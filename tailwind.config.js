@@ -22,7 +22,6 @@ export default {
                 'main': '#F5EBDD',
                 'card': '#FFFFFF',
                 'hover': '#F0E2D2',
-                'text-light': '#F5EBDD',
                 'primary-text': '#2B2B2B',
                 'secondary-text': '#6B6B6B',
                 'success': '#10B981',
