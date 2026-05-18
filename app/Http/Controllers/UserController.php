@@ -17,6 +17,7 @@ class UserController extends Controller
         $users = User::with('roles')->paginate(10)->appends(request()->query());
         return Inertia::render('Users/Index', [
             'users' => $users,
+            'roles' => Role::all(),
         ]);
     }
 

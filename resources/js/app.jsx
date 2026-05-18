@@ -1,5 +1,7 @@
-import '../css/app.css';
 import './bootstrap';
+
+// Import Mantine CSS first (for component base styles)
+import '@mantine/core/styles.css';
 
 // Import jQuery and Bootstrap (Required for dropdowns)
 import $ from 'jquery';
@@ -12,9 +14,13 @@ import 'admin-lte/dist/js/adminlte.min.js';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
+// Import Tailwind CSS LAST so it has highest priority and overrides Bootstrap
+import '../css/app.css';
+
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
+import { MantineProvider } from '@mantine/core';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -28,7 +34,11 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <MantineProvider withNormalizeCSS withGlobalStyles>
+                <App {...props} />
+            </MantineProvider>
+        );
     },
     progress: {
         color: '#4B5563',

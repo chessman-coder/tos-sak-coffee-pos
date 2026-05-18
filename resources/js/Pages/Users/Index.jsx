@@ -1,139 +1,148 @@
-import Breadcrumb from '@/Components/Breadcrumb';
-import DangerButton from '@/Components/DangerButton';
-import Modal from '@/Components/Modal';
-import NavLink from '@/Components/NavLink';
-import Pagination from '@/Components/Pagination';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import SecondaryButtonLink from '@/Components/SecondaryButtonLink';
-import AdminLayout from '@/Layouts/AdminLayout';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import moment from 'moment';
-import { useState } from 'react';
+import UserCard from "@/Components/Users/UserCard";
+import Pagination from "@/Components/Pagination";
+import AdminLayout from "@/Layouts/AdminLayout";
+import { Head, useForm, usePage } from "@inertiajs/react";
+import { useState } from "react";
+import Modal from "@/Components/Modal";
+import UserHeader from "@/Components/Users/UserHeader";
+import { UserForm } from "@/Pages/Users/CreateEdit";
+import DangerButton from "@/Components/DangerButton";
+import SecondaryButton from "@/Components/SecondaryButton";
 
 export default function UserPage({ users }) {
-    const { auth } = usePage().props;
-    const can = auth?.can ?? {}; 
-    
-    const datasList = users.data;
-    const [confirmingDataDeletion, setConfirmingDataDeletion] = useState(false);
-    const [dataEdit, setDataEdit] = useState({})
-    const { data: deleteData, setData: setDeleteData, delete: destroy, processing, reset, errors, clearErrors } =
-        useForm({
-            id: '',
-            name: ''
-        });
+    const userList = users?.data ?? [];
+    const [showForm, setShowForm] = useState(false);
+    const [activeUser, setActiveUser] = useState(null);
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [deletingUser, setDeletingUser] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const { roles = [] } = usePage().props;
+    const { delete: destroy, processing } = useForm();
 
-    const confirmDataDeletion = (data) => {
-        setDataEdit(data);
-        setDeleteData('id', data.id)
-        setDeleteData('name', data.name)
-        setConfirmingDataDeletion(true);
-    };
-    const closeModal = () => {
-        setConfirmingDataDeletion(false);
-        setDataEdit({})
-        clearErrors();
-        reset();
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    const filteredUsers = normalizedSearchTerm
+        ? userList.filter((user) => {
+              const userName = user?.name?.toLowerCase() ?? "";
+              return userName.includes(normalizedSearchTerm);
+          })
+        : userList;
+
+    const confirmDelete = (user) => {
+        setDeletingUser(user);
+        setConfirmingDelete(true);
     };
 
-    const deleteDataRow = (e) => {
+    const closeDeleteModal = () => {
+        setConfirmingDelete(false);
+        setDeletingUser(null);
+    };
+
+    const deleteUser = (e) => {
         e.preventDefault();
-        destroy(route('users.destroy', dataEdit.id), {
+
+        if (!deletingUser?.id) {
+            return;
+        }
+
+        destroy(route("users.destroy", deletingUser.id), {
             preserveScroll: true,
-            onSuccess: () => closeModal(),
-            onError: () => passwordInput.current.focus(),
-            onFinish: () => reset(),
+            onSuccess: () => {
+                closeDeleteModal();
+            },
+            onFinish: () => {
+                closeDeleteModal();
+            },
         });
     };
-    const headWeb = 'User List'
-    const linksBreadcrumb = [{ title: 'Home', url: '/' }, { title: headWeb, url: '' }];
 
+    const headWeb = "Users List";
     return (
-        <AdminLayout breadcrumb={<Breadcrumb header={headWeb} links={linksBreadcrumb} />} >
+        <AdminLayout>
             <Head title={headWeb} />
             <section className="content">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card card-outline card-info">
-                            <div className="card-header">
-                                <h3 className="card-title">
-                                    Datalist Management
-                                </h3>
-                                <div className="card-tools">
-                                    <div className="input-group input-group-sm" style={{ width: '150px' }}>
-                                        <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
-                                        <div className="input-group-append">
-                                            <button type="submit" className="btn btn-default">
-                                                <i className="fas fa-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-body table-responsive p-0">
-                                <table className="table table-hover text-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>#ID</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Created At</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {datasList.length > 0 ?
-                                            [...datasList].sort((a, b) => a.name.localeCompare(b.name)).map((item, k) => (
-                                                <tr key={k + 1}>
-                                                    <td>{item?.id}</td>
-                                                    <td>{item?.name}</td>
-                                                    <td>{item?.email}</td>
-                                                    <td>{item?.roles[0]?.name}</td>
-                                                    <td>{moment(item?.created_at).format("DD/MM/YYYY")}</td>
-                                                    <td width={'170px'}>
-                                                        {can['user-edit'] && (
-                                                            <Link href={route('users.edit', item.id)} className="btn btn-info btn-xs mr-2">
-                                                                <i className='fas fa-edit'></i> Edit
-                                                            </Link>
-                                                        )}
-                                                        {/* <button onClick={() => confirmDataDeletion(item)} type="button" className="btn btn-danger btn-xs">
-                                                            <i className='fas fa-trash'></i> Delete
-                                                        </button> */}
-                                                    </td>
-                                                </tr>
-                                            ))
-                                            :
-                                            <tr>
-                                                <td colSpan={5}>There are no record!</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                                <Modal show={confirmingDataDeletion} onClose={closeModal}>
-                                    <form onSubmit={deleteDataRow} className="p-6">
-                                        <h2 className="text-lg font-medium text-gray-900">
-                                            Confirmation!
-                                        </h2>
-                                        <p className="mt-1 text-sm text-gray-600">
-                                            Are you sure you want to delete <span className='text-lg font-medium'>{deleteData.name}</span>?
-                                        </p>
-                                        <div className="mt-6 flex justify-end">
-                                            <SecondaryButton onClick={closeModal}>No</SecondaryButton>
-                                            <DangerButton className="ms-3" disabled={processing}>Yes</DangerButton>
-                                        </div>
-                                    </form>
-                                </Modal>
-                            </div>
-
-                            <div className="card-footer clearfix">
-                                <Pagination links={users.links} />
-                            </div>
-                        </div>
+                <UserHeader
+                    total={users?.total ?? userList.length}
+                    searchValue={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    onCreateClick={() => {
+                        setActiveUser(null);
+                        setShowForm(true);
+                    }}
+                />
+                <Modal
+                    show={showForm}
+                    onClose={() => {
+                        setShowForm(false);
+                        setActiveUser(null);
+                    }}
+                    maxWidth="2xl"
+                >
+                    <div className="p-4">
+                        <UserForm
+                            key={activeUser?.id ?? "create-user"}
+                            user={activeUser ?? {}}
+                            roles={roles}
+                            onCancel={() => {
+                                setShowForm(false);
+                                setActiveUser(null);
+                            }}
+                            onSuccess={() => {
+                                setShowForm(false);
+                                setActiveUser(null);
+                            }}
+                        />
                     </div>
+                </Modal>
+                <Modal
+                    show={confirmingDelete}
+                    onClose={closeDeleteModal}
+                    maxWidth="md"
+                >
+                    <form
+                        onSubmit={deleteUser}
+                        className="p-6 bg-white rounded-xl"
+                    >
+                        <h2 className="text-lg font-medium text-gray-900">
+                            Confirm delete
+                        </h2>
+                        <p className="mt-1 text-sm text-gray-600">
+                            Are you sure you want to delete{" "}
+                            <span className="font-medium text-gray-900">
+                                {deletingUser?.name}
+                            </span>
+                            ?
+                        </p>
+                        <div className="mt-6 flex justify-end gap-3">
+                            <SecondaryButton
+                                type="button"
+                                onClick={closeDeleteModal}
+                            >
+                                Cancel
+                            </SecondaryButton>
+                            <DangerButton disabled={processing}>
+                                Delete
+                            </DangerButton>
+                        </div>
+                    </form>
+                </Modal>
+                <div className="flex flex-wrap gap-6 justify-center md:w-full">
+                    {filteredUsers.length > 0 ? (
+                        filteredUsers.map((user) => (
+                            <UserCard
+                                key={user.id}
+                                user={user}
+                                onEdit={(selectedUser) => {
+                                    setActiveUser(selectedUser);
+                                    setShowForm(true);
+                                }}
+                                onDelete={confirmDelete}
+                            />
+                        ))
+                    ) : (
+                        <div>No users found.</div>
+                    )}
                 </div>
+                {users?.links && <Pagination links={users.links} />}
             </section>
         </AdminLayout>
     );

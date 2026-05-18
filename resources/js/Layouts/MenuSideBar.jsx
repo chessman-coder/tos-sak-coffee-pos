@@ -14,6 +14,7 @@ import {
     StoreIcon,
     LogOut,
 } from "lucide-react";
+import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function MenuSideBar({}) {
     const { url, auth } = usePage().props;
@@ -75,7 +76,7 @@ export default function MenuSideBar({}) {
                             <li className="nav-item">
                                 <Link
                                     href="#"
-                                    className={`nav-link ${route().current("#") && "active"}`}
+                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -89,7 +90,7 @@ export default function MenuSideBar({}) {
                             <li className="nav-item">
                                 <Link
                                     href={route("dashboard")}
-                                    className={`nav-link ${route().current("dashboard") && "active"}`}
+                                    className={`nav-link navbar-item ${route().current("dashboard") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -103,7 +104,7 @@ export default function MenuSideBar({}) {
                             <li className="nav-item">
                                 <Link
                                     href="#"
-                                    className={`nav-link ${route().current("#") && "active"}`}
+                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -116,8 +117,8 @@ export default function MenuSideBar({}) {
                             </li>
                             <li className="nav-item">
                                 <Link
-                                    href={route("categories.index")}
-                                    className={`nav-link ${route().current("categories.index") && "active"}`}
+                                    href={route("users.index")}
+                                    className={`nav-link navbar-item ${route().current("users.index") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -125,13 +126,13 @@ export default function MenuSideBar({}) {
                                     }}
                                 >
                                     <Users className="nav-icon" />
-                                    <span>Staff</span>
+                                    <span>Users</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
                                 <Link
                                     href="#"
-                                    className={`nav-link ${route().current("#") && "active"}`}
+                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -145,7 +146,7 @@ export default function MenuSideBar({}) {
                             <li className="nav-item">
                                 <Link
                                     href="#"
-                                    className={`nav-link ${route().current("#") && "active"}`}
+                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -159,7 +160,7 @@ export default function MenuSideBar({}) {
                             <li className="nav-item">
                                 <Link
                                     href="#"
-                                    className={`nav-link ${route().current("#") && "active"}`}
+                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -300,6 +301,7 @@ export default function MenuSideBar({}) {
                         <span>Log Out</span>
                     </Link>
                 </div>
+                
             </aside>
         </>
     );

@@ -30,8 +30,9 @@ export default {
                 'warning-bg': '#FFF0B4',
                 'danger': '#F43F5E',
                 'danger-bg': '#FEBDC2',
-                'info': '#006FFF',
-                'info-bg': '#8BBDFF',
+                'infoColor': '#006FFF',
+                'info-bg': '#B5D5FF',
+                'black': '#000000'
 
             },
         extend: {
