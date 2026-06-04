@@ -13,6 +13,29 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'view_order',
+        'parent_id',
     ];
+
+    /**
+     * Always include the products count on the model as `products_count`.
+     */
+    protected $withCount = ['products'];
+
+    /**
+     * Get the products for the category.
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function subcategories()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
 }

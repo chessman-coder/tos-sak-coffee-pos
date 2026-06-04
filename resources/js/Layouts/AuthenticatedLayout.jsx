@@ -36,6 +36,18 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Categories
                                 </NavLink>
+                                <NavLink
+                                    href={route('types.index')}
+                                    active={route().current('types.index') || route().current('types.create') || route().current('types.edit')}
+                                >
+                                    Types
+                                </NavLink>
+                                <NavLink
+                                    href={route('sizes.index')}
+                                    active={route().current('sizes.index') || route().current('sizes.create') || route().current('sizes.edit')}
+                                >
+                                    Sizes
+                                </NavLink>
                             </div>
                         </div>
 

@@ -11,10 +11,10 @@ import {
     ClipboardList,
     ClipboardClock,
     Store,
-    StoreIcon,
     LogOut,
+    Boxes,
+    Coffee,
 } from "lucide-react";
-import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function MenuSideBar({}) {
     const { url, auth } = usePage().props;
@@ -34,7 +34,7 @@ export default function MenuSideBar({}) {
     return (
         <>
             {/* Sidebar */}
-            <aside className="main-sidebar bg-primaryColor elevation-4 flex h-screen flex-col">
+            <aside className="main-sidebar fixed left-0 top-0 z-40 bg-primaryColor elevation-4 flex flex-col max-h-screen overflow-hidden">
                 <Link href="/" className="brand-link">
                     <div className="image flex justify-center">
                         <img
@@ -66,7 +66,7 @@ export default function MenuSideBar({}) {
                         </div>
                     </div>
 
-                    <nav className="mt-2 flex-1">
+                    <nav className="mt-2 flex-1 overflow-y-auto">
                         <ul
                             className="nav nav-pills nav-sidebar flex-column"
                             data-widget="treeview"
@@ -117,6 +117,48 @@ export default function MenuSideBar({}) {
                             </li>
                             <li className="nav-item">
                                 <Link
+                                    href={route("catalog.index")}
+                                    className={`nav-link navbar-item ${route().current("catalog.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ClipboardList className="nav-icon" />
+                                    <span>Catalog</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    href={route("products.index")}
+                                    className={`nav-link navbar-item ${route().current("products.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Coffee className="nav-icon" />
+                                    <span>Product</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    href={route("inventories.index")}
+                                    className={`nav-link navbar-item ${route().current("inventories.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Boxes className="nav-icon" />
+                                    <span>Inventory</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
                                     href={route("users.index")}
                                     className={`nav-link navbar-item ${route().current("users.index") && "active"}`}
                                     style={{
@@ -127,20 +169,6 @@ export default function MenuSideBar({}) {
                                 >
                                     <Users className="nav-icon" />
                                     <span>Users</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href="#"
-                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <Warehouse className="nav-icon" />
-                                    <span>Inventory</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
@@ -171,6 +199,49 @@ export default function MenuSideBar({}) {
                                     <span>Order History</span>
                                 </Link>
                             </li>
+                            <li className="nav-item">
+                                <Link
+                                    href={route("roles.index")}
+                                    className={`nav-link navbar-item ${route().current("roles.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ClipboardClock className="nav-icon" />
+                                    <span>Role</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link
+                                    href={route("orders.index")}
+                                    className={`nav-link navbar-item ${route().current("orders.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ClipboardClock className="nav-icon" />
+                                    <span>Order</span>
+                                </Link>
+                            </li>
+                            {/* <li className="nav-item">
+                                <Link
+                                    href={route("sizes.index")}
+                                    className={`nav-link navbar-item ${route().current("sizes.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ClipboardClock className="nav-icon" />
+                                    <span>Size</span>
+                                </Link>
+                            </li> */}
+
                             {/* {can["category-list"] && (
                                 <>
                                     <li className="nav-item">
@@ -301,7 +372,6 @@ export default function MenuSideBar({}) {
                         <span>Log Out</span>
                     </Link>
                 </div>
-                
             </aside>
         </>
     );

@@ -42,15 +42,29 @@ export default function Sidebar() {
         {
             label: 'Inventory',
             icon: 'fa-solid fa-cart-shopping',
-            href: '#',
-            active: false,
+            href: route('inventories.index'),
+            active: route().current('inventories.index'),
             show: true,
         },
         {
             label: 'Menu',
             icon: 'fa-solid fa-utensils',
             href: can['category-list'] ? route('categories.index') : '#',
-            active: route().current('categories.index') || route().current('categories.create'),
+            active: route().current('categories.index') || route().current('categories.create') || route().current('categories.edit'),
+            show: true,
+        },
+        {
+            label: 'Types',
+            icon: 'fa-solid fa-layer-group',
+            href: route('types.index'),
+            active: route().current('types.index') || route().current('types.create') || route().current('types.edit'),
+            show: true,
+        },
+        {
+            label: 'Sizes',
+            icon: 'fa-solid fa-ruler',
+            href: route('sizes.index'),
+            active: route().current('sizes.index') || route().current('sizes.create') || route().current('sizes.edit'),
             show: true,
         },
         {

@@ -10,10 +10,11 @@ const AdminLayout = ({breadcrumb, children }) => {
     useEffect(() => {
         // Ensure dropdowns, tooltips, and modals work
         $('[data-toggle="dropdown"]').dropdown();
+        // Add AdminLTE body classes so layout CSS applies correctly
     }, []);
     
     return (
-        <div className="wrapper">
+        <div className="wrapper flex flex-col h-screen overflow-hidden">
             {/* Navbar */}
             <nav className="main-header navbar navbar-expand navbar-white navbar-light">
                 <ul className="navbar-nav">
@@ -49,15 +50,15 @@ const AdminLayout = ({breadcrumb, children }) => {
             <MenuSideBar />
 
             {/* Content Wrapper */}
-            <div className="content-wrapper">
+            <div className="content-wrapper bg-white ml-64 h-screen overflow-auto">
                 {breadcrumb && breadcrumb}
                 <section className="content">{children}</section>
             </div>
 
             {/* Footer */}
-            <footer className="main-footer">
+            {/* <footer className="main-footer">
                 <strong>Copyright &copy; 2025</strong> All rights reserved.
-            </footer>
+            </footer> */}
         </div>
     );
 };

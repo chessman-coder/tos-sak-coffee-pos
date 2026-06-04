@@ -4,7 +4,6 @@ import './bootstrap';
 import '@mantine/core/styles.css';
 
 // Import jQuery and Bootstrap (Required for dropdowns)
-import $ from 'jquery';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 

@@ -92,7 +92,7 @@ export default function UserCard({
                         <Pencil
                             size={18}
                             strokeWidth={2.5}
-                            className="text-infoColor"
+                            className="text-info"
                         />
                     </ActionIcon>
                     <ActionIcon

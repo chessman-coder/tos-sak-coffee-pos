@@ -14,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request): Response
     {
-        $rsDatas = Category::latest()->paginate(10)->appends(request()->query());
+        $rsDatas = Category::with('parent')->latest()->paginate(10)->appends(request()->query());
 
         return Inertia::render('Categories/Index', [
             'categoryData' => $rsDatas
@@ -27,7 +27,8 @@ class CategoryController extends Controller
     public function create()
     {
         return Inertia::render('Categories/CreateEdit', [
-            'datas' => ''
+            'datas' => (object) [],
+            'parentCategories' => Category::whereNull('parent_id')->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -36,10 +37,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request, Category $model)
     {
-        $model->create($request->validate([
+        $validated = $request->validate([
             'name' => 'required|max:255|min:2',
-            'view_order' => 'required',
-        ]));
+            'parent_id' => 'nullable|exists:categories,id',
+        ]);
+
+        if (empty($validated['parent_id'])) {
+            $validated['parent_id'] = null;
+        }
+
+        $model->create($validated);
         return redirect()->route('categories.index');
         // return back()->with('message', 'Data added successfully');
     }
@@ -59,7 +66,8 @@ class CategoryController extends Controller
     {
         $rsDatasModel = Category::find($id);
         return Inertia::render('Categories/CreateEdit', [
-            'datas' => $rsDatasModel
+            'datas' => $rsDatasModel,
+            'parentCategories' => Category::whereNull('parent_id')->where('id', '!=', $id)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -68,13 +76,17 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $model, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|max:255|min:2',
-            'view_order' => 'required',
+            'parent_id' => 'nullable|exists:categories,id',
         ]);
+
+        if (empty($validated['parent_id'])) {
+            $validated['parent_id'] = null;
+        }
         
         $rsDatasModel = Category::find($id);
-        $rsDatasModel->update($request->all());
+        $rsDatasModel->update($validated);
 
         return redirect()->route('categories.index');
     }

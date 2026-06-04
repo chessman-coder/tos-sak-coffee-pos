@@ -1,4 +1,5 @@
 import { Plus, Search } from "lucide-react";
+import Button from "../ui/Button";
 
 export default function UserHeader({
     title = "Users List",
@@ -22,18 +23,19 @@ export default function UserHeader({
                             value={searchValue}
                             onChange={(e) => onSearchChange?.(e.target.value)}
                             placeholder="Search users"
-                            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm outline-none transition focus:ring-2 focus:ring-amber-100"
+                            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm outline-none transition focus:ring-2 focus:ring-primary-light"
                         />
                     </label>
 
-                    <button
+                    <Button
                         type="button"
+                        variant="fillDark"
                         onClick={() => onCreateClick?.()}
-                        className="flex items-center justify-center gap-2 rounded-xl bg-secondary-dark px-4 py-2.5 text-sm font-medium text-primary-dark shadow hover:bg-secondary-dark/80"
+                        className="inline-flex items-center rounded-full px-4 py-2"
                     >
                         <Plus strokeWidth={2.5} size={18} />
                         <span>Add staff</span>
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
