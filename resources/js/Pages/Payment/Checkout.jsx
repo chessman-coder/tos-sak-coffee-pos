@@ -6,6 +6,7 @@ import { QrCode, ArrowLeft, ShieldCheck, Copy, Check } from "lucide-react";
 
 export default function Checkout({ qr_code, md5, amount, bill_number, description }) {
     const [copied, setCopied] = useState(false);
+    const [transition, setTransition] = useState(null);
 
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(qr_code)}`;
 
@@ -21,15 +22,10 @@ export default function Checkout({ qr_code, md5, amount, bill_number, descriptio
     };
 
     const headWeb = "Bakong KHQR Payment";
-    const linksBreadcrumb = [
-        { title: "Home", url: "/" },
-        { title: "Orders", url: "/orders" },
-        { title: "Checkout", url: "" },
-    ];
 
     return (
         <AdminLayout
-            breadcrumb={<Breadcrumb header={headWeb} links={linksBreadcrumb} />}
+            breadcrumb={<Breadcrumb header={headWeb} />}
         >
             <Head title={headWeb} />
 
