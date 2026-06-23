@@ -9,6 +9,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\POSController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -70,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
     Route::get('/orders/{id}', [OrderController::class, 'edit'])->name('orders.edit');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index')->middleware(['check:product-list']);
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create')->middleware(['check:product-create']);
@@ -94,6 +97,9 @@ Route::middleware('auth')->group(function () {
         Route::patch("/{id}", [UserController::class, 'update'])->name('users.update');
         Route::delete("/{id}", [UserController::class, 'destroy'])->name('users.destroy')->middleware(['check:user-delete']);
     });
+
+    Route::get('/kitchen', [\App\Http\Controllers\KitchenController::class, 'index'])->name('kitchen.index');
+    Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
 });
 
 require __DIR__.'/auth.php';

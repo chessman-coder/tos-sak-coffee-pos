@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import React from "react";
 
 export default function CreateCategoryForm({
@@ -35,7 +36,7 @@ export default function CreateCategoryForm({
                         style={{ background: "transparent", color: "#7b5f58", fontSize: 26, lineHeight: 1 }}
                         onClick={onClose}
                     >
-                        x
+                        <X size={18}/>
                     </button>
                 </div>
 

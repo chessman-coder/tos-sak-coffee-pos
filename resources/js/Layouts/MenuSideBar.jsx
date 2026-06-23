@@ -75,8 +75,8 @@ export default function MenuSideBar({}) {
                         >
                             <li className="nav-item">
                                 <Link
-                                    href="#"
-                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
+                                    href={route("pos.index")}
+                                    className={`nav-link navbar-item ${route().current("pos.index") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",

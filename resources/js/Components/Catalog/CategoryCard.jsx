@@ -17,7 +17,7 @@ export default function CategoryCard({ category, subItems = [], onDelete, onEdit
                 <div className="flex gap-4">
                     <button
                         type="button"
-                        className="border-0 bg-transparent p-0 text-infoColor"
+                        className="bg-transparent text-infoColor border-none appearance-none outline-none"
                         title="Edit"
                         onClick={() => onEdit?.(category)}
                     >
@@ -25,7 +25,7 @@ export default function CategoryCard({ category, subItems = [], onDelete, onEdit
                     </button>
                     <button
                         type="button"
-                        className="border-0 bg-transparent p-0 text-danger"
+                        className="bg-transparent text-danger border-none appearance-none outline-none"
                         title="Delete"
                         onClick={() => onDelete?.(category)}
                     >

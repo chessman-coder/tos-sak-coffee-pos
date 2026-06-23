@@ -2,11 +2,12 @@ import Breadcrumb from "@/Components/Breadcrumb";
 import DangerButton from "@/Components/DangerButton";
 import Modal from "@/Components/Modal";
 import Pagination from "@/Components/Pagination";
-import ProductCard from "@/Components/Products/ProductCard";
+import ProductTable from "@/Components/Products/ProductTable";
 import ProductFormModal from "@/Components/Products/ProductFormModal";
+import ProductViewModal from "@/Components/Products/ProductViewModal";
 import SecondaryButton from "@/Components/SecondaryButton";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage, router } from "@inertiajs/react";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -57,6 +58,7 @@ export default function ProductsPage({
     subCategories = [],
     types = [],
     sizes = [],
+    queryParams = {},
 }) {
     const { auth } = usePage().props;
     const can = auth?.can ?? {};
@@ -65,6 +67,30 @@ export default function ProductsPage({
     const [showProductForm, setShowProductForm] = useState(false);
     const [confirmingDataDeletion, setConfirmingDataDeletion] = useState(false);
     const [dataEdit, setDataEdit] = useState({});
+    const [viewingProduct, setViewingProduct] = useState(null);
+
+    const openViewProductModal = (product) => {
+        setViewingProduct(product);
+    };
+
+    const closeViewProductModal = () => {
+        setViewingProduct(null);
+    };
+
+    const handleSort = (field, order) => {
+        router.get(
+            route("products.index"),
+            {
+                ...queryParams,
+                sort_by: field,
+                sort_order: order,
+            },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    };
 
     const {
         data: deleteData,
@@ -179,14 +205,14 @@ export default function ProductsPage({
 
     return (
         <AdminLayout >
-            <section className="content">
-                <div className="rounded-[26px] bg-[#f8f4f1] p-5 md:p-7">
+            <section className="min-h-screen bg-background px-4 py-6 md:px-6 lg:px-8">
+                <div className="p-4 md:p-7">
                     <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h1 className="mb-1 text-2xl font-semibold text-[#2f1a16]">
+                        <div className="flex flex-col gap-1">
+                            <h1 className="text-4xl font-bold text-primary-dark">
                                 Products
                             </h1>
-                            <p className="mb-0 text-sm text-[#8a5b3e]">
+                            <p className="text-sm text-secondary-dark">
                                 {productData.total ?? datasList.length} items in catalog
                             </p>
                         </div>
@@ -219,25 +245,18 @@ export default function ProductsPage({
                         </div>
                     </div>
 
-                    {filteredProducts.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                            {filteredProducts.map((item) => (
-                                <ProductCard
-                                    key={item.id}
-                                    product={item}
-                                    canEdit={Boolean(can["product-edit"])}
-                                    canDelete={Boolean(can["product-delete"])}
-                                    onView={openEditProductForm}
-                                    onEdit={openEditProductForm}
-                                    onDelete={confirmDataDeletion}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="rounded-2xl border border-dashed border-[#e1d0c8] bg-white p-8 text-center text-sm text-[#7b5f58]">
-                            No products found.
-                        </div>
-                    )}
+                    <ProductTable
+                        products={filteredProducts}
+                        canView={true}
+                        canEdit={Boolean(can["product-edit"])}
+                        canDelete={Boolean(can["product-delete"])}
+                        onView={openViewProductModal}
+                        onEdit={openEditProductForm}
+                        onDelete={confirmDataDeletion}
+                        sortBy={queryParams.sort_by ?? "created_at"}
+                        sortOrder={queryParams.sort_order ?? "desc"}
+                        onSort={handleSort}
+                    />
 
                     <div className="mt-6">
                         <Pagination links={productData.links} />
@@ -280,6 +299,12 @@ export default function ProductsPage({
                     onClose={closeProductForm}
                     onSubmit={saveProduct}
                     processing={productProcessing}
+                />
+
+                <ProductViewModal
+                    show={Boolean(viewingProduct)}
+                    product={viewingProduct}
+                    onClose={closeViewProductModal}
                 />
             </section>
         </AdminLayout>

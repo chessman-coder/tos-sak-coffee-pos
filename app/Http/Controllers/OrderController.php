@@ -19,7 +19,6 @@ class OrderController extends Controller
      */
     private function generateOrderNumber(): string
     {
-        // Find the current max numeric suffix for order numbers like ORD-001
         $max = DB::table('orders')
             ->where('order_number', 'like', 'ORD-%')
             ->selectRaw("MAX(CAST(REPLACE(order_number, 'ORD-', '') AS UNSIGNED)) as max_no")
@@ -29,7 +28,6 @@ class OrderController extends Controller
         $suffix = str_pad($next, 3, '0', STR_PAD_LEFT);
         $num = 'ORD-' . $suffix;
 
-        // ensure uniqueness
         while (Order::where('order_number', $num)->exists()) {
             $next++;
             $suffix = str_pad($next, 3, '0', STR_PAD_LEFT);
@@ -58,22 +56,26 @@ class OrderController extends Controller
 
     public function store(Request $request, Order $model)
     {
-        // Log incoming payload for debugging
         Log::info('Order store request payload', $request->all());
 
         try {
             $validated = $request->validate([
                 'order_number' => 'nullable|max:255|min:2|unique:orders,order_number',
+                'customer_name' => 'nullable|string|max:100',
+                'phone_number' => 'nullable|string|max:20',
+                'order_type' => 'required|string|in:Dine In,Take Away',
                 'order_date' => 'required|date',
                 'order_method' => 'required|in:qr_order,walk_in_order',
                 'table_number' => 'nullable|required_if:order_method,qr_order|max:50',
                 'payment_method' => 'required|in:khqr,cash',
-                'status' => 'required|in:pending,preparing,finish',
+                'status' => 'required|in:pending,preparing,ready,completed,cancelled,finish',
                 'notes' => 'nullable|string',
                 'items' => 'required|array|min:1',
                 'items.*.product_id' => 'required|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
                 'items.*.discount' => 'nullable|numeric|min:0',
+                'items.*.type' => 'nullable|string|max:255',
+                'items.*.size' => 'nullable|string|max:255',
                 'items.*.selected_options' => 'nullable|array',
                 'items.*.selected_options.*.product_option_id' => 'nullable|integer|exists:product_options,id',
                 'items.*.selected_options.*.product_option_value_id' => 'nullable|integer|exists:product_option_values,id',
@@ -101,6 +103,9 @@ class OrderController extends Controller
 
             $order = $model->create([
                 'order_number' => $orderNumber,
+                'customer_name' => $validated['customer_name'] ?? null,
+                'phone_number' => $validated['phone_number'] ?? null,
+                'order_type' => $validated['order_type'],
                 'order_date' => $validated['order_date'],
                 'order_method' => $validated['order_method'],
                 'table_number' => $validated['order_method'] === 'qr_order' ? $validated['table_number'] : null,
@@ -120,8 +125,11 @@ class OrderController extends Controller
                 $orderItem = $order->items()->create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
+                    'type' => $item['type'] ?? null,
+                    'size' => $item['size'] ?? null,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
+                    'subtotal' => $unitPrice * $quantity,
                     'discount' => $discount,
                     'line_total' => $lineTotal,
                 ]);
@@ -155,16 +163,21 @@ class OrderController extends Controller
 
         $validated = $request->validate([
             'order_number' => 'required|max:255|min:2|unique:orders,order_number,' . $id,
+            'customer_name' => 'nullable|string|max:100',
+            'phone_number' => 'nullable|string|max:20',
+            'order_type' => 'required|string|in:Dine In,Take Away',
             'order_date' => 'required|date',
             'order_method' => 'required|in:qr_order,walk_in_order',
             'table_number' => 'nullable|required_if:order_method,qr_order|max:50',
             'payment_method' => 'required|in:khqr,cash',
-            'status' => 'required|in:pending,preparing,finish',
+            'status' => 'required|in:pending,preparing,ready,completed,cancelled,finish',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.discount' => 'nullable|numeric|min:0',
+            'items.*.type' => 'nullable|string|max:255',
+            'items.*.size' => 'nullable|string|max:255',
             'items.*.selected_options' => 'nullable|array',
             'items.*.selected_options.*.product_option_id' => 'nullable|integer|exists:product_options,id',
             'items.*.selected_options.*.product_option_value_id' => 'nullable|integer|exists:product_option_values,id',
@@ -185,6 +198,9 @@ class OrderController extends Controller
             $totalAmount = 0;
             $rsDatasModel->update([
                 'order_number' => $validated['order_number'],
+                'customer_name' => $validated['customer_name'] ?? null,
+                'phone_number' => $validated['phone_number'] ?? null,
+                'order_type' => $validated['order_type'],
                 'order_date' => $validated['order_date'],
                 'order_method' => $validated['order_method'],
                 'table_number' => $validated['order_method'] === 'qr_order' ? $validated['table_number'] : null,
@@ -204,8 +220,11 @@ class OrderController extends Controller
 
                 $orderItem = $rsDatasModel->items()->create([
                     'product_id' => $product->id,
+                    'type' => $item['type'] ?? null,
+                    'size' => $item['size'] ?? null,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
+                    'subtotal' => $unitPrice * $quantity,
                     'discount' => $discount,
                     'line_total' => $lineTotal,
                 ]);

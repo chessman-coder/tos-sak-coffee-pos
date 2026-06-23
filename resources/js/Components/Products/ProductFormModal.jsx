@@ -55,6 +55,15 @@ export default function ProductFormModal({
         setData("sizes", nextSizes);
     };
 
+    const toggleType = (typeTitle) => {
+        const selectedTypes = data.types ?? [];
+        const nextTypes = selectedTypes.includes(typeTitle)
+            ? selectedTypes.filter((value) => value !== typeTitle)
+            : [...selectedTypes, typeTitle];
+
+        setData("types", nextTypes);
+    };
+
     const setSelectedImage = (file) => {
         const previewUrl = file ? URL.createObjectURL(file) : imageUrl;
 
@@ -109,8 +118,8 @@ export default function ProductFormModal({
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="2xl" backdropClassName="bg-black/70">
-            <div className="rounded-[14px] border border-[#eadfda] bg-[#f8f4f1] p-5 md:p-6">
-                <div className="mb-5 flex items-start justify-between gap-4">
+            <div className="rounded-[14px] border border-[#eadfda] bg-[#f8f4f1] py-4 px-5 mt-4 md:p-5">
+                <div className="mb-2 mt-2 flex items-start justify-between gap-4">
                     <h2 className="mb-0 text-2xl font-bold text-[#2f1a16]">
                         {title}
                     </h2>
@@ -178,25 +187,6 @@ export default function ProductFormModal({
 
                     <label className="space-y-2">
                         <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-[#6f4f47]">
-                            Type
-                        </span>
-                        <select
-                            className={fieldClassName}
-                            value={data.type}
-                            onChange={(event) => updateField("type", event.target.value)}
-                        >
-                            <option value="">Select type</option>
-                            {types.map((type) => (
-                                <option key={type.id} value={type.title}>
-                                    {type.title}
-                                </option>
-                            ))}
-                        </select>
-                        <InputError message={errors.type} />
-                    </label>
-
-                    <label className="space-y-2">
-                        <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-[#6f4f47]">
                             Price ($)
                         </span>
                         <input
@@ -228,6 +218,36 @@ export default function ProductFormModal({
 
                     <div className="space-y-2 md:col-span-2">
                         <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-[#6f4f47]">
+                            Types
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                            {types.map((type) => {
+                                const selected = (data.types ?? []).includes(type.title);
+
+                                return (
+                                    <button
+                                        key={type.id}
+                                        type="button"
+                                        onClick={() => toggleType(type.title)}
+                                        className={`min-w-10 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                                            selected
+                                                ? "border-[#5a3630] bg-[#5a3630] text-white"
+                                                : "border-[#e1d0c8] bg-white text-[#6f4f47] hover:bg-[#fcf8f6]"
+                                        }`}
+                                    >
+                                        {type.title}
+                                    </button>
+                                );
+                            })}
+                            {types.length === 0 ? (
+                                <span className="text-sm text-[#8a6a55]">No types available</span>
+                            ) : null}
+                        </div>
+                        <InputError message={errors.types} />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                        <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-[#6f4f47]">
                             Sizes
                         </span>
                         <div className="flex flex-wrap gap-2">
@@ -255,73 +275,6 @@ export default function ProductFormModal({
                         </div>
                         <InputError message={errors.sizes} />
                     </div>
-
-                    {/* <label className="space-y-2 md:col-span-2">
-                        <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-[#6f4f47]">
-                            Image
-                        </span>
-                        <div
-                            className={`flex min-h-40 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed bg-white transition ${
-                                data.imagePreview
-                                    ? "border-[#e1d0c8]"
-                                    : isDraggingImage
-                                        ? "border-[#5a3630] bg-[#fcf8f6]"
-                                        : "border-[#e1d0c8] hover:border-[#b78a78] hover:bg-[#fcf8f6]"
-                            }`}
-                            onDragEnter={() => setIsDraggingImage(true)}
-                            onDragLeave={() => setIsDraggingImage(false)}
-                            onDragOver={(event) => event.preventDefault()}
-                            onDrop={handleDrop}
-                        >
-                            {data.imagePreview ? (
-                                <div className="flex flex-col items-center gap-3 py-4">
-                                    <img
-                                        src={data.imagePreview}
-                                        alt="Product preview"
-                                        className="h-28 w-28 rounded-md object-cover"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            fileInputRef.current?.click();
-                                        }}
-                                        className="rounded-full border border-[#d6ccc8] bg-white px-4 py-2 text-sm font-semibold text-[#4a2b25] shadow-sm transition hover:bg-[#fcf8f6]"
-                                    >
-                                        Browse
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="flex h-full w-full flex-col items-center justify-center gap-4 px-4 py-5 text-center">
-                                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f8f4f1] text-[#7b5f58]">
-                                        <ImageIcon size={26} />
-                                    </div>
-                                    <div className="text-sm font-semibold leading-5 text-[#5f4038]">
-                                        Drag and drop the image here or browse
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            fileInputRef.current?.click();
-                                        }}
-                                        className="rounded-full border border-[#d6ccc8] bg-white px-4 py-2 text-sm font-semibold text-[#4a2b25] shadow-sm transition hover:bg-[#fcf8f6]"
-                                    >
-                                        Browse
-                                    </button>
-                                </div>
-                            )}
-
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleImageChange}
-                            />
-                        </div>
-                        <InputError message={errors.image} />
-                    </label> */}
 
                     <label className="space-y-2 md:col-span-2">
                         <span className="block text-xs font-semibold uppercase tracking-[0.08em] text-[#6f4f47]">

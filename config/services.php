@@ -34,5 +34,13 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    
+    'bakong' => [
+        'merchantID' => env('BAKONG_MERCHANT_ID'),
+        'merchantName' => env('BAKONG_MERCHANT_NAME'),
+        'merchantCity' => env('BAKONG_MERCHANT_CITY'),
+        'token' => env('BAKONG_TOKEN'),
+        'merchantMobile' => env('BAKONG_MERCHANT_MOBILE'),
+    ],
 
 ];

@@ -79,19 +79,19 @@ export default function InventoryList({
 
                                 <td className="px-4 py-4 text-right">
                                     <div className="flex items-center justify-end gap-3">
-                                        <button type="button" onClick={() => openMovementModal(item, "in")} className="text-success transition" aria-label="Stock in">
+                                        <button type="button" onClick={() => openMovementModal(item, "in")} className="text-success transition border-none appearance-none outline-none" aria-label="Stock in">
                                             <Plus size={18} strokeWidth={2.5} />
                                         </button>
-                                        <button type="button" onClick={() => openMovementModal(item, "out")} className="text-warning  transition" aria-label="Stock out">
+                                        <button type="button" onClick={() => openMovementModal(item, "out")} className="text-warning  transition border-none appearance-none outline-none" aria-label="Stock out">
                                             <Minus size={18} strokeWidth={2.5} />
                                         </button>
-                                        <button type="button" onClick={() => onViewItem(item)} className="text-primary-light transition" aria-label="View details">
+                                        <button type="button" onClick={() => onViewItem(item)} className="text-primary-light transition border-none appearance-none outline-none" aria-label="View details">
                                             <Eye size={18} />
                                         </button>
-                                        <button type="button" onClick={() => onEditItem(item)} className="text-infoColor transition" aria-label="Edit item">
+                                        <button type="button" onClick={() => onEditItem(item)} className="text-infoColor transition border-none appearance-none outline-none" aria-label="Edit item">
                                             <SquarePen size={18} />
                                         </button>
-                                        <button type="button" onClick={() => onDeleteItem(item)} className="text-danger transition" aria-label="Delete item">
+                                        <button type="button" onClick={() => onDeleteItem(item)} className="text-danger transition border-none appearance-none outline-none" aria-label="Delete item">
                                             <Trash2 size={18} />
                                         </button>
                                     </div>

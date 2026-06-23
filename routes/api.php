@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\QrOrderApiController;
+use App\Http\Controllers\Api\KitchenApiController;
 use App\Http\Controllers\Api\CategoryApiController;
 use App\Http\Controllers\Api\SizeApiController;
 use App\Http\Controllers\Api\TypeApiController;
@@ -53,3 +55,12 @@ Route::delete('/catalog/product-options/{id}', [ProductOptionApiController::clas
 Route::get('/catalog/products', function () {
     return response()->json(Product::orderBy('name')->get(['id', 'name', 'price']));
 });
+
+// QR Self-Ordering API routes
+Route::get('/qr-order/products', [QrOrderApiController::class, 'products']);
+Route::post('/qr-order', [QrOrderApiController::class, 'store']);
+Route::get('/qr-order/tracking/{order_number}', [QrOrderApiController::class, 'track']);
+
+// Kitchen API routes
+Route::get('/kitchen/orders', [KitchenApiController::class, 'index']);
+Route::post('/kitchen/orders/{id}/status', [KitchenApiController::class, 'updateStatus']);

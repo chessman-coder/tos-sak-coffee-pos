@@ -183,7 +183,6 @@ export default function InventoryFormModal({
                                         ? "border-[#5a3630] bg-[#fcf8f6]"
                                         : "border-[#e1d0c8] hover:border-[#b78a78] hover:bg-[#fcf8f6]"
                             }`}
-                            // onClick={openFilePicker}
                             onDragEnter={() => setIsDraggingImage(true)}
                             onDragLeave={() => setIsDraggingImage(false)}
                             onDragOver={handleDragOver}

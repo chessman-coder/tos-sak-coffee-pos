@@ -12,7 +12,7 @@ export default function Modal({
     closeable = true,
     onClose = () => {},
     backdropClassName = "bg-black/40",
-    panelClassName = `mb-6 transform overflow-hidden rounded-lg transition-all sm:mx-auto sm:w-full relative z-50`,
+    panelClassName = `transform overflow-hidden rounded-lg transition-all sm:mx-auto sm:w-full relative z-50`,
 }) {
     const close = () => {
         if (closeable) {
@@ -33,7 +33,7 @@ export default function Modal({
             <Dialog
                 as="div"
                 id="modal"
-                className="fixed inset-0 z-50 flex transform items-center overflow-y-auto px-4 py-6 transition-all sm:px-0"
+                className="fixed inset-0 z-50 flex transform items-center justify-center overflow-y-auto px-4 py-6 transition-all sm:px-0"
                 onClose={close}
             >
                 <TransitionChild

@@ -19,7 +19,32 @@ class ProductController extends Controller
      */
     public function index(Request $request): Response
     {
-        $rsDatas = Product::with(['category.parent', 'options.values'])->latest()->paginate(10)->appends(request()->query());
+        $sortField = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+
+        $allowedSortFields = ['name', 'category', 'price', 'created_at', 'type'];
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'created_at';
+        }
+
+        $allowedSortOrders = ['asc', 'desc'];
+        if (!in_array($sortOrder, $allowedSortOrders)) {
+            $sortOrder = 'desc';
+        }
+
+        $query = Product::with(['category.parent', 'options.values']);
+
+        if ($sortField === 'category') {
+            $query->select('products.*')
+                ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+                ->orderBy('categories.name', $sortOrder);
+        } elseif ($sortField === 'created_at') {
+            $query->orderBy('products.created_at', $sortOrder);
+        } else {
+            $query->orderBy('products.' . $sortField, $sortOrder);
+        }
+
+        $rsDatas = $query->paginate(10)->appends($request->query());
 
         return Inertia::render('Products/Index', [
             'productData' => $rsDatas,
@@ -27,6 +52,7 @@ class ProductController extends Controller
             'subCategories' => $this->subCategoryOptions(),
             'types' => Type::orderBy('title')->get(['id', 'title']),
             'sizes' => Size::orderBy('title')->get(['id', 'title']),
+            'queryParams' => $request->query() ?: new \stdClass(),
         ]);
     }
 

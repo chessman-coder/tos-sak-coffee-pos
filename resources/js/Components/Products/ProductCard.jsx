@@ -1,4 +1,4 @@
-import { Eye, ImageIcon, PenBox, Trash2 } from "lucide-react";
+import { Eye, ImageIcon, PenBox, Plus, Trash2 } from "lucide-react";
 
 const formatPrice = (price) => {
     const amount = Number(price ?? 0);
@@ -33,17 +33,20 @@ export default function ProductCard({
     canView = true,
     canEdit = true,
     canDelete = true,
+    onAddToCart, // Added for POS
 }) {
     const imageUrl = product?.image_url ?? (product?.image_path ? `/storage/${product.image_path}` : "");
     const sizes = getSizes(product);
     const optionValues = sizes.length > 0 ? sizes : getOptionValues(product).map((value) => value.value);
-    const visibleBadges = optionValues.slice(0, 4);
+    const visibleBadges = optionValues.slice(0, 2);
+    const remainingCount = Math.max(0, optionValues.length - 2);
     const category = product?.category?.name ?? "Uncategorized";
     const hasStock = product?.stock !== null && product?.stock !== undefined && product?.stock !== "";
+    const isOutOfStock = hasStock && Number(product?.stock) <= 0;
 
     return (
-        <article className="overflow-hidden rounded-[22px] border border-[#eadfda] bg-white shadow-[0_10px_24px_rgba(54,37,30,0.06)]">
-            <div className="flex h-32 items-center justify-center bg-[#f3ede9]">
+        <article className={`overflow-hidden rounded-[22px] border border-[#eadfda] bg-white shadow-[0_10px_24px_rgba(54,37,30,0.06)] transition ${isOutOfStock ? "opacity-75" : ""}`}>
+            <div className="flex h-48 items-center justify-center bg-[#f3ede9]">
                 {imageUrl ? (
                     <img
                         src={imageUrl}
@@ -75,14 +78,23 @@ export default function ProductCard({
                 <div className="mb-4 flex min-h-6 items-center justify-between gap-3">
                     <div className="flex flex-wrap gap-2">
                         {visibleBadges.length > 0 ? (
-                            visibleBadges.map((value) => (
-                                <span
-                                    key={value}
-                                    className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]"
-                                >
-                                    {value}
-                                </span>
-                            ))
+                            <>
+                                {visibleBadges.map((value) => (
+                                    <span
+                                        key={value}
+                                        className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]"
+                                    >
+                                        {value}
+                                    </span>
+                                ))}
+                                {remainingCount > 0 && (
+                                    <span
+                                        className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]"
+                                    >
+                                        +{remainingCount}
+                                    </span>
+                                )}
+                            </>
                         ) : (
                             <span className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]">
                                 Reg
@@ -90,52 +102,68 @@ export default function ProductCard({
                         )}
                     </div>
                     {hasStock ? (
-                        <span className="shrink-0 text-xs text-[#6f4f47]">
-                            Stock: {product.stock}
+                        <span className={`shrink-0 text-xs font-bold ${isOutOfStock ? "text-danger" : "text-success"}`}>
+                            {isOutOfStock ? "Out of Stock" : `Stock: ${product.stock}`}
                         </span>
                     ) : null}
                 </div>
 
-                <div className="grid grid-cols-[34px_1fr_34px] gap-2">
-                    {canView ? (
-                        <button
-                            type="button"
-                            onClick={() => onView?.(product)}
-                            className="inline-flex h-9 items-center justify-center rounded-full border border-[#e1d0c8] bg-white text-[#4a2b25] transition hover:bg-[#fcf8f6]"
-                            aria-label={`View ${product?.name}`}
-                        >
-                            <Eye size={16} />
-                        </button>
-                    ) : (
-                        <span />
-                    )}
+                {onAddToCart ? (
+                    <button
+                        type="button"
+                        onClick={() => !isOutOfStock && onAddToCart?.(product)}
+                        disabled={isOutOfStock}
+                        className={`inline-flex h-9 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold transition ${
+                            isOutOfStock
+                                ? "bg-[#eadfda] text-[#7b5f58] cursor-not-allowed opacity-60"
+                                : "bg-[#5a3630] text-white hover:bg-[#4a2b25]"
+                        }`}
+                    >
+                        <Plus size={15} />
+                        {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                    </button>
+                ) : (
+                    <div className="grid grid-cols-[34px_1fr_34px] gap-2">
+                        {canView ? (
+                            <button
+                                type="button"
+                                onClick={() => onView?.(product)}
+                                className="inline-flex h-9 items-center justify-center rounded-full border border-[#e1d0c8] bg-white text-[#4a2b25] transition hover:bg-[#fcf8f6]"
+                                aria-label={`View ${product?.name}`}
+                            >
+                                <Eye size={16} />
+                            </button>
+                        ) : (
+                            <span />
+                        )}
 
-                    {canEdit ? (
-                        <button
-                            type="button"
-                            onClick={() => onEdit?.(product)}
-                            className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[#e1d0c8] bg-[#fbf8f5] px-4 text-sm font-semibold text-[#4a2b25] transition hover:bg-white"
-                        >
-                            <PenBox size={15} />
-                            Edit
-                        </button>
-                    ) : (
-                        <span />
-                    )}
+                        {canEdit ? (
+                            <button
+                                type="button"
+                                onClick={() => onEdit?.(product)}
+                                className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[#e1d0c8] bg-[#fbf8f5] px-4 text-sm font-semibold text-[#4a2b25] transition hover:bg-white"
+                            >
+                                <PenBox size={15} />
+                                Edit
+                            </button>
+                        ) : (
+                            <span />
+                        )}
 
-                    {canDelete ? (
-                        <button
-                            type="button"
-                            onClick={() => onDelete?.(product)}
-                            className="inline-flex h-9 items-center justify-center rounded-full border border-[#e1d0c8] bg-white text-[#4a2b25] transition hover:bg-[#fff3f0]"
-                            aria-label={`Delete ${product?.name}`}
-                        >
-                            <Trash2 size={15} />
-                        </button>
-                    ) : (
-                        <span />
-                    )}
-                </div>
+                        {canDelete ? (
+                            <button
+                                type="button"
+                                onClick={() => onDelete?.(product)}
+                                className="inline-flex h-9 items-center justify-center rounded-full border border-[#e1d0c8] bg-white text-[#4a2b25] transition hover:bg-[#fff3f0]"
+                                aria-label={`Delete ${product?.name}`}
+                            >
+                                <Trash2 size={15} />
+                            </button>
+                        ) : (
+                            <span />
+                        )}
+                    </div>
+                )}
             </div>
         </article>
     );

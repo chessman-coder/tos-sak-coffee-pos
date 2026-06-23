@@ -347,7 +347,7 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
     return (
         <AdminLayout>
             <Head title={headWeb} />
-            <section className="min-h-screen bg-background px-4 py-6 text-[#2f1a16] md:px-6 lg:px-8">
+            <section className="min-h-screen bg-background px-4 py-6 md:px-6 lg:px-8">
                 <div className="space-y-6">
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                         <StatCard
@@ -377,11 +377,11 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
                     </div>
 
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                        <div>
-                            <h1 className="mb-1 text-3xl font-bold md:text-4xl">
+                        <div className="flex flex-col gap-1">
+                            <h1 className="text-4xl font-bold text-primary-dark">
                                 Inventory items
                             </h1>
-                            <p className="mb-0 text-sm text-[#7b5f58] md:text-base">
+                            <p className="text-sm text-[#7b5f58] md:text-base">
                                 Track stock levels, cost, reorder points, and
                                 admin stock movement history.
                             </p>

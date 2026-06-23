@@ -52,7 +52,7 @@ const AdminLayout = ({breadcrumb, children }) => {
             {/* Content Wrapper */}
             <div className="content-wrapper bg-white ml-64 h-screen overflow-auto">
                 {breadcrumb && breadcrumb}
-                <section className="content">{children}</section>
+                <section>{children}</section>
             </div>
 
             {/* Footer */}

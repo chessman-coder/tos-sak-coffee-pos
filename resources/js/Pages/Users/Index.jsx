@@ -109,7 +109,7 @@ export default function UserPage({ users }) {
     return (
         <AdminLayout>
             <Head title={headWeb} />
-            <section className="content">
+            <section className="min-h-screen bg-background px-4 py-6 md:px-6 lg:px-8">
                 <UserHeader
                     total={users?.total ?? userList.length}
                     searchValue={searchTerm}

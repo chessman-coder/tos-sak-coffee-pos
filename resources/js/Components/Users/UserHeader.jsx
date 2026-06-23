@@ -12,8 +12,8 @@ export default function UserHeader({
         <div className="mb-6 px-4 pt-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold text-gray-900">{title}</h1>
-                    <p className="text-sm text-gray-500">{total} team members</p>
+                    <h1 className="text-4xl font-bold text-primary-dark">{title}</h1>
+                    <p className="text-sm text-secondary-dark">{total} team members</p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <label className="relative block w-full m-0 sm:w-80">
