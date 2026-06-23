@@ -41,10 +41,14 @@ class PaymentController extends Controller
         }
 
         try {
-            $bakongAccountID = config('services.bakong.merchantID') ?: 'merchant@bakong';
+            $bakongAccountID = config('services.bakong.merchantID') ?: env('BAKONG_MERCHANT_ID', 'dara_ly@bkrt');
             $merchantName = config('services.bakong.merchantName') ?: 'Merchant Name';
             $merchantCity = config('services.bakong.merchantCity') ?: 'Phnom Penh';
+            $storeName = env('BAKONG_STORE_NAME', 'Tos Sak');
+            $mobile = config('services.bakong.merchantMobile') ?: env('BAKONG_MERCHANT_MOBILE', '077906536');
+            $terminal = env('BAKONG_TERMINAL_LABEL', 'WebQR');
 
+            // 1. Use the library's IndividualInfo model to format parameters and data
             $individualInfo = new IndividualInfo(
                 bakongAccountID: $bakongAccountID,
                 merchantName: $merchantName,
@@ -52,17 +56,49 @@ class PaymentController extends Controller
                 currency: KHQRData::CURRENCY_USD,
                 amount: $amount,
                 billNumber: $billNumber,
+                storeLabel: $storeName,
+                terminalLabel: $terminal,
+                mobileNumber: $mobile,
                 purposeOfTransaction: $description
             );
 
+            // 2. Generate the base KHQR code using the BakongKHQR library
             $khqrResponse = BakongKHQR::generateIndividual($individualInfo);
             $qrData = $khqrResponse->data;
+            $baseQrString = $qrData['qr'];
+
+            // 3. Post-process to inject subtag 01 (expiration) under tag 99 (timestamps)
+            // since the library's default Timestamp generation only appends subtag 00.
+            $nowMs = (int) floor(microtime(true) * 1000);
+            $expireMs = $nowMs + (10 * 60 * 1000); // 10 minutes expiry
+
+            $sub99_00 = $this->formatTag('00', (string) $nowMs);
+            $sub99_01 = $this->formatTag('01', (string) $expireMs);
+            $tag99Value = $sub99_00 . $sub99_01;
+            $newTag99 = $this->formatTag('99', $tag99Value);
+
+            // Strip the existing tag 99 and CRC from the end of the base string
+            // Base string format ends with: 99[length][value]6304[crc]
+            $qrWithoutCrcAnd99 = preg_replace('/99\d{2}00\d{15}.*$/', '', $baseQrString);
+            if (empty($qrWithoutCrcAnd99) || $qrWithoutCrcAnd99 === $baseQrString) {
+                // Fallback: strip last 4 chars (CRC) and manual strip tag 99
+                $qrWithoutCrc = substr($baseQrString, 0, -4);
+                $qrWithoutCrcAnd99 = preg_replace('/99\d{2}00\d{15}/', '', $qrWithoutCrc);
+            }
+
+            // Append the new tag 99 and the CRC starter "6304"
+            $adjustedQrWithoutCrc = $qrWithoutCrcAnd99 . $newTag99 . '6304';
+            
+            // Recalculate CRC using the library's helper method
+            $newCrc = \KHQR\Helpers\Utils::crc16($adjustedQrWithoutCrc);
+            $qrCodeString = $adjustedQrWithoutCrc . $newCrc;
+            $md5Hash = md5($qrCodeString);
 
             if ($request->wantsJson() || !$request->acceptsHtml()) {
                 return response()->json([
                     'success' => true,
-                    'qr_code' => $qrData['qr'],
-                    'md5' => $qrData['md5'],
+                    'qr_code' => $qrCodeString,
+                    'md5' => $md5Hash,
                     'amount' => $amount,
                     'currency' => 'USD',
                     'bill_number' => $billNumber,
@@ -71,8 +107,8 @@ class PaymentController extends Controller
             }
 
             return Inertia::render('Payment/Checkout', [
-                'qr_code' => $qrData['qr'],
-                'md5' => $qrData['md5'],
+                'qr_code' => $qrCodeString,
+                'md5' => $md5Hash,
                 'amount' => $amount,
                 'bill_number' => $billNumber,
                 'description' => $description,
@@ -86,5 +122,14 @@ class PaymentController extends Controller
             }
             return back()->withErrors(['error' => 'Bakong KHQR Generation failed: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Helper to format an EMVCo tag (Tag-Length-Value format)
+     */
+    private function formatTag(string $tag, string $value): string
+    {
+        $length = str_pad((string) strlen($value), 2, '0', STR_PAD_LEFT);
+        return $tag . $length . $value;
     }
 }
