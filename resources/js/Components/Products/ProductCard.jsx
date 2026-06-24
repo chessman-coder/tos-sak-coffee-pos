@@ -82,21 +82,21 @@ export default function ProductCard({
                                 {visibleBadges.map((value) => (
                                     <span
                                         key={value}
-                                        className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]"
+                                        className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-secondary-dark"
                                     >
                                         {value}
                                     </span>
                                 ))}
                                 {remainingCount > 0 && (
                                     <span
-                                        className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]"
+                                        className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-secondary-dark"
                                     >
                                         +{remainingCount}
                                     </span>
                                 )}
                             </>
                         ) : (
-                            <span className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-[#7b5f58]">
+                            <span className="rounded-full bg-[#eee4de] px-2.5 py-1 text-[11px] font-semibold text-secondary-dark">
                                 Reg
                             </span>
                         )}
@@ -113,11 +113,10 @@ export default function ProductCard({
                         type="button"
                         onClick={() => !isOutOfStock && onAddToCart?.(product)}
                         disabled={isOutOfStock}
-                        className={`inline-flex h-9 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold transition ${
-                            isOutOfStock
-                                ? "bg-[#eadfda] text-[#7b5f58] cursor-not-allowed opacity-60"
+                        className={`inline-flex h-9 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold transition ${isOutOfStock
+                                ? "bg-[#eadfda] text-secondary-dark cursor-not-allowed opacity-60"
                                 : "bg-[#5a3630] text-white hover:bg-[#4a2b25]"
-                        }`}
+                            }`}
                     >
                         <Plus size={15} />
                         {isOutOfStock ? "Out of Stock" : "Add to Cart"}

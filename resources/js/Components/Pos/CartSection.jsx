@@ -41,7 +41,7 @@ export default function CartSection({
                 <div className="flex items-center gap-2">
                     <ShoppingBag className="text-[#5a3630]" size={20} />
                     <h2 className="text-lg font-bold text-[#2f1a16]">Cart Items</h2>
-                    <span className="bg-[#eee4de] text-[#7b5f58] rounded-full text-xs font-bold px-2.5 py-0.5">
+                    <span className="bg-[#eee4de] text-secondary-dark rounded-full text-xs font-bold px-2.5 py-0.5">
                         {cart.reduce((sum, item) => sum + item.quantity, 0)}
                     </span>
                 </div>
@@ -75,7 +75,7 @@ export default function CartSection({
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <ShoppingBag size={18} className="text-[#7b5f58]" />
+                                            <ShoppingBag size={18} className="text-secondary-dark" />
                                         )}
                                     </div>
 
@@ -96,7 +96,7 @@ export default function CartSection({
                                                 {item.selected_options.map((opt) => (
                                                     <span
                                                         key={opt.product_option_value_id}
-                                                        className="text-[9px] bg-white border border-[#eadfda] text-[#7b5f58] px-1.5 py-0.5 rounded-md font-semibold"
+                                                        className="text-[9px] bg-white border border-[#eadfda] text-secondary-dark px-1.5 py-0.5 rounded-md font-semibold"
                                                     >
                                                         {opt.option_label}: {opt.value_label}
                                                     </span>
@@ -109,7 +109,7 @@ export default function CartSection({
                                 <button
                                     type="button"
                                     onClick={() => removeCartItem(item.id)}
-                                    className="top-2 right-2 text-[#7b5f58] hover:text-red-600 transition"
+                                    className="top-2 right-2 text-secondary-dark hover:text-red-600 transition"
                                     aria-label="Remove item"
                                 >
                                     <Trash2 size={18} />
@@ -122,7 +122,7 @@ export default function CartSection({
                                     <button
                                         type="button"
                                         onClick={() => updateQuantity(item.id, -1)}
-                                        className="p-1 hover:bg-[#fbf8f5] rounded-l-lg text-[#7b5f58]"
+                                        className="p-1 hover:bg-[#fbf8f5] rounded-l-lg text-secondary-dark"
                                     >
                                         <Minus size={13} />
                                     </button>
@@ -132,7 +132,7 @@ export default function CartSection({
                                     <button
                                         type="button"
                                         onClick={() => updateQuantity(item.id, 1)}
-                                        className="p-1 hover:bg-[#fbf8f5] rounded-r-lg text-[#7b5f58]"
+                                        className="p-1 hover:bg-[#fbf8f5] rounded-r-lg text-secondary-dark"
                                     >
                                         <Plus size={13} />
                                     </button>
@@ -160,7 +160,7 @@ export default function CartSection({
                         </article>
                     ))
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center text-[#7b5f58]">
+                    <div className="flex flex-col items-center justify-center py-20 text-center text-secondary-dark">
                         <ShoppingBag size={36} className="text-[#c07a49] mb-2" />
                         <p className="text-sm font-medium">Cart is empty</p>
                         <p className="text-xs mt-1">Add items to proceed</p>
@@ -185,70 +185,9 @@ export default function CartSection({
                     </div>
                 )}
 
-                {/* Order Method, Type and Payment */}
-                <div className="grid grid-cols-2 gap-2">
-                    <div>
-                        <label className="text-xs font-bold text-[#7b5f58] uppercase tracking-wider block mb-1">
-                            Order Type
-                        </label>
-                        <div className="grid grid-cols-2 rounded-md bg-[#eee4de] p-0.5">
-                            <button
-                                type="button"
-                                onClick={() => setData("order_type", "Dine In")}
-                                className={`h-7 text-xs font-bold rounded transition ${data.order_type === "Dine In"
-                                    ? "bg-[#5a3630] text-white"
-                                    : "text-[#5a3630]"
-                                    }`}
-                            >
-                                Dine In
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setData("order_type", "Take Away")}
-                                className={`h-7 text-xs font-bold rounded transition ${data.order_type === "Take Away"
-                                    ? "bg-[#5a3630] text-white"
-                                    : "text-[#5a3630]"
-                                    }`}
-                            >
-                                Take Away
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="text-xs font-bold text-[#7b5f58] uppercase tracking-wider block mb-1">
-                            Payment
-                        </label>
-                        <div className="grid grid-cols-2 rounded-md bg-[#eee4de] p-0.5">
-                            <button
-                                type="button"
-                                onClick={() => setData("payment_method", "cash")}
-                                className={`h-7 text-xs font-bold rounded transition flex items-center justify-center gap-1 ${data.payment_method === "cash"
-                                    ? "bg-[#5a3630] text-white"
-                                    : "text-[#5a3630]"
-                                    }`}
-                            >
-                                <Coins size={14} />
-                                Cash
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setData("payment_method", "qr pay")}
-                                className={`h-7 text-xs font-bold rounded transition flex items-center justify-center gap-1 ${data.payment_method === "qr pay"
-                                    ? "bg-[#5a3630] text-white"
-                                    : "text-[#5a3630]"
-                                    }`}
-                            >
-                                <QrCode size={14} />
-                                QR Pay
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Order Notes */}
                 <div>
-                    <label className="text-[11px] font-bold text-[#7b5f58] uppercase tracking-wider block mb-1">
+                    <label className="text-[11px] font-bold text-secondary-dark uppercase tracking-wider block mb-1">
                         Order Notes (Optional)
                     </label>
                     <input
@@ -262,11 +201,11 @@ export default function CartSection({
 
                 {/* Pricing Breakdowns */}
                 <div className="border-t border-[#eadfda] pt-3 space-y-1.5">
-                    <div className="flex justify-between text-xs text-[#7b5f58] font-semibold">
+                    <div className="flex justify-between text-xs text-secondary-dark font-semibold">
                         <span>Subtotal</span>
                         <span>${formatPrice(subtotal)}</span>
                     </div>
-                    <div className="flex justify-between text-xs text-[#7b5f58] font-semibold">
+                    <div className="flex justify-between text-xs text-secondary-dark font-semibold">
                         <span>Line Discount</span>
                         <span>-${formatPrice(discountTotal)}</span>
                     </div>

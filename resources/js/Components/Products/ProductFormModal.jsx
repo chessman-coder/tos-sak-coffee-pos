@@ -70,7 +70,7 @@ export default function ProductFormModal({
         if (lastBlobRef.current && lastBlobRef.current !== previewUrl) {
             try {
                 URL.revokeObjectURL(lastBlobRef.current);
-            } catch (e) {}
+            } catch (e) { }
             lastBlobRef.current = null;
         }
 
@@ -89,7 +89,7 @@ export default function ProductFormModal({
         const file = event.target.files?.[0] ?? null;
 
         if (!file) {
-            event.target.value = ""; 
+            event.target.value = "";
             return;
         }
 
@@ -126,7 +126,7 @@ export default function ProductFormModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full border-0 bg-transparent p-1 text-[#7b5f58] transition hover:bg-white"
+                        className="rounded-full border-0 bg-transparent p-1 text-secondary-dark transition hover:bg-white"
                         aria-label="Close product form"
                     >
                         <X size={20} />
@@ -229,11 +229,10 @@ export default function ProductFormModal({
                                         key={type.id}
                                         type="button"
                                         onClick={() => toggleType(type.title)}
-                                        className={`min-w-10 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                                            selected
+                                        className={`min-w-10 rounded-full border px-4 py-2 text-sm font-semibold transition ${selected
                                                 ? "border-[#5a3630] bg-[#5a3630] text-white"
                                                 : "border-[#e1d0c8] bg-white text-[#6f4f47] hover:bg-[#fcf8f6]"
-                                        }`}
+                                            }`}
                                     >
                                         {type.title}
                                     </button>
@@ -259,11 +258,10 @@ export default function ProductFormModal({
                                         key={size.id}
                                         type="button"
                                         onClick={() => toggleSize(size.title)}
-                                        className={`min-w-10 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                                            selected
+                                        className={`min-w-10 rounded-full border px-4 py-2 text-sm font-semibold transition ${selected
                                                 ? "border-[#5a3630] bg-[#5a3630] text-white"
                                                 : "border-[#e1d0c8] bg-white text-[#6f4f47] hover:bg-[#fcf8f6]"
-                                        }`}
+                                            }`}
                                     >
                                         {size.title}
                                     </button>
@@ -281,13 +279,12 @@ export default function ProductFormModal({
                             Image
                         </span>
                         <div
-                            className={`mx-auto flex min-h-40 min-w-58 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed bg-white transition ${
-                                data.imagePreview || imageUrl
+                            className={`mx-auto flex min-h-40 min-w-58 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed bg-white transition ${data.imagePreview || imageUrl
                                     ? "border-[#e1d0c8]"
                                     : isDraggingImage
                                         ? "border-[#5a3630] bg-[#fcf8f6]"
                                         : "border-[#e1d0c8] hover:border-[#b78a78] hover:bg-[#fcf8f6]"
-                            }`}
+                                }`}
                             // onClick={openFilePicker}
                             onDragEnter={() => setIsDraggingImage(true)}
                             onDragLeave={() => setIsDraggingImage(false)}

@@ -21,7 +21,7 @@ export default function DetailModal({ item, history, onClose }) {
                             <h3 className="mb-1 text-3xl font-bold text-[#2f1a16]">
                                 {item.name}
                             </h3>
-                            <p className="mb-0 text-sm text-[#7b5f58]">
+                            <p className="mb-0 text-sm text-secondary-dark">
                                 {item.category}
                             </p>
                         </div>
@@ -29,7 +29,7 @@ export default function DetailModal({ item, history, onClose }) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full border border-[#e1d0c8] bg-white p-2 text-xl leading-none text-[#7b5f58]"
+                        className="rounded-full border border-[#e1d0c8] bg-white p-2 text-xl leading-none text-secondary-dark"
                     >
                         <X />
                     </button>
@@ -60,7 +60,7 @@ export default function DetailModal({ item, history, onClose }) {
                     </div>
                     <div className="space-y-3">
                         {history.length === 0 ? (
-                            <div className="text-sm text-[#7b5f58]">
+                            <div className="text-sm text-secondary-dark">
                                 No movement recorded for this item yet.
                             </div>
                         ) : (
@@ -71,11 +71,10 @@ export default function DetailModal({ item, history, onClose }) {
                                 >
                                     <div>
                                         <div
-                                            className={`font-semibold ${
-                                                entry.type === "in"
+                                            className={`font-semibold ${entry.type === "in"
                                                     ? "text-success"
                                                     : "text-warning"
-                                            }`}
+                                                }`}
                                         >
                                             {entry.type === "in"
                                                 ? "Stock in"

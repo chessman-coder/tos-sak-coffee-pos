@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductOption;
 use App\Models\Size;
 use App\Models\Type;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class ProductController extends Controller
             $sortOrder = 'desc';
         }
 
-        $query = Product::with(['category.parent', 'options.values']);
+        $query = Product::with(['category.parent']);
 
         if ($sortField === 'category') {
             $query->select('products.*')
@@ -45,6 +46,15 @@ class ProductController extends Controller
         }
 
         $rsDatas = $query->paginate(10)->appends($request->query());
+
+        // Attach global options to all product items manually
+        $options = ProductOption::with(['values' => function ($valueQuery) {
+            $valueQuery->orderBy('sort_order')->orderBy('id');
+        }])->orderBy('sort_order')->orderBy('id')->get();
+
+        foreach ($rsDatas as $product) {
+            $product->setRelation('options', $options);
+        }
 
         return Inertia::render('Products/Index', [
             'productData' => $rsDatas,
@@ -75,19 +85,13 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|max:255|min:2',
             'category_id' => 'required|exists:categories,id',
-            'type' => 'nullable|string|max:255',
+            'types' => 'nullable|array',
+            'types.*' => 'nullable|string|max:255',
             'sizes' => 'nullable|array',
             'sizes.*' => 'nullable|string|max:255',
             'price' => 'required|numeric',
             'stock' => 'nullable|integer',
             'image' => 'nullable|image|max:2048',
-            'options' => 'nullable|array',
-            'options.*.id' => 'nullable|integer|exists:product_options,id',
-            'options.*.name' => 'required_with:options|string|max:255',
-            'options.*.is_required' => 'nullable|boolean',
-            'options.*.values' => 'required_with:options|array|min:1',
-            'options.*.values.*.id' => 'nullable|integer|exists:product_option_values,id',
-            'options.*.values.*.value' => 'required_with:options|string|max:255',
         ]);
 
         $imagePath = $request->file('image')
@@ -98,14 +102,12 @@ class ProductController extends Controller
             $product = $model->create([
                 'name' => $validated['name'],
                 'category_id' => $validated['category_id'],
-                'type' => $validated['type'] ?? null,
+                'type' => $this->formatTypes($validated['types'] ?? []),
                 'size' => $this->formatSizes($validated['sizes'] ?? []),
                 'price' => $validated['price'],
                 'stock' => $validated['stock'] ?? null,
                 'image_path' => $imagePath,
             ]);
-
-            $this->syncProductOptions($product, $validated['options'] ?? []);
         });
 
         return redirect()->route('products.index');
@@ -116,7 +118,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product, $id)
     {
-        $rsDatasModel = Product::with('options.values')->findOrFail($id);
+        $rsDatasModel = Product::findOrFail($id);
+        $options = ProductOption::with(['values' => function ($valueQuery) {
+            $valueQuery->orderBy('sort_order')->orderBy('id');
+        }])->orderBy('sort_order')->orderBy('id')->get();
+        $rsDatasModel->setRelation('options', $options);
+
         return Inertia::render('Products/CreateEdit', [
             'datas' => $rsDatasModel,
             'categories' => $this->subCategoryOptions(),
@@ -131,19 +138,13 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|max:255|min:2',
             'category_id' => 'required|exists:categories,id',
-            'type' => 'nullable|string|max:255',
+            'types' => 'nullable|array',
+            'types.*' => 'nullable|string|max:255',
             'sizes' => 'nullable|array',
             'sizes.*' => 'nullable|string|max:255',
             'price' => 'required|numeric',
             'stock' => 'nullable|integer',
             'image' => 'nullable|image|max:2048',
-            'options' => 'nullable|array',
-            'options.*.id' => 'nullable|integer|exists:product_options,id',
-            'options.*.name' => 'required_with:options|string|max:255',
-            'options.*.is_required' => 'nullable|boolean',
-            'options.*.values' => 'required_with:options|array|min:1',
-            'options.*.values.*.id' => 'nullable|integer|exists:product_option_values,id',
-            'options.*.values.*.value' => 'required_with:options|string|max:255',
         ]);
         
         $rsDatasModel = Product::findOrFail($id);
@@ -161,14 +162,12 @@ class ProductController extends Controller
             $rsDatasModel->update([
                 'name' => $validated['name'],
                 'category_id' => $validated['category_id'],
-                'type' => $validated['type'] ?? null,
+                'type' => $this->formatTypes($validated['types'] ?? []),
                 'size' => $this->formatSizes($validated['sizes'] ?? []),
                 'price' => $validated['price'],
                 'stock' => $validated['stock'] ?? null,
                 'image_path' => $imagePath,
             ]);
-
-            $this->syncProductOptions($rsDatasModel, $validated['options'] ?? []);
         });
 
         return redirect()->route('products.index');
@@ -248,6 +247,17 @@ class ProductController extends Controller
     {
         $values = collect($sizes)
             ->map(fn ($size) => trim((string) $size))
+            ->filter()
+            ->unique()
+            ->values();
+
+        return $values->isEmpty() ? null : $values->implode(', ');
+    }
+
+    private function formatTypes(array $types): ?string
+    {
+        $values = collect($types)
+            ->map(fn ($type) => trim((string) $type))
             ->filter()
             ->unique()
             ->values();

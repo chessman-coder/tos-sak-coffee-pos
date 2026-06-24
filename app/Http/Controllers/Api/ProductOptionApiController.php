@@ -16,17 +16,12 @@ class ProductOptionApiController extends Controller
             $valueQuery->orderBy('sort_order')->orderBy('id');
         }])->orderBy('sort_order')->orderBy('id');
 
-        if ($request->filled('product_id')) {
-            $query->where('product_id', $request->get('product_id'));
-        }
-
-        return response()->json($query->get(['id', 'product_id', 'name', 'is_required', 'sort_order']));
+        return response()->json($query->get());
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
             'name' => 'required|string|max:255|min:1',
             'is_required' => 'nullable|boolean',
             'sort_order' => 'nullable|integer',
@@ -43,7 +38,6 @@ class ProductOptionApiController extends Controller
 
         $option = DB::transaction(function () use ($validated) {
             $option = ProductOption::create([
-                'product_id' => $validated['product_id'],
                 'name' => $validated['name'],
                 'is_required' => $validated['is_required'],
                 'sort_order' => $validated['sort_order'] ?? 0,
@@ -51,7 +45,7 @@ class ProductOptionApiController extends Controller
 
             $this->syncOptionValues($option, $validated['values'] ?? []);
 
-            return $option->load('values');
+            return $option->load(['values']);
         });
 
         return response()->json($option, 201);
@@ -60,7 +54,6 @@ class ProductOptionApiController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
             'name' => 'required|string|max:255|min:1',
             'is_required' => 'nullable|boolean',
             'sort_order' => 'nullable|integer',
@@ -79,7 +72,6 @@ class ProductOptionApiController extends Controller
 
         DB::transaction(function () use ($option, $validated) {
             $option->update([
-                'product_id' => $validated['product_id'],
                 'name' => $validated['name'],
                 'is_required' => $validated['is_required'],
                 'sort_order' => $validated['sort_order'] ?? 0,
@@ -88,7 +80,7 @@ class ProductOptionApiController extends Controller
             $this->syncOptionValues($option, $validated['values'] ?? []);
         });
 
-        return response()->json($option->load('values'));
+        return response()->json($option->load(['values']));
     }
 
     public function destroy($id)

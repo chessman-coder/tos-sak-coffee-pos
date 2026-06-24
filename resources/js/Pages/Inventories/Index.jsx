@@ -222,7 +222,7 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
             : route("inventories.store");
 
         const method = editingItemId ? "patch" : "post";
-        
+
         // If there's a file, build FormData manually to ensure proper multipart encoding
         if (itemForm.image) {
             const fd = new FormData();
@@ -381,7 +381,7 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
                             <h1 className="text-4xl font-bold text-primary-dark">
                                 Inventory items
                             </h1>
-                            <p className="text-sm text-[#7b5f58] md:text-base">
+                            <p className="text-sm text-secondary-dark md:text-base">
                                 Track stock levels, cost, reorder points, and
                                 admin stock movement history.
                             </p>
@@ -444,11 +444,10 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
                                 key={tab.key}
                                 type="button"
                                 onClick={() => setFilter(tab.key)}
-                                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                                    filter === tab.key
+                                className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${filter === tab.key
                                         ? "border-[#5a3630] bg-[#5a3630] text-white"
                                         : "border-[#e1d0c8] bg-white text-[#5a3630] hover:bg-[#fcf8f6]"
-                                }`}
+                                    }`}
                             >
                                 {tab.label}
                             </button>

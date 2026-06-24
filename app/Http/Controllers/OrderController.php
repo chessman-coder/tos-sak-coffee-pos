@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductOption;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -48,9 +49,17 @@ class OrderController extends Controller
 
     public function create(): Response
     {
+        $products = Product::with(['category'])->orderBy('name')->get(['id', 'name', 'category_id', 'type', 'size', 'price', 'stock', 'image_path']);
+        $options = ProductOption::with(['values' => function ($valueQuery) {
+            $valueQuery->orderBy('sort_order')->orderBy('id');
+        }])->orderBy('sort_order')->orderBy('id')->get();
+        foreach ($products as $product) {
+            $product->setRelation('options', $options);
+        }
+
         return Inertia::render('Order/CreateEdit', [
             'datas' => [ 'order_number' => $this->generateOrderNumber() ],
-            'products' => Product::with(['category', 'options.values'])->orderBy('name')->get(['id', 'name', 'category_id', 'type', 'size', 'price', 'stock', 'image_path']),
+            'products' => $products,
         ]);
     }
 
@@ -62,7 +71,6 @@ class OrderController extends Controller
             $validated = $request->validate([
                 'order_number' => 'nullable|max:255|min:2|unique:orders,order_number',
                 'customer_name' => 'nullable|string|max:100',
-                'phone_number' => 'nullable|string|max:20',
                 'order_type' => 'required|string|in:Dine In,Take Away',
                 'order_date' => 'required|date',
                 'order_method' => 'required|in:qr_order,walk_in_order',
@@ -91,7 +99,13 @@ class OrderController extends Controller
         DB::transaction(function () use ($validated, $model, &$createdOrderId) {
             $items = collect($validated['items']);
             $productIds = $items->pluck('product_id')->unique()->values();
-            $products = Product::with(['options.values'])->whereIn('id', $productIds)->get()->keyBy('id');
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+            $options = ProductOption::with(['values' => function ($valueQuery) {
+                $valueQuery->orderBy('sort_order')->orderBy('id');
+            }])->orderBy('sort_order')->orderBy('id')->get();
+            foreach ($products as $product) {
+                $product->setRelation('options', $options);
+            }
 
             $optionErrors = $this->validateSelectedOptions($items, $products);
             if ($optionErrors !== []) {
@@ -104,7 +118,6 @@ class OrderController extends Controller
             $order = $model->create([
                 'order_number' => $orderNumber,
                 'customer_name' => $validated['customer_name'] ?? null,
-                'phone_number' => $validated['phone_number'] ?? null,
                 'order_type' => $validated['order_type'],
                 'order_date' => $validated['order_date'],
                 'order_method' => $validated['order_method'],
@@ -144,16 +157,27 @@ class OrderController extends Controller
             Log::info('Order created', ['order_id' => $createdOrderId, 'total' => $totalAmount]);
         });
 
+        if ($validated['payment_method'] === 'khqr') {
+            return redirect()->route('checkout', ['id' => $createdOrderId]);
+        }
+
         return redirect()->route('orders.index');
     }
 
     public function edit(Order $order, $id): Response
     {
         $rsDatasModel = Order::with(['items.options'])->find($id);
+        $products = Product::with(['category'])->orderBy('name')->get(['id', 'name', 'category_id', 'type', 'size', 'price', 'stock', 'image_path']);
+        $options = ProductOption::with(['values' => function ($valueQuery) {
+            $valueQuery->orderBy('sort_order')->orderBy('id');
+        }])->orderBy('sort_order')->orderBy('id')->get();
+        foreach ($products as $product) {
+            $product->setRelation('options', $options);
+        }
 
         return Inertia::render('Order/CreateEdit', [
             'datas' => $rsDatasModel,
-            'products' => Product::with(['category', 'options.values'])->orderBy('name')->get(['id', 'name', 'category_id', 'type', 'size', 'price', 'stock', 'image_path']),
+            'products' => $products,
         ]);
     }
 
@@ -164,7 +188,6 @@ class OrderController extends Controller
         $validated = $request->validate([
             'order_number' => 'required|max:255|min:2|unique:orders,order_number,' . $id,
             'customer_name' => 'nullable|string|max:100',
-            'phone_number' => 'nullable|string|max:20',
             'order_type' => 'required|string|in:Dine In,Take Away',
             'order_date' => 'required|date',
             'order_method' => 'required|in:qr_order,walk_in_order',
@@ -188,7 +211,13 @@ class OrderController extends Controller
         DB::transaction(function () use ($validated, $rsDatasModel) {
             $items = collect($validated['items']);
             $productIds = $items->pluck('product_id')->unique()->values();
-            $products = Product::with(['options.values'])->whereIn('id', $productIds)->get()->keyBy('id');
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+            $options = ProductOption::with(['values' => function ($valueQuery) {
+                $valueQuery->orderBy('sort_order')->orderBy('id');
+            }])->orderBy('sort_order')->orderBy('id')->get();
+            foreach ($products as $product) {
+                $product->setRelation('options', $options);
+            }
 
             $optionErrors = $this->validateSelectedOptions($items, $products);
             if ($optionErrors !== []) {
@@ -199,7 +228,6 @@ class OrderController extends Controller
             $rsDatasModel->update([
                 'order_number' => $validated['order_number'],
                 'customer_name' => $validated['customer_name'] ?? null,
-                'phone_number' => $validated['phone_number'] ?? null,
                 'order_type' => $validated['order_type'],
                 'order_date' => $validated['order_date'],
                 'order_method' => $validated['order_method'],
@@ -243,7 +271,15 @@ class OrderController extends Controller
     public function destroy(Order $order, $id)
     {
         $rsDatasModel = Order::find($id);
-        $rsDatasModel->delete();
+        if ($rsDatasModel) {
+            if ($rsDatasModel->status === 'pending') {
+                $rsDatasModel->delete();
+            }
+        }
+
+        if (request()->header('referer') && str_contains(request()->header('referer'), '/checkout')) {
+            return redirect()->route('pos.index')->with('message', 'Order cancelled');
+        }
 
         return back()->with('message', 'Deleted successfully');
     }

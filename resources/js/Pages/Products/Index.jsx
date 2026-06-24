@@ -20,6 +20,15 @@ const splitSizes = (value) => {
         .filter(Boolean);
 };
 
+const splitTypes = (value) => {
+    if (!value) return [];
+
+    return String(value)
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+};
+
 const normalizeOptions = (options = []) => {
     if (!Array.isArray(options)) return [];
 
@@ -30,9 +39,9 @@ const normalizeOptions = (options = []) => {
         values:
             option.values?.length > 0
                 ? option.values.map((value) => ({
-                      id: value.id ?? null,
-                      value: value.value ?? "",
-                  }))
+                    id: value.id ?? null,
+                    value: value.value ?? "",
+                }))
                 : [],
     }));
 };
@@ -42,7 +51,7 @@ const emptyProductForm = {
     name: "",
     parent_category_id: "",
     category_id: "",
-    type: "",
+    types: [],
     price: "",
     stock: "",
     sizes: [],
@@ -148,7 +157,7 @@ export default function ProductsPage({
             name: product.name ?? "",
             parent_category_id: product.category?.parent_id ?? "",
             category_id: product.category_id ?? "",
-            type: product.type ?? "",
+            types: splitTypes(product.type),
             price: product.price ?? "",
             stock: product.stock ?? "",
             sizes: splitSizes(product.size),
@@ -221,7 +230,7 @@ export default function ProductsPage({
                             <label className="relative mb-0">
                                 <Search
                                     size={18}
-                                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#7b5f58]"
+                                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-secondary-dark"
                                 />
                                 <input
                                     type="search"

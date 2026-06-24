@@ -5,8 +5,11 @@ import ProductSection from "@/Components/Pos/ProductSection";
 import CartSection from "@/Components/Pos/CartSection";
 import ProductOptionsModal from "@/Components/Pos/ProductOptionsModal";
 import {
-    ShoppingBag
+    ShoppingBag,
+    Coins,
+    QrCode
 } from "lucide-react";
+import OrderCheckoutModal from "@/Components/Pos/OrderCheckoutModal";
 
 const formatPrice = (price) => {
     const amount = Number(price ?? 0);
@@ -23,20 +26,40 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
     const [activeTab, setActiveTab] = useState("products"); // products, cart
 
     // Cart state
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(() => {
+        try {
+            const saved = localStorage.getItem("pos_cart");
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            return [];
+        }
+    });
 
     // Options Modal state
     const [optionModalOpen, setOptionModalOpen] = useState(false);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [tempSelectedOptions, setTempSelectedOptions] = useState({});
     const [selectedSize, setSelectedSize] = useState("");
+    const [selectedType, setSelectedType] = useState("");
     const [optionError, setOptionError] = useState("");
+
+    // Checkout Confirmation Modal state
+    const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+    const [paymentMethodSelected, setPaymentMethodSelected] = useState(null);
 
     const getProductSizes = (product) => {
         if (!product?.size) return [];
         return String(product.size)
             .split(",")
             .map((s) => s.trim())
+            .filter(Boolean);
+    };
+
+    const getProductTypes = (product) => {
+        if (!product?.type) return [];
+        return String(product.type)
+            .split(",")
+            .map((t) => t.trim())
             .filter(Boolean);
     };
 
@@ -77,7 +100,28 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
             };
         });
         setData("items", itemsPayload);
+        localStorage.setItem("pos_cart", JSON.stringify(cart));
     }, [cart]);
+
+    // Submit form after payment method has been set in the state
+    useEffect(() => {
+        if (paymentMethodSelected) {
+            post(route("orders.store"), {
+                onSuccess: () => {
+                    if (paymentMethodSelected === "cash") {
+                        clearCart();
+                        localStorage.removeItem("pos_cart");
+                    }
+                    reset();
+                    setPaymentMethodSelected(null);
+                    setCheckoutModalOpen(false);
+                },
+                onError: () => {
+                    setPaymentMethodSelected(null);
+                }
+            });
+        }
+    }, [paymentMethodSelected]);
 
     // Parent Categories (root level)
     const parentCategories = useMemo(() => {
@@ -126,8 +170,9 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
         if (hasStock && Number(product.stock) <= 0) return;
 
         const productSizes = getProductSizes(product);
-        if ((product.options && product.options.length > 0) || productSizes.length > 1) {
-            // Open modal to configure options/size
+        const productTypes = getProductTypes(product);
+        if ((product.options && product.options.length > 0) || productSizes.length > 1 || productTypes.length > 1) {
+            // Open modal to configure options/size/type
             setCurrentProduct(product);
 
             // Set default selections
@@ -140,15 +185,16 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
             });
             setTempSelectedOptions(defaults);
             setSelectedSize(productSizes[0] || "");
+            setSelectedType(productTypes[0] || "");
             setOptionError("");
             setOptionModalOpen(true);
         } else {
             // Add directly
-            addToCartDirectly(product, [], productSizes[0] || "");
+            addToCartDirectly(product, [], productSizes[0] || "", productTypes[0] || "");
         }
     };
 
-    const addToCartDirectly = (product, selectedOpts, sizeVal) => {
+    const addToCartDirectly = (product, selectedOpts, sizeVal, typeVal) => {
         const optionUpcharges = selectedOpts.reduce((sum, opt) => sum + Number(opt.upcharge || 0), 0);
 
         // Find matching size to calculate upcharge
@@ -161,7 +207,7 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
         const sortedOptIds = selectedOpts
             .map((o) => o.product_option_value_id)
             .sort((a, b) => a - b);
-        const cartItemId = product.id + "_" + (sizeVal || "default") + (sortedOptIds.length > 0 ? "_" + sortedOptIds.join("_") : "");
+        const cartItemId = product.id + "_" + (sizeVal || "default") + "_" + (typeVal || "default") + (sortedOptIds.length > 0 ? "_" + sortedOptIds.join("_") : "");
 
         setCart((prev) => {
             const existing = prev.find((item) => item.id === cartItemId);
@@ -179,7 +225,7 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
                         discount: 0,
                         price: itemPrice,
                         size: sizeVal || null,
-                        type: product.type || null,
+                        type: typeVal || null,
                         selected_options: selectedOpts,
                     },
                 ];
@@ -217,19 +263,28 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
             })
             .filter(Boolean);
 
-        addToCartDirectly(currentProduct, selectedOpts, selectedSize);
+        addToCartDirectly(currentProduct, selectedOpts, selectedSize, selectedType);
         setOptionModalOpen(false);
         setCurrentProduct(null);
         setTempSelectedOptions({});
         setSelectedSize("");
+        setSelectedType("");
     };
 
     // Update option selection
     const handleOptionSelect = (optionId, valueObj) => {
-        setTempSelectedOptions((prev) => ({
-            ...prev,
-            [optionId]: valueObj,
-        }));
+        setTempSelectedOptions((prev) => {
+            const currentSelected = prev[optionId];
+            if (currentSelected && currentSelected.id === valueObj.id) {
+                const updated = { ...prev };
+                delete updated[optionId];
+                return updated;
+            }
+            return {
+                ...prev,
+                [optionId]: valueObj,
+            };
+        });
     };
 
     // Update quantity
@@ -302,13 +357,13 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
             return;
         }
 
-        post(route("orders.store"), {
-            onSuccess: () => {
-                clearCart();
-                reset();
-                router.visit(route("orders.index"));
-            },
-        });
+        setCheckoutModalOpen(true);
+    };
+
+    const handlePaymentSelection = (method) => {
+        if (processing) return;
+        setData("payment_method", method);
+        setPaymentMethodSelected(method);
     };
 
     return (
@@ -395,11 +450,29 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
                 product={currentProduct}
                 selectedSize={selectedSize}
                 setSelectedSize={setSelectedSize}
+                selectedType={selectedType}
+                setSelectedType={setSelectedType}
                 sizes={sizes}
                 tempSelectedOptions={tempSelectedOptions}
                 onOptionSelect={handleOptionSelect}
                 optionError={optionError}
                 onConfirm={handleConfirmOptions}
+            />
+
+            {/* Order Checkout Confirmation Modal */}
+            <OrderCheckoutModal
+                isOpen={checkoutModalOpen}
+                onClose={() => setCheckoutModalOpen(false)}
+                processing={processing}
+                errors={errors}
+                data={data}
+                setData={setData}
+                cart={cart}
+                subtotal={subtotal}
+                discountTotal={discountTotal}
+                totalAmount={totalAmount}
+                onPaymentSelect={handlePaymentSelection}
+                paymentMethodSelected={paymentMethodSelected}
             />
         </AdminLayout>
     );

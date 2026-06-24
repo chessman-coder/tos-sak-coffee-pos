@@ -21,9 +21,12 @@ class Product extends Model
         'image_path',
     ];
 
-    public function options()
+    public function getOptionsAttribute()
     {
-        return $this->hasMany(ProductOption::class)->orderBy('sort_order')->orderBy('id');
+        if ($this->relationLoaded('options')) {
+            return $this->getRelation('options');
+        }
+        return ProductOption::with('values')->orderBy('sort_order')->orderBy('id')->get();
     }
 
     public function category()

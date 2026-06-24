@@ -40,7 +40,7 @@ function ComboField({ label, value, onChange, options = [], placeholder }) {
                     <button
                         type="button"
                         onClick={() => setIsOpen((current) => !current)}
-                        className="flex shrink-0 items-center justify-center border-l border-[#eadfda] px-3 text-[#7b5f58] transition hover:bg-[#fcf8f6]"
+                        className="flex shrink-0 items-center justify-center border-l border-[#eadfda] px-3 text-secondary-dark transition hover:bg-[#fcf8f6]"
                         aria-label={`Show ${label.toLowerCase()} options`}
                         aria-expanded={isOpen}
                     >
@@ -86,7 +86,7 @@ export default function InventoryFormModal({
     const fileInputRef = useRef(null);
     const lastBlobRef = useRef(null);
     const [isDraggingImage, setIsDraggingImage] = useState(false);
-    
+
 
     if (!show) return null;
 
@@ -102,7 +102,7 @@ export default function InventoryFormModal({
             if (lastBlobRef.current && lastBlobRef.current !== previewUrl) {
                 try {
                     URL.revokeObjectURL(lastBlobRef.current);
-                } catch (e) {}
+                } catch (e) { }
                 lastBlobRef.current = null;
             }
 
@@ -157,16 +157,16 @@ export default function InventoryFormModal({
                 <div className="mb-5 flex items-start justify-between gap-4">
                     <div>
                         <h2 className="mb-1 text-3xl font-bold text-[#2f1a16]">{title}</h2>
-                        <p className="mb-0 text-sm text-[#7b5f58]">
+                        <p className="mb-0 text-sm text-secondary-dark">
                             Track inventory items and keep the stock history in sync.
                         </p>
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full border border-[#e1d0c8] bg-white p-2 text-xl leading-none text-[#7b5f58]"
+                        className="rounded-full border border-[#e1d0c8] bg-white p-2 text-xl leading-none text-secondary-dark"
                     >
-                        <X/>
+                        <X />
                     </button>
                 </div>
 
@@ -176,13 +176,12 @@ export default function InventoryFormModal({
                             Image
                         </span>
                         <div
-                            className={`mx-auto flex min-h-40 min-w-58 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed bg-white transition ${
-                                form.imagePreview || imageUrl
+                            className={`mx-auto flex min-h-40 min-w-58 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed bg-white transition ${form.imagePreview || imageUrl
                                     ? "border-[#e1d0c8]"
                                     : isDraggingImage
                                         ? "border-[#5a3630] bg-[#fcf8f6]"
                                         : "border-[#e1d0c8] hover:border-[#b78a78] hover:bg-[#fcf8f6]"
-                            }`}
+                                }`}
                             onDragEnter={() => setIsDraggingImage(true)}
                             onDragLeave={() => setIsDraggingImage(false)}
                             onDragOver={handleDragOver}

@@ -1,7 +1,6 @@
 export default function CreateProductOptionForm({
     show,
     editingOptionId,
-    productName,
     name,
     setName,
     isRequired,
@@ -42,14 +41,6 @@ export default function CreateProductOptionForm({
                         >
                             {editingOptionId ? "Edit Option" : "Add Option"}
                         </h2>
-                        {productName ? (
-                            <p
-                                className="mb-0 mt-1 text-sm"
-                                style={{ color: "#8b6e66" }}
-                            >
-                                Product: {productName}
-                            </p>
-                        ) : null}
                     </div>
                     <button
                         type="button"

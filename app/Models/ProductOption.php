@@ -10,7 +10,6 @@ class ProductOption extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
         'name',
         'is_required',
         'sort_order',
@@ -19,11 +18,6 @@ class ProductOption extends Model
     protected $casts = [
         'is_required' => 'boolean',
     ];
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
 
     public function values()
     {

@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}', [OrderController::class, 'edit'])->name('orders.edit');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
+    Route::get('/payment/check/{id}', [PaymentController::class, 'checkStatus'])->name('payment.check');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index')->middleware(['check:product-list']);
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create')->middleware(['check:product-create']);

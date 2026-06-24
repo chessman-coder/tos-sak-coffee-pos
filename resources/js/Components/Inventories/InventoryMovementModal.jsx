@@ -30,16 +30,16 @@ export default function InventoryMovementModal({
                         <h2 className="mb-1 text-3xl font-bold text-[#2f1a16]">
                             {isStockIn ? "Stock in" : "Stock out"}
                         </h2>
-                        <p className="mb-0 text-sm text-[#7b5f58]">
+                        <p className="mb-0 text-sm text-secondary-dark">
                             Record movement for {item.name} and keep the history updated.
                         </p>
                     </div>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full border border-[#e1d0c8] bg-white p-2 text-xl leading-none text-[#7b5f58]"
+                        className="rounded-full border border-[#e1d0c8] bg-white p-2 text-xl leading-none text-secondary-dark"
                     >
-                        <X/>
+                        <X />
                     </button>
                 </div>
 

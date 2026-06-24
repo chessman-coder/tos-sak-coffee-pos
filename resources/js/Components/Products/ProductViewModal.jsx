@@ -32,7 +32,7 @@ export default function ProductViewModal({ show, product, onClose }) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#e1d0c8] bg-white text-[#7b5f58] transition hover:bg-[#fcf8f6] hover:text-[#5a3630]"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#e1d0c8] bg-white text-secondary-dark transition hover:bg-[#fcf8f6] hover:text-[#5a3630]"
                         aria-label="Close"
                     >
                         <X size={18} />

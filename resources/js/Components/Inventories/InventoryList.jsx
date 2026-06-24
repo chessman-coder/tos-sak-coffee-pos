@@ -12,7 +12,7 @@ export default function InventoryList({
 }) {
     if (!filteredItems || filteredItems.length === 0) {
         return (
-            <div className="overflow-hidden rounded-[28px] border border-[#eadfda] bg-white p-6 text-sm text-[#7b5f58]">
+            <div className="overflow-hidden rounded-[28px] border border-[#eadfda] bg-white p-6 text-sm text-secondary-dark">
                 No inventory items match your search.
             </div>
         );

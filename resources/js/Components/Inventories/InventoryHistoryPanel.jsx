@@ -48,7 +48,7 @@ export default function InventoryHistoryPanel({ history }) {
                     <h3 className="mb-1 text-2xl font-bold text-[#2f1a16]">
                         Stock history
                     </h3>
-                    <p className="mb-0 text-sm text-[#7b5f58]">
+                    <p className="mb-0 text-sm text-secondary-dark">
                         Recent stock in and stock out activity recorded by
                         admin.
                     </p>
@@ -57,7 +57,7 @@ export default function InventoryHistoryPanel({ history }) {
 
             <div className="overflow-hidden rounded-3xl border border-[#eadfda] bg-white">
                 {history.length === 0 ? (
-                    <div className="px-4 py-6 text-sm text-[#7b5f58]">
+                    <div className="px-4 py-6 text-sm text-secondary-dark">
                         No history yet.
                     </div>
                 ) : (

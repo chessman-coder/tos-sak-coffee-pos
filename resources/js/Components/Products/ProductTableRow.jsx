@@ -1,6 +1,7 @@
 import React from "react";
 import { Eye, ImageIcon, PenBox, Trash2 } from "lucide-react";
 import SizesColumn from "./SizesColumn";
+import TypesColumn from "./TypesColumn";
 import Badge from "../ui/Badge";
 
 const formatPrice = (price) => {
@@ -16,6 +17,14 @@ const getSizes = (product) => {
     return String(product.size)
         .split(",")
         .map((s) => s.trim())
+        .filter(Boolean);
+};
+
+const getTypes = (product) => {
+    if (!product?.type) return [];
+    return String(product.type)
+        .split(",")
+        .map((t) => t.trim())
         .filter(Boolean);
 };
 
@@ -47,6 +56,7 @@ export default function ProductTableRow({
         product?.image_url ??
         (product?.image_path ? `/storage/${product.image_path}` : "");
     const sizes = getSizes(product);
+    const types = getTypes(product);
     const category = product?.category?.name ?? "Uncategorized";
 
     return (
@@ -79,14 +89,8 @@ export default function ProductTableRow({
             </td>
 
             {/* Type */}
-            <td className="px-4 py-2.5 align-middle whitespace-nowrap">
-                {product.type ? (
-                    <span className="inline-flex items-center rounded-md bg-[#f5ebe6] px-2 py-0.5 text-xs font-semibold text-[#8a5b3e] border border-[#e8ded8]">
-                        {product.type}
-                    </span>
-                ) : (
-                    <span className="text-[#8a6a55]">-</span>
-                )}
+            <td className="px-4 py-2.5 align-middle">
+                <TypesColumn types={types} />
             </td>
 
             {/* Base Price */}

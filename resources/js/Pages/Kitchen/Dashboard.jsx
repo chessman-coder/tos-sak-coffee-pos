@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head } from "@inertiajs/react";
 import axios from "axios";
-import { 
-    Clock, Coffee, Check, Play, CheckCircle, 
-    XCircle, AlertCircle, Volume2, VolumeX 
+import {
+    Clock, Coffee, Check, Play, CheckCircle,
+    XCircle, AlertCircle, Volume2, VolumeX
 } from "lucide-react";
 
 export default function KitchenDashboard() {
@@ -21,18 +21,18 @@ export default function KitchenDashboard() {
             .then(res => {
                 if (res.data.success) {
                     const newOrders = res.data.data;
-                    
+
                     // Check if new order arrived (to play sound)
                     if (newOrders.length > prevOrdersCountRef.current) {
-                        const hasNewPending = newOrders.some(order => 
-                            order.status === "pending" && 
+                        const hasNewPending = newOrders.some(order =>
+                            order.status === "pending" &&
                             !orders.some(o => o.id === order.id)
                         );
                         if (hasNewPending && soundEnabled) {
                             playChime();
                         }
                     }
-                    
+
                     setOrders(newOrders);
                     prevOrdersCountRef.current = newOrders.length;
                     setError(null);
@@ -61,7 +61,7 @@ export default function KitchenDashboard() {
         if (window.Echo) {
             console.log("Subscribing to kitchen channel...");
             const channel = window.Echo.channel("kitchen");
-            
+
             channel.listen(".order.created", (e) => {
                 console.log("Real-time order created in kitchen:", e.order);
                 setOrders(prev => {
@@ -100,21 +100,21 @@ export default function KitchenDashboard() {
     const playChime = () => {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
+
             // Tone sequence (chime sound)
             const playTone = (freq, startTime, duration) => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                
+
                 osc.type = "triangle";
                 osc.frequency.setValueAtTime(freq, startTime);
-                
+
                 gain.gain.setValueAtTime(0.2, startTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration - 0.05);
-                
+
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-                
+
                 osc.start(startTime);
                 osc.stop(startTime + duration);
             };
@@ -217,7 +217,7 @@ export default function KitchenDashboard() {
                             <Coffee size={24} className="text-[#C38B59]" />
                             Kitchen Dashboard
                         </h1>
-                        <p className="text-xs text-[#7B5F58] mt-0.5">
+                        <p className="text-xs text-secondary-dark mt-0.5">
                             Manage and track active orders in the prep queue.
                         </p>
                     </div>
@@ -226,16 +226,15 @@ export default function KitchenDashboard() {
                         {/* Audio alert toggle */}
                         <button
                             onClick={() => setSoundEnabled(!soundEnabled)}
-                            className={`flex h-10 px-4 items-center gap-2 rounded-xl border text-xs font-bold transition ${
-                                soundEnabled 
-                                    ? "bg-[#FDFBF9] border-[#EADFC8] text-[#5A3A36]" 
+                            className={`flex h-10 px-4 items-center gap-2 rounded-xl border text-xs font-bold transition ${soundEnabled
+                                    ? "bg-[#FDFBF9] border-[#EADFC8] text-[#5A3A36]"
                                     : "bg-red-50 border-red-200 text-red-500"
-                            }`}
+                                }`}
                         >
                             {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
                             <span>{soundEnabled ? "Chime On" : "Chime Off"}</span>
                         </button>
-                        
+
                         {/* Status Stats Summary */}
                         <div className="flex items-center gap-2 text-xs font-bold bg-[#F8F5F2] px-3.5 py-2 rounded-xl border border-[#EADFC8]/30">
                             <span className="text-[#FF002C]">Pending: {columns.pending.orders.length}</span>
@@ -249,7 +248,7 @@ export default function KitchenDashboard() {
 
                 {/* Main Dashboard Columns */}
                 {loading ? (
-                    <div className="flex-1 flex flex-col items-center justify-center text-[#7B5F58] bg-white rounded-3xl border border-[#EADFC8]/40 shadow-sm">
+                    <div className="flex-1 flex flex-col items-center justify-center text-secondary-dark bg-white rounded-3xl border border-[#EADFC8]/40 shadow-sm">
                         <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#5A3A36] border-t-transparent mb-4"></div>
                         <span className="text-xs font-semibold">Loading kitchen queue...</span>
                     </div>
@@ -267,7 +266,7 @@ export default function KitchenDashboard() {
                 ) : (
                     <div className="flex-1 grid grid-cols-3 gap-4 overflow-hidden">
                         {Object.entries(columns).map(([key, col]) => (
-                            <div 
+                            <div
                                 key={key}
                                 className={`rounded-3xl border border-[#EADFC8]/40 overflow-hidden flex flex-col shadow-sm ${col.color}`}
                             >
@@ -284,7 +283,7 @@ export default function KitchenDashboard() {
                                 {/* Order Cards list */}
                                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                                     {col.orders.length === 0 ? (
-                                        <div className="h-full flex items-center justify-center text-center py-20 text-[#7B5F58]/60">
+                                        <div className="h-full flex items-center justify-center text-center py-20 text-secondary-dark/60">
                                             <p className="text-xs italic">No orders in this stage</p>
                                         </div>
                                     ) : (
@@ -293,11 +292,10 @@ export default function KitchenDashboard() {
                                             const isLate = elapsed >= 10 && (key === "pending" || key === "preparing");
 
                                             return (
-                                                <div 
-                                                    key={order.id} 
-                                                    className={`bg-white rounded-2xl border p-4 shadow-sm relative flex flex-col justify-between ${
-                                                        isLate ? "border-red-400 ring-2 ring-red-100" : "border-[#EADFC8]/50"
-                                                    }`}
+                                                <div
+                                                    key={order.id}
+                                                    className={`bg-white rounded-2xl border p-4 shadow-sm relative flex flex-col justify-between ${isLate ? "border-red-400 ring-2 ring-red-100" : "border-[#EADFC8]/50"
+                                                        }`}
                                                 >
                                                     {/* Header */}
                                                     <div>
@@ -311,9 +309,8 @@ export default function KitchenDashboard() {
                                                                 </span>
                                                             </div>
                                                             <div className="flex flex-col items-end shrink-0">
-                                                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 ${
-                                                                    isLate ? "bg-red-100 text-red-500" : "bg-[#F8F5F2] text-[#7B5F58]"
-                                                                }`}>
+                                                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 ${isLate ? "bg-red-100 text-red-500" : "bg-[#F8F5F2] text-secondary-dark"
+                                                                    }`}>
                                                                     <Clock size={10} />
                                                                     {elapsed}m ago
                                                                 </span>
@@ -334,7 +331,7 @@ export default function KitchenDashboard() {
                                                                         <span className="font-bold text-[#2F1A16]">{item.product_name}</span>
                                                                     </div>
                                                                     {item.options.length > 0 && (
-                                                                        <p className="text-[10px] text-[#7B5F58] font-medium leading-relaxed pl-5 mt-0.5 bg-[#F8F5F2]/50 py-1 px-2 rounded-lg border border-[#EADFC8]/10">
+                                                                        <p className="text-[10px] text-secondary-dark font-medium leading-relaxed pl-5 mt-0.5 bg-[#F8F5F2]/50 py-1 px-2 rounded-lg border border-[#EADFC8]/10">
                                                                             {item.options.map(o => `${o.option_label}: ${o.value_label}`).join(", ")}
                                                                         </p>
                                                                     )}
@@ -360,7 +357,7 @@ export default function KitchenDashboard() {
                                                         <div className="flex-1">
                                                             {col.nextAction(order.id)}
                                                         </div>
-                                                        
+
                                                         {/* Cancel option for pending/preparing */}
                                                         {(key === "pending" || key === "preparing") && (
                                                             <button

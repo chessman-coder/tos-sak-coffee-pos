@@ -107,6 +107,7 @@ class PaymentController extends Controller
             }
 
             return Inertia::render('Payment/Checkout', [
+                'order_id' => $order ? $order->id : null,
                 'qr_code' => $qrCodeString,
                 'md5' => $md5Hash,
                 'amount' => $amount,
@@ -121,6 +122,79 @@ class PaymentController extends Controller
                 ], 500);
             }
             return back()->withErrors(['error' => 'Bakong KHQR Generation failed: ' . $e->getMessage()]);
+        }
+    }
+
+    public function checkStatus(Request $request, $id)
+    {
+        $order = Order::find($id);
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found.'
+            ], 404);
+        }
+
+        // If the order status is already completed, preparing, ready, or finish, it means it was paid/processed
+        if (in_array($order->status, ['completed', 'preparing', 'ready', 'finish'])) {
+            return response()->json([
+                'success' => true,
+                'status' => $order->status,
+                'message' => 'Payment was already processed successfully.'
+            ]);
+        }
+
+        $md5 = $request->query('md5');
+
+        if (!$md5) {
+            return response()->json([
+                'success' => false,
+                'message' => 'MD5 hash is required.'
+            ], 400);
+        }
+
+        try {
+            $token = config('services.bakong.token') ?: env('BAKONG_SECRET_KEY');
+            if (empty($token) || $token === 'YOUR_BAKONG_TOKEN') {
+                throw new \Exception("Bakong API Token is not configured.");
+            }
+
+            $bakongKhqr = new BakongKHQR($token);
+            $response = $bakongKhqr->checkTransactionByMD5($md5);
+
+            \Illuminate\Support\Facades\Log::info('Bakong Check Transaction Response', [
+                'order_id' => $id,
+                'md5' => $md5,
+                'response' => $response
+            ]);
+
+            if (isset($response['responseCode']) && $response['responseCode'] === 0) {
+                // Payment was successful! Update the order status.
+                $order->update([
+                    'status' => 'preparing',
+                    'payment_method' => 'khqr'
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'status' => 'preparing',
+                    'message' => 'Payment successful!'
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $response['responseMessage'] ?? 'Payment pending.'
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Bakong payment check failed: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'error_type' => 'API_ERROR',
+                'message' => 'Unable to verify payment status: ' . $e->getMessage()
+            ], 500);
         }
     }
 

@@ -6,8 +6,6 @@ import CreateProductOptionForm from "./CreateProductOptionForm";
 import ProductOptionCard from "@/Components/Catalog/ProductOptionCard";
 
 export default function ProductOptionsTab() {
-    const [products, setProducts] = useState([]);
-    const [modalProductId, setModalProductId] = useState(null);
     const [options, setOptions] = useState([]);
     const [newOptionName, setNewOptionName] = useState("");
     const [isRequired, setIsRequired] = useState(false);
@@ -18,22 +16,8 @@ export default function ProductOptionsTab() {
     const [deleteDialog, setDeleteDialog] = useState(null);
 
     useEffect(() => {
-        fetchProducts();
         fetchOptions();
     }, []);
-
-    function fetchProducts() {
-        window.axios
-            .get("/api/catalog/products")
-            .then((r) => {
-                const items = Array.isArray(r.data) ? r.data : [];
-                setProducts(items);
-                if (!modalProductId && items.length > 0) {
-                    setModalProductId(Number(items[0].id));
-                }
-            })
-            .catch(() => {});
-    }
 
     function fetchOptions() {
         window.axios
@@ -47,7 +31,6 @@ export default function ProductOptionsTab() {
         setNewOptionName("");
         setIsRequired(false);
         setOptionValues([{ value: "", upcharge: 0 }]);
-        setModalProductId(products.length > 0 ? Number(products[0].id) : null);
         setIsOptionModalOpen(true);
     }
 
@@ -64,7 +47,6 @@ export default function ProductOptionsTab() {
                   }))
                 : [{ value: "", upcharge: 0 }],
         );
-        setModalProductId(option?.product_id ?? null);
         setIsOptionModalOpen(true);
     }
 
@@ -101,7 +83,7 @@ export default function ProductOptionsTab() {
         e?.preventDefault?.();
         const name = newOptionName.trim();
 
-        if (!name || !modalProductId) return;
+        if (!name) return;
 
         const normalizedValues = optionValues
             .map((value) => ({
@@ -117,7 +99,6 @@ export default function ProductOptionsTab() {
             setIsSubmitting(true);
 
             const payload = {
-                product_id: Number(modalProductId),
                 name,
                 is_required: isRequired,
                 values: normalizedValues,
@@ -157,14 +138,11 @@ export default function ProductOptionsTab() {
         setDeleteDialog(null);
     }
 
-    const hasProducts = products.length > 0;
-    const modalProduct = products.find((p) => Number(p.id) === Number(modalProductId));
-
     return (
         <div>
             <div className="mb-4 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-semibold mb-0">Product Options</h2>
+                    <h2 className="text-xl font-semibold mb-0">Global Options</h2>
                 </div>
 
                 <Button
@@ -172,26 +150,25 @@ export default function ProductOptionsTab() {
                     onClick={openOptionModal}
                     className="inline-flex items-center rounded-full px-4 py-2"
                     variant="fillDark"
-                    disabled={!hasProducts}
                 >
                     <Plus size={18} className="mr-2" />
                     Add Option
                 </Button>
             </div>
 
-            {!hasProducts ? (
-                <div
-                    className="rounded-3xl p-4"
-                    style={{
-                        background: "#fff",
-                        border: "1px dashed #ceb8b0",
-                        color: "#7b5f58",
-                    }}
-                >
-                    Create a product first, then add its options here.
-                </div>
-            ) : (
-                <>
+            <div className="space-y-6">
+                {options.length === 0 ? (
+                    <div
+                        className="rounded-3xl p-4"
+                        style={{
+                            background: "#fff",
+                            border: "1px dashed #ceb8b0",
+                            color: "#7b5f58",
+                        }}
+                    >
+                        No product options yet. Click Add Option to create your first one.
+                    </div>
+                ) : (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                         {options.map((option) => (
                             <ProductOptionCard
@@ -202,26 +179,12 @@ export default function ProductOptionsTab() {
                             />
                         ))}
                     </div>
-
-                    {options.length === 0 && (
-                        <div
-                            className="rounded-3xl p-4"
-                            style={{
-                                background: "#fff",
-                                border: "1px dashed #ceb8b0",
-                                color: "#7b5f58",
-                            }}
-                        >
-                            No product options yet. Click Add Option to create your first one.
-                        </div>
-                    )}
-                </>
-            )}
+                )}
+            </div>
 
             <CreateProductOptionForm
                 show={isOptionModalOpen}
                 editingOptionId={editingOptionId}
-                productName={modalProduct?.name}
                 name={newOptionName}
                 setName={setNewOptionName}
                 isRequired={isRequired}

@@ -22,7 +22,7 @@ export default function ProductSection({
                     <h1 className="text-3xl font-extrabold text-[#2f1a16] tracking-tight">
                         POS Checkout
                     </h1>
-                    <p className="text-sm text-[#7b5f58] mt-1">
+                    <p className="text-sm text-secondary-dark mt-1">
                         Order {orderNumber} • Walk-in Sales Portal
                     </p>
                 </div>
@@ -31,7 +31,7 @@ export default function ProductSection({
                 <div className="relative w-full sm:w-80">
                     <Search
                         size={18}
-                        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#7b5f58]"
+                        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-secondary-dark"
                     />
                     <input
                         type="search"
@@ -51,7 +51,7 @@ export default function ProductSection({
                         onClick={() => setSelectedCategoryId(null)}
                         className={`rounded-full px-5 py-2 text-xs font-bold transition shadow-sm ${selectedCategoryId === null
                             ? "bg-[#5a3630] text-white"
-                            : "bg-white border border-[#eadfda] text-[#7b5f58] hover:bg-[#fbf8f5]"
+                            : "bg-white border border-[#eadfda] text-secondary-dark hover:bg-[#fbf8f5]"
                             }`}
                     >
                         All Products
@@ -63,7 +63,7 @@ export default function ProductSection({
                             onClick={() => setSelectedCategoryId(cat.id)}
                             className={`rounded-full px-5 py-2 text-xs font-bold transition shadow-sm ${selectedCategoryId === cat.id
                                 ? "bg-[#5a3630] text-white"
-                                : "bg-white border border-[#eadfda] text-[#7b5f58] hover:bg-[#fbf8f5]"
+                                : "bg-white border border-[#eadfda] text-secondary-dark hover:bg-[#fbf8f5]"
                                 }`}
                         >
                             {cat.name}
@@ -74,7 +74,7 @@ export default function ProductSection({
                 {/* Subcategory pills if a parent is selected */}
                 {selectedCategoryId && subCategoriesMap[selectedCategoryId] && (
                     <div className="flex flex-wrap gap-1.5 border-t border-[#eadfda] pt-3">
-                        <span className="text-xs text-[#7b5f58] flex items-center mr-1">
+                        <span className="text-xs text-secondary-dark flex items-center mr-1">
                             Subcategories:
                         </span>
                         {subCategoriesMap[selectedCategoryId].map((sub) => (
@@ -112,7 +112,7 @@ export default function ProductSection({
                         <h3 className="text-lg font-semibold text-[#2f1a16]">
                             No products found
                         </h3>
-                        <p className="text-sm text-[#7b5f58] mt-1">
+                        <p className="text-sm text-secondary-dark mt-1">
                             Try searching for a different keyword or category.
                         </p>
                     </div>
