@@ -108,10 +108,6 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
         if (paymentMethodSelected) {
             post(route("orders.store"), {
                 onSuccess: () => {
-                    if (paymentMethodSelected === "cash") {
-                        clearCart();
-                        localStorage.removeItem("pos_cart");
-                    }
                     reset();
                     setPaymentMethodSelected(null);
                     setCheckoutModalOpen(false);

@@ -157,7 +157,7 @@ class OrderController extends Controller
             Log::info('Order created', ['order_id' => $createdOrderId, 'total' => $totalAmount]);
         });
 
-        if ($validated['payment_method'] === 'khqr') {
+        if ($validated['payment_method'] === 'khqr' || $validated['payment_method'] === 'cash') {
             return redirect()->route('checkout', ['id' => $createdOrderId]);
         }
 
@@ -272,13 +272,13 @@ class OrderController extends Controller
     {
         $rsDatasModel = Order::find($id);
         if ($rsDatasModel) {
-            if ($rsDatasModel->status === 'pending') {
+            if ($rsDatasModel->status === 'Order Cancelled') {
                 $rsDatasModel->delete();
             }
         }
 
         if (request()->header('referer') && str_contains(request()->header('referer'), '/checkout')) {
-            return redirect()->route('pos.index')->with('message', 'Order cancelled');
+            return redirect()->route('pos.index')->with('message', 'Order Cancelled');
         }
 
         return back()->with('message', 'Deleted successfully');

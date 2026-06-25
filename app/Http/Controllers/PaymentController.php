@@ -24,6 +24,15 @@ class PaymentController extends Controller
             $amount = (float) $order->total_amount;
             $billNumber = $order->order_number;
             $description = "Payment for Order " . $order->order_number;
+
+            if ($order->payment_method === 'cash') {
+                return Inertia::render('Payment/cash/Checkout', [
+                    'order_id' => $order->id,
+                    'amount' => $amount,
+                    'bill_number' => $billNumber,
+                    'description' => $description,
+                ]);
+            }
         } else {
             $product = Product::find($id);
             if ($product) {
@@ -106,7 +115,7 @@ class PaymentController extends Controller
                 ]);
             }
 
-            return Inertia::render('Payment/Checkout', [
+            return Inertia::render('Payment/khqr/Checkout', [
                 'order_id' => $order ? $order->id : null,
                 'qr_code' => $qrCodeString,
                 'md5' => $md5Hash,
@@ -196,6 +205,40 @@ class PaymentController extends Controller
                 'message' => 'Unable to verify payment status: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function confirmCashPayment(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        $order->update([
+            'status' => 'preparing',
+            'payment_method' => 'cash'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'status' => 'preparing',
+            'message' => 'Cash payment confirmed successfully.'
+        ]);
+    }
+
+    public function cancelOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        $order->update([
+            'status' => 'cancelled'
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'status' => 'cancelled',
+                'message' => 'Order cancelled successfully.'
+            ]);
+        }
+
+        return redirect()->route('pos.index')->with('message', 'Order Cancelled');
     }
 
     /**

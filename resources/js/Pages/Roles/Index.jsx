@@ -74,7 +74,7 @@ export default function UserPage({ roles }) {
                                     Datalist Management
                                 </h3>
                                 <div className="card-tools flex items-center">
-                                    {can["role-create"] && (
+                                    {can["manage role"] && (
                                         <Link
                                             href={route("roles.create")}
                                             className="btn btn-primary btn-sm mr-2"
@@ -112,9 +112,7 @@ export default function UserPage({ roles }) {
                                             <th>Name</th>
                                             <th>Guard</th>
                                             <th>Created At</th>
-                                            {can[
-                                                "role-edit" || "role-delete"
-                                            ] && <th>Action</th>}
+                                            {can["manage role"] && <th>Action</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -140,9 +138,7 @@ export default function UserPage({ roles }) {
                                                             )}
                                                         </td>
                                                         <td>
-                                                            {can[
-                                                                "role-edit"
-                                                            ] && (
+                                                            {can["manage role"] && (
                                                                 <Link
                                                                     href={route(
                                                                         "roles.edit",
@@ -154,9 +150,7 @@ export default function UserPage({ roles }) {
                                                                     Edit
                                                                 </Link>
                                                             )}
-                                                            {can[
-                                                                "role-delete"
-                                                            ] && (
+                                                            {can["manage role"] && (
                                                                 <button
                                                                     onClick={() =>
                                                                         confirmDataDeletion(

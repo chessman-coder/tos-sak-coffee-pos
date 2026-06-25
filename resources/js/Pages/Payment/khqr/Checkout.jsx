@@ -2,23 +2,30 @@ import React, { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import { QrCode, Check } from "lucide-react";
 import Modal from "@/Components/Modal";
+import SuccessView from "@/Components/SuccessView";
 
 export default function Checkout({ order_id, qr_code, md5, amount, bill_number, description }) {
     const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, checking, success, error
     const [errorMsg, setErrorMsg] = useState("");
-    const [isSimulating, setIsSimulating] = useState(false);
     const [checkingManual, setCheckingManual] = useState(false);
 
     const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(qr_code)}`;
 
     const handleClose = () => {
         if (order_id && paymentStatus !== "success") {
-            router.delete(route('orders.destroy', order_id));
-        } else {
             localStorage.removeItem("pos_cart");
+            router.post(route("payment.cancel", order_id));
+        } else {
             router.visit(route('pos.index'));
         }
     };
+
+    // Clear cart immediately on successful payment
+    useEffect(() => {
+        if (paymentStatus === "success") {
+            localStorage.removeItem("pos_cart");
+        }
+    }, [paymentStatus]);
 
     // Auto-polling for payment status verification
     useEffect(() => {
@@ -86,63 +93,7 @@ export default function Checkout({ order_id, qr_code, md5, amount, bill_number, 
             >
                 <div className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-[#eadfda]">
                     {paymentStatus === "success" ? (
-                        /* Success View */
-                        <div className="p-8 text-center bg-white space-y-6">
-                            {/* Animated Success Checkmark */}
-                            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full text-success bg-success-bg border-4 border-success animate-pulse">
-                                <Check size={40} className="stroke-[4]" />
-                            </div>
-
-                            <div className="space-y-2">
-                                <h2 className="text-2xl font-extrabold text-primary-text tracking-tight">
-                                    Pay Successfully!
-                                </h2>
-                                <p className="text-sm font-bold text-success bg-success-bg inline-block px-3 py-1 rounded-full">
-                                    KHQR Payment Confirmed
-                                </p>
-                            </div>
-
-                            {/* Receipt Summary card */}
-                            <div className="bg-[#fcf9f7] rounded-2xl p-5 border border-[#eadfda] text-left space-y-3.5 shadow-sm">
-                                <h3 className="text-xs font-bold text-secondary-dark uppercase tracking-wider">
-                                    Receipt Details
-                                </h3>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-secondary-dark font-semibold">Order Number</span>
-                                        <span className="text-[#2f1a16] font-bold">
-                                            {bill_number || "N/A"}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-secondary-dark font-semibold">Amount Paid</span>
-                                        <span className="text-[#2f1a16] font-extrabold text-base">
-                                            ${Number(amount || 0).toFixed(2)}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="text-secondary-dark font-semibold">Payment Method</span>
-                                        <span className="text-[#2f1a16] font-bold">
-                                            Bakong KHQR
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Redirect Timer info */}
-                            <div className="space-y-4 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        localStorage.removeItem("pos_cart");
-                                        router.visit(route('pos.index'));
-                                    }}
-                                    className="w-full h-12 bg-[#5a3630] hover:bg-[#4a2b25] text-white rounded-xl font-bold shadow-md transition transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                                >
-                                    Return to POS
-                                </button>
-                            </div>
-                        </div>
+                        <SuccessView amount={amount} bill_number={bill_number} />
                     ) : (
                         /* Scan & Verification View */
                         <>

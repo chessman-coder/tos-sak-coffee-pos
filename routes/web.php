@@ -33,74 +33,89 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // POS & Checkout & Orders module
+    Route::middleware(['check:manage pos checkout'])->group(function () {
+        Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
+        Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout/cash/{id}', [PaymentController::class, 'confirmCashPayment'])->name('payment.confirm-cash');
+        Route::post('/checkout/cancel/{id}', [PaymentController::class, 'cancelOrder'])->name('payment.cancel');
+        Route::get('/payment/check/{id}', [PaymentController::class, 'checkStatus'])->name('payment.check');
 
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index')->middleware(['check:category-list']);
-    Route::get('/catalog', function () {
-        return Inertia::render('Catalog/Index');
-    })->name('catalog.index');
-    Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create')->middleware(['check:category-create']);
-    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-    Route::patch('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
-    Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::patch('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
+        Route::get('/orders/{id}', [OrderController::class, 'edit'])->name('orders.edit');
+        Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    });
 
-    Route::get('/types', [TypeController::class, 'index'])->name('types.index');
-    Route::get('/types/create', [TypeController::class, 'create'])->name('types.create');
-    Route::post('/types', [TypeController::class, 'store'])->name('types.store');
-    Route::patch('/types/{id}', [TypeController::class, 'update'])->name('types.update');
-    Route::get('/types/{id}', [TypeController::class, 'edit'])->name('types.edit');
-    Route::delete('/types/{id}', [TypeController::class, 'destroy'])->name('types.destroy');
+    // Product & Catalog module
+    Route::middleware(['check:manage product'])->group(function () {
+        Route::get('/catalog', function () {
+            return Inertia::render('Catalog/Index');
+        })->name('catalog.index');
 
-    Route::get('/sizes', [SizeController::class, 'index'])->name('sizes.index');
-    Route::get('/sizes/create', [SizeController::class, 'create'])->name('sizes.create');
-    Route::post('/sizes', [SizeController::class, 'store'])->name('sizes.store');
-    Route::patch('/sizes/{id}', [SizeController::class, 'update'])->name('sizes.update');
-    Route::get('/sizes/{id}', [SizeController::class, 'edit'])->name('sizes.edit');
-    Route::delete('/sizes/{id}', [SizeController::class, 'destroy'])->name('sizes.destroy');
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::patch('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::get('/categories/{id}', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-    Route::get('/inventories', [InventoryController::class, 'index'])->name('inventories.index');
-    Route::post('/inventories', [InventoryController::class, 'store'])->name('inventories.store');
-    Route::get('/inventories/{inventory}', [InventoryController::class, 'show'])->name('inventories.show');
-    Route::get('/inventories/{inventory}/edit', [InventoryController::class, 'edit'])->name('inventories.edit');
-    Route::patch('/inventories/{inventory}', [InventoryController::class, 'update'])->name('inventories.update');
-    Route::delete('/inventories/{inventory}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
-    Route::post('/inventories/{inventory}/movements', [InventoryController::class, 'storeMovement'])->name('inventories.movements.store');
+        Route::get('/types', [TypeController::class, 'index'])->name('types.index');
+        Route::get('/types/create', [TypeController::class, 'create'])->name('types.create');
+        Route::post('/types', [TypeController::class, 'store'])->name('types.store');
+        Route::patch('/types/{id}', [TypeController::class, 'update'])->name('types.update');
+        Route::get('/types/{id}', [TypeController::class, 'edit'])->name('types.edit');
+        Route::delete('/types/{id}', [TypeController::class, 'destroy'])->name('types.destroy');
 
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
-    Route::patch('/orders/{id}', [OrderController::class, 'update'])->name('orders.update');
-    Route::get('/orders/{id}', [OrderController::class, 'edit'])->name('orders.edit');
-    Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
-    Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
-    Route::get('/payment/check/{id}', [PaymentController::class, 'checkStatus'])->name('payment.check');
+        Route::get('/sizes', [SizeController::class, 'index'])->name('sizes.index');
+        Route::get('/sizes/create', [SizeController::class, 'create'])->name('sizes.create');
+        Route::post('/sizes', [SizeController::class, 'store'])->name('sizes.store');
+        Route::patch('/sizes/{id}', [SizeController::class, 'update'])->name('sizes.update');
+        Route::get('/sizes/{id}', [SizeController::class, 'edit'])->name('sizes.edit');
+        Route::delete('/sizes/{id}', [SizeController::class, 'destroy'])->name('sizes.destroy');
 
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index')->middleware(['check:product-list']);
-    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create')->middleware(['check:product-create']);
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    Route::patch('/products/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::get('/products/{id}', [ProductController::class, 'edit'])->name('products.edit');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::patch('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+        Route::get('/products/{id}', [ProductController::class, 'edit'])->name('products.edit');
+        Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+    });
 
-    Route::prefix('roles')->group(function () {
-        Route::get('/', [RolesController::class, 'index'])->name('roles.index')->middleware(['check:role-list']);
-        Route::get('/create', [RolesController::class, 'create'])->name('roles.create')->middleware(['check:role-create']);
-        Route::get('/{id}', [RolesController::class, 'edit'])->name('roles.edit')->middleware(['check:role-edit']);
+    // Inventory module
+    Route::middleware(['check:manage inventory'])->group(function () {
+        Route::get('/inventories', [InventoryController::class, 'index'])->name('inventories.index');
+        Route::post('/inventories', [InventoryController::class, 'store'])->name('inventories.store');
+        Route::get('/inventories/{inventory}', [InventoryController::class, 'show'])->name('inventories.show');
+        Route::get('/inventories/{inventory}/edit', [InventoryController::class, 'edit'])->name('inventories.edit');
+        Route::patch('/inventories/{inventory}', [InventoryController::class, 'update'])->name('inventories.update');
+        Route::delete('/inventories/{inventory}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
+        Route::post('/inventories/{inventory}/movements', [InventoryController::class, 'storeMovement'])->name('inventories.movements.store');
+    });
+
+    // Roles management module
+    Route::prefix('roles')->middleware(['check:manage role'])->group(function () {
+        Route::get('/', [RolesController::class, 'index'])->name('roles.index');
+        Route::get('/create', [RolesController::class, 'create'])->name('roles.create');
+        Route::get('/{id}', [RolesController::class, 'edit'])->name('roles.edit');
         Route::post("/", [RolesController::class, 'store'])->name('roles.store');
         Route::patch("/{id}", [RolesController::class, 'update'])->name('roles.update');
-        Route::delete("/{id}", [RolesController::class, 'destroy'])->name('roles.destroy')->middleware(['check:role-delete']);
+        Route::delete("/{id}", [RolesController::class, 'destroy'])->name('roles.destroy');
     });
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('users.index')->middleware(['check:user-list']);
-        Route::get('/create', [UserController::class, 'create'])->name('users.create')->middleware(['check:user-create']);
-        Route::get('/{id}', [UserController::class, 'edit'])->name('users.edit')->middleware(['check:user-edit']);
+
+    // Users management module
+    Route::prefix('users')->middleware(['check:manage user'])->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('users.index');
+        Route::get('/create', [UserController::class, 'create'])->name('users.create');
+        Route::get('/{id}', [UserController::class, 'edit'])->name('users.edit');
         Route::post("/", [UserController::class, 'store'])->name('users.store');
         Route::patch("/{id}", [UserController::class, 'update'])->name('users.update');
-        Route::delete("/{id}", [UserController::class, 'destroy'])->name('users.destroy')->middleware(['check:user-delete']);
+        Route::delete("/{id}", [UserController::class, 'destroy'])->name('users.destroy');
     });
 
     Route::get('/kitchen', [\App\Http\Controllers\KitchenController::class, 'index'])->name('kitchen.index');
-    Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
 });
 
 require __DIR__.'/auth.php';

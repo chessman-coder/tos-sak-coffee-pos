@@ -16,7 +16,6 @@ export default function OrderCheckoutModal({
     processing,
     errors = {},
     data = {},
-    setData,
     cart = [],
     subtotal,
     discountTotal,

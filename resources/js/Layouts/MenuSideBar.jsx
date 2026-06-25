@@ -16,7 +16,7 @@ import {
     Coffee,
 } from "lucide-react";
 
-export default function MenuSideBar({}) {
+export default function MenuSideBar({ }) {
     const { url, auth } = usePage().props;
     const can = auth?.can ?? {};
     useEffect(() => {
@@ -36,36 +36,21 @@ export default function MenuSideBar({}) {
             {/* Sidebar */}
             <aside className="main-sidebar fixed left-0 top-0 z-40 bg-primaryColor elevation-4 flex flex-col max-h-screen overflow-hidden">
                 <Link href="/" className="brand-link">
-                    <div className="image flex justify-center">
-                        <img
-                            src={"/images/logo.svg"}
-                            className="h-20 w-20"
-                            alt="brand logo"
-                        />
+                    <div className="flex justify-center items-center gap-4">
+                        <div className="p-2 bg-card rounded-2xl">
+                            <img
+                                src={"/images/logo.svg"}
+                                className="h-14 w-14"
+                                alt="brand logo"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            <span className="font-black text-white text-2xl"> <span className="text-secondary-dark">TOS</span> SAK</span>
+                            <span className="block text-xs font-semibold tracking-widest text-secondary-dark">COFFEE POS</span>
+                        </div>
                     </div>
                 </Link>
                 <div className="sidebar flex flex-1 flex-col">
-                    <div className="user-panel bg-card rounded-2xl mt-3 py-2 px-2 mb-5 flex">
-                        <div className="image">
-                            <img
-                                src={"/images/avatar.png"}
-                                className="rounded-md bg-top elevation-3"
-                                alt="User Image"
-                            />
-                        </div>
-                        <div className="info p-0 pl-3">
-                            <Link
-                                href="#"
-                                className="d-block text-base font-black text-primary-text"
-                            >
-                                <span> {auth?.user?.name} </span>
-                            </Link>
-                            <p className="text-xs m-0 text-secondary-text font-semibold">
-                                {auth?.user?.roles?.[0]?.name ?? "No role"}
-                            </p>
-                        </div>
-                    </div>
-
                     <nav className="mt-2 flex-1 overflow-y-auto">
                         <ul
                             className="nav nav-pills nav-sidebar flex-column"
@@ -73,20 +58,22 @@ export default function MenuSideBar({}) {
                             role="menu"
                             data-accordion="false"
                         >
-                            <li className="nav-item">
-                                <Link
-                                    href={route("pos.index")}
-                                    className={`nav-link navbar-item ${route().current("pos.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <Store className="nav-icon" />
-                                    <span>POS</span>
-                                </Link>
-                            </li>
+                            {can["manage pos checkout"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("pos.index")}
+                                        className={`nav-link navbar-item ${route().current("pos.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
+                                    >
+                                        <Store className="nav-icon" />
+                                        <span>POS</span>
+                                    </Link>
+                                </li>
+                            )}
                             <li className="nav-item">
                                 <Link
                                     href={route("dashboard")}
@@ -115,244 +102,102 @@ export default function MenuSideBar({}) {
                                     <span>Analytics</span>
                                 </Link>
                             </li>
-                            <li className="nav-item">
-                                <Link
-                                    href={route("catalog.index")}
-                                    className={`nav-link navbar-item ${route().current("catalog.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <ClipboardList className="nav-icon" />
-                                    <span>Catalog</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href={route("products.index")}
-                                    className={`nav-link navbar-item ${route().current("products.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <Coffee className="nav-icon" />
-                                    <span>Product</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href={route("inventories.index")}
-                                    className={`nav-link navbar-item ${route().current("inventories.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <Boxes className="nav-icon" />
-                                    <span>Inventory</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href={route("users.index")}
-                                    className={`nav-link navbar-item ${route().current("users.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <Users className="nav-icon" />
-                                    <span>Users</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href="#"
-                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <ClipboardList className="nav-icon" />
-                                    <span>Menu</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href="#"
-                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <ClipboardClock className="nav-icon" />
-                                    <span>Order History</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href={route("roles.index")}
-                                    className={`nav-link navbar-item ${route().current("roles.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <ClipboardClock className="nav-icon" />
-                                    <span>Role</span>
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link
-                                    href={route("orders.index")}
-                                    className={`nav-link navbar-item ${route().current("orders.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <ClipboardClock className="nav-icon" />
-                                    <span>Order</span>
-                                </Link>
-                            </li>
-                            {/* <li className="nav-item">
-                                <Link
-                                    href={route("sizes.index")}
-                                    className={`nav-link navbar-item ${route().current("sizes.index") && "active"}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "12px",
-                                    }}
-                                >
-                                    <ClipboardClock className="nav-icon" />
-                                    <span>Size</span>
-                                </Link>
-                            </li> */}
-
-                            {/* {can["category-list"] && (
-                                <>
-                                    <li className="nav-item">
-                                        <Link
-                                            href={route("categories.index")}
-                                            className={`nav-link ${route().current("categories.index") && "active"}`}
-                                        >
-                                            <i className="fa-solid fa-list-ul nav-icon text-warning"></i>
-                                            <p>LIST</p>
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link
-                                            href={route("categories.create")}
-                                            className={`nav-link ${route().current("categories.create") && "active"}`}
-                                        >
-                                            <i className="fa-regular fa-square-plus nav-icon text-info"></i>
-                                            <p>CREATE</p>
-                                        </Link>
-                                    </li>
-                                </>
-                            )}
-                            {can["role-list" || "user-list"] && (
-                                <li className="nav-header">AUTHENTICATION</li>
-                            )}
-                            {can["role-list"] && (
-                                <>
-                                    <li
-                                        className={`nav-item ${(route().current("roles.index") || route().current("roles.create")) && "menu-is-opening menu-open"}`}
+                            {can["manage product"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("catalog.index")}
+                                        className={`nav-link navbar-item ${route().current("catalog.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
                                     >
-                                        <a
-                                            href="#"
-                                            className={`nav-link ${(route().current("roles.index") || route().current("roles.create")) && "active"}`}
-                                        >
-                                            <i className="nav-icon far fa-plus-square"></i>
-                                            <p>
-                                                {" "}
-                                                ROLE
-                                                <i className="fas fa-angle-left right"></i>
-                                            </p>
-                                        </a>
-                                        <ul className="nav nav-treeview">
-                                            <li className="nav-item">
-                                                <Link
-                                                    href={route("roles.index")}
-                                                    className={`nav-link ${route().current("roles.index") && "active"}`}
-                                                >
-                                                    <i className="fa-solid fa-list-ul nav-icon text-warning"></i>
-                                                    <p>LIST</p>
-                                                </Link>
-                                            </li>
-                                            {can["role-create"] && (
-                                                <li className="nav-item">
-                                                    <Link
-                                                        href={route(
-                                                            "roles.create",
-                                                        )}
-                                                        className={`nav-link ${route().current("roles.create") && "active"}`}
-                                                    >
-                                                        <i className="fa-regular fa-square-plus nav-icon text-info"></i>
-                                                        <p>CREATE</p>
-                                                    </Link>
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </li>
-                                </>
-                            )} */}
-                            {/* {can["user-list"] && (
-                                <>
-                                    <li
-                                        className={`nav-item ${(route().current("users.index") || route().current("users.create")) && "menu-is-opening menu-open"}`}
+                                        <ClipboardList className="nav-icon" />
+                                        <span>Catalog</span>
+                                    </Link>
+                                </li>
+                            )}
+                            {can["manage product"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("products.index")}
+                                        className={`nav-link navbar-item ${route().current("products.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
                                     >
-                                        <a
-                                            href="#"
-                                            className={`nav-link ${(route().current("users.index") || route().current("users.create")) && "active"}`}
-                                        >
-                                            <i className="nav-icon far fa-plus-square"></i>
-                                            <p>
-                                                {" "}
-                                                USER
-                                                <i className="fas fa-angle-left right"></i>
-                                            </p>
-                                        </a>
-                                        <ul className="nav nav-treeview">
-                                            <li className="nav-item">
-                                                <Link
-                                                    href={route("users.index")}
-                                                    className={`nav-link ${route().current("users.index") && "active"}`}
-                                                >
-                                                    <i className="fa-solid fa-list-ul nav-icon text-warning"></i>
-                                                    <p>LIST</p>
-                                                </Link>
-                                            </li>
-                                            {can["user-create"] && (
-                                                <li className="nav-item">
-                                                    <Link
-                                                        href={route(
-                                                            "users.create",
-                                                        )}
-                                                        className={`nav-link ${route().current("users.create") && "active"}`}
-                                                    >
-                                                        <i className="fa-regular fa-square-plus nav-icon text-info"></i>
-                                                        <p>CREATE</p>
-                                                    </Link>
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </li>
-                                </>
-                            )} */}
+                                        <Coffee className="nav-icon" />
+                                        <span>Product</span>
+                                    </Link>
+                                </li>
+                            )}
+                            {can["manage inventory"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("inventories.index")}
+                                        className={`nav-link navbar-item ${route().current("inventories.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
+                                    >
+                                        <Boxes className="nav-icon" />
+                                        <span>Inventory</span>
+                                    </Link>
+                                </li>
+                            )}
+                            {can["manage user"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("users.index")}
+                                        className={`nav-link navbar-item ${route().current("users.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
+                                    >
+                                        <Users className="nav-icon" />
+                                        <span>Users</span>
+                                    </Link>
+                                </li>
+                            )}
+                            {can["manage role"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("roles.index")}
+                                        className={`nav-link navbar-item ${route().current("roles.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
+                                    >
+                                        <ClipboardClock className="nav-icon" />
+                                        <span>Role</span>
+                                    </Link>
+                                </li>
+                            )}
+                            {can["manage pos checkout"] && (
+                                <li className="nav-item">
+                                    <Link
+                                        href={route("orders.index")}
+                                        className={`nav-link navbar-item ${route().current("orders.index") && "active"}`}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                        }}
+                                    >
+                                        <ClipboardClock className="nav-icon" />
+                                        <span>Order</span>
+                                    </Link>
+                                </li>
+                            )}
                         </ul>
                     </nav>
                 </div>

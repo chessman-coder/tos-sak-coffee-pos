@@ -73,7 +73,7 @@ export default function CategoriesPage({ categoryData }) {
                                     Datalist Management
                                 </h3>
                                 <div className="card-tools flex items-center">
-                                    {can["category-create"] && (
+                                    {can["manage product"] && (
                                         <Link
                                             href={route("categories.create")}
                                             className="btn btn-primary btn-sm mr-2"

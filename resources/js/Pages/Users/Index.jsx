@@ -252,10 +252,10 @@ export default function UserPage({ users }) {
                                                                     true,
                                                                 );
                                                             }}
-                                                            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-infoColor transition hover:bg-info-bg/60"
+                                                            className="inline-flex h-10 w-10 items-center justify-center transition"
                                                             aria-label="Edit user"
                                                         >
-                                                            <Pencil size={18} strokeWidth={2.5} className="text-infoColor" />
+                                                            <Pencil size={20} strokeWidth={2.5} className="text-infoColor" />
                                                         </button>
                                                         <button
                                                             type="button"
@@ -264,10 +264,10 @@ export default function UserPage({ users }) {
                                                                     user,
                                                                 )
                                                             }
-                                                            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-danger transition hover:bg-danger-bg/60"
+                                                            className="inline-flex h-10 w-10 items-center justify-center transition"
                                                             aria-label="Delete user"
                                                         >
-                                                            <Trash2 size={18} strokeWidth={2.5} className="text-danger"/>
+                                                            <Trash2 size={20} strokeWidth={2.5} className="text-danger"/>
                                                         </button>
                                                     </div>
                                                 </td>

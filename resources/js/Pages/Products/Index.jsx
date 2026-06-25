@@ -241,7 +241,7 @@ export default function ProductsPage({
                                 />
                             </label>
 
-                            {can["product-create"] && (
+                            {can["manage product"] && (
                                 <button
                                     type="button"
                                     onClick={openCreateProductForm}
@@ -257,8 +257,8 @@ export default function ProductsPage({
                     <ProductTable
                         products={filteredProducts}
                         canView={true}
-                        canEdit={Boolean(can["product-edit"])}
-                        canDelete={Boolean(can["product-delete"])}
+                        canEdit={Boolean(can["manage product"])}
+                        canDelete={Boolean(can["manage product"])}
                         onView={openViewProductModal}
                         onEdit={openEditProductForm}
                         onDelete={confirmDataDeletion}

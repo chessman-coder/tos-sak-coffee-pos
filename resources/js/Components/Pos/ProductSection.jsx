@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, ClipboardList } from "lucide-react";
-import ProductCard from "@/Components/Products/ProductCard";
+import ProductCard from "@/Components/Pos/ProductCard";
 
 export default function ProductSection({
     activeTab,
@@ -23,7 +23,7 @@ export default function ProductSection({
                         POS Checkout
                     </h1>
                     <p className="text-sm text-secondary-dark mt-1">
-                        Order {orderNumber} • Walk-in Sales Portal
+                        Walk-in Sales Portal
                     </p>
                 </div>
 
