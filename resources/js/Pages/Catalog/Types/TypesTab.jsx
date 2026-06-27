@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import TypeCard from "../../../Components/Catalog/TypeCard";
 import Button from "@/Components/ui/Button";
-import DeleteConfirmDialog from "@/Components/Catalog/DeleteConfirmDialog";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 import CreateTypeForm from "./CreateTypeForm";
 
 export default function TypesTab() {
@@ -21,7 +21,7 @@ export default function TypesTab() {
         window.axios
             .get("/api/catalog/types")
             .then((r) => setTypes(r.data))
-            .catch(() => {});
+            .catch(() => { });
     }
 
     function openTypeModal() {

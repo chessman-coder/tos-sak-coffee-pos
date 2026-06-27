@@ -1,22 +1,22 @@
-import Breadcrumb from "@/Components/Breadcrumb";
 import DangerButton from "@/Components/DangerButton";
 import Modal from "@/Components/Modal";
-import NavLink from "@/Components/NavLink";
 import Pagination from "@/Components/Pagination";
-import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
-import SecondaryButtonLink from "@/Components/SecondaryButtonLink";
 import AdminLayout from "@/Layouts/AdminLayout";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, useForm, usePage } from "@inertiajs/react";
-import moment from "moment";
+import RoleCard from "@/Components/Roles/RoleCard";
+import RoleModal from "@/Components/Roles/RoleModal";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
+import { Plus } from "lucide-react";
+import Button from "@/Components/ui/Button";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 
-export default function UserPage({ roles }) {
+export default function UserPage({ roles, permissions = [] }) {
     const { auth } = usePage().props;
     const can = auth?.can ?? {};
     const datasList = roles.data;
 
+    // Delete state
     const [confirmingDataDeletion, setConfirmingDataDeletion] = useState(false);
     const [dataEdit, setDataEdit] = useState({});
     const {
@@ -50,174 +50,96 @@ export default function UserPage({ roles }) {
         destroy(route("roles.destroy", dataEdit.id), {
             preserveScroll: true,
             onSuccess: () => closeModal(),
-            onError: () => passwordInput.current.focus(),
             onFinish: () => reset(),
         });
     };
-    const headWeb = "Roles List";
-    const linksBreadcrumb = [
-        { title: "Home", url: "/" },
-        { title: headWeb, url: "" },
-    ];
+
+    // Add / Edit Role Modal State
+    const [confirmingRoleForm, setConfirmingRoleForm] = useState(false);
+    const [editingRole, setEditingRole] = useState(null);
+
+    const openCreateModal = () => {
+        setEditingRole(null);
+        setConfirmingRoleForm(true);
+    };
+
+    const openEditModal = (role) => {
+        setEditingRole(role);
+        setConfirmingRoleForm(true);
+    };
+
+    const closeRoleModal = () => {
+        setConfirmingRoleForm(false);
+        setEditingRole(null);
+    };
+
+    const headWeb = "Roles & Permissions";
 
     return (
-        <AdminLayout
-            breadcrumb={<Breadcrumb header={headWeb} links={linksBreadcrumb} />}
-        >
+        <AdminLayout>
             <Head title={headWeb} />
-            <section className="content">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="card card-outline card-info">
-                            <div className="card-header">
-                                <h3 className="card-title">
-                                    Datalist Management
-                                </h3>
-                                <div className="card-tools flex items-center">
-                                    {can["manage role"] && (
-                                        <Link
-                                            href={route("roles.create")}
-                                            className="btn btn-primary btn-sm mr-2"
-                                        >
-                                            <i className="fas fa-plus"></i>{" "}
-                                            Create Role
-                                        </Link>
-                                    )}
-                                    <div
-                                        className="input-group input-group-sm"
-                                        style={{ width: "150px" }}
-                                    >
-                                        <input
-                                            type="text"
-                                            name="table_search"
-                                            className="form-control float-right"
-                                            placeholder="Search"
-                                        />
-                                        <div className="input-group-append">
-                                            <button
-                                                type="submit"
-                                                className="btn btn-default"
-                                            >
-                                                <i className="fas fa-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-body table-responsive p-0">
-                                <table className="table table-hover text-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>#ID</th>
-                                            <th>Name</th>
-                                            <th>Guard</th>
-                                            <th>Created At</th>
-                                            {can["manage role"] && <th>Action</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {datasList.length > 0 ? (
-                                            [...datasList]
-                                                .sort((a, b) =>
-                                                    a.name.localeCompare(
-                                                        b.name,
-                                                    ),
-                                                )
-                                                .map((item, k) => (
-                                                    <tr key={k}>
-                                                        <td>{k + 1}</td>
-                                                        <td>{item?.name}</td>
-                                                        <td>
-                                                            {item?.guard_name}
-                                                        </td>
-                                                        <td>
-                                                            {moment(
-                                                                item?.created_at,
-                                                            ).format(
-                                                                "DD/MM/YYYY",
-                                                            )}
-                                                        </td>
-                                                        <td>
-                                                            {can["manage role"] && (
-                                                                <Link
-                                                                    href={route(
-                                                                        "roles.edit",
-                                                                        item.id,
-                                                                    )}
-                                                                    className="btn btn-info btn-xs mr-2"
-                                                                >
-                                                                    <i className="fas fa-edit"></i>{" "}
-                                                                    Edit
-                                                                </Link>
-                                                            )}
-                                                            {can["manage role"] && (
-                                                                <button
-                                                                    onClick={() =>
-                                                                        confirmDataDeletion(
-                                                                            item,
-                                                                        )
-                                                                    }
-                                                                    type="button"
-                                                                    className="btn btn-danger btn-xs"
-                                                                >
-                                                                    <i className="fas fa-trash"></i>{" "}
-                                                                    Delete
-                                                                </button>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan={5}>
-                                                    There are no record!
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                                <Modal
-                                    show={confirmingDataDeletion}
-                                    onClose={closeModal}
-                                >
-                                    <form
-                                        onSubmit={deleteDataRow}
-                                        className="p-6"
-                                    >
-                                        <h2 className="text-lg font-medium text-gray-900">
-                                            Confirmation!
-                                        </h2>
-                                        <p className="mt-1 text-sm text-gray-600">
-                                            Are you sure you want to delete{" "}
-                                            <span className="text-lg font-medium">
-                                                {deleteData.name}
-                                            </span>
-                                            ?
-                                        </p>
-                                        <div className="mt-6 flex justify-end">
-                                            <SecondaryButton
-                                                onClick={closeModal}
-                                            >
-                                                No
-                                            </SecondaryButton>
-                                            <DangerButton
-                                                className="ms-3"
-                                                disabled={processing}
-                                            >
-                                                Yes
-                                            </DangerButton>
-                                        </div>
-                                    </form>
-                                </Modal>
-                            </div>
-
-                            <div className="card-footer clearfix">
-                                <Pagination links={roles.links} />
-                            </div>
-                        </div>
+            <div className="bg-background min-h-screen p-8 flex flex-col gap-8">
+                {/* Header Section */}
+                <div className="flex justify-between items-start sm:flex-row flex-col gap-4">
+                    <div className="flex flex-col">
+                        <h1 className="text-[32px] font-bold text-primary-dark tracking-tight">Roles & Permissions</h1>
+                        <p className="text-secondary-text mt-1 text-base">Define what each role can do</p>
                     </div>
+                    {can["Manage Role"] && (
+                        <Button
+                            onClick={openCreateModal}
+                            variant="fillDark"
+                            size="sm"
+                            className="rounded-full flex items-center gap-2 justify-center"
+                        >
+                            <Plus />
+                            <span>Add Role</span>
+                        </Button>
+                    )}
                 </div>
-            </section>
+
+                {/* Grid of Role Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 items-start">
+                    {datasList.length > 0 ? (
+                        [...datasList]
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map((role) => (
+                                <RoleCard
+                                    key={role.id}
+                                    role={role}
+                                    allPermissions={permissions}
+                                    onEdit={openEditModal}
+                                    onDelete={confirmDataDeletion}
+                                    canManageRole={can["Manage Role"]}
+                                />
+                            ))
+                    ) : (
+                        <div className="col-span-2 text-center py-16 text-secondary-text bg-white rounded-3xl border border-[#EADBC8]/30 shadow-sm">
+                            <p className="text-lg font-medium text-primary-dark">No Roles found</p>
+                            <p className="text-sm text-secondary-text mt-1">Get started by creating a new role above.</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Create / Edit Role Modal Component */}
+                <RoleModal
+                    show={confirmingRoleForm}
+                    onClose={closeRoleModal}
+                    role={editingRole}
+                    permissions={permissions}
+                />
+
+                {/* Confirmation Modal */}
+                <DeleteConfirmDialog
+                    show={confirmingDataDeletion}
+                    title="Delete Role"
+                    onClose={closeModal}
+                    description={`Are you sure you want to delete the role "${deleteData.name}"? This action cannot be undone.`}
+                    confirmText="Delete"
+                    processing={processing}
+                    onConfirm={deleteDataRow}
+                />
+            </div>
         </AdminLayout>
     );
 }

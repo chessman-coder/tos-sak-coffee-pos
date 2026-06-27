@@ -1,14 +1,14 @@
 import Modal from "@/Components/Modal";
-import Button from "../ui/Button";
+import Button from "./ui/Button";
 
 export default function DeleteConfirmDialog({
     show = false,
-    title = "Delete item?",
+    title = "",
     description = "",
     confirmText = "Delete",
     processing = false,
-    onClose = () => {},
-    onConfirm = () => {},
+    onClose = () => { },
+    onConfirm = () => { },
 }) {
     return (
         <Modal show={show} onClose={onClose} maxWidth="md">

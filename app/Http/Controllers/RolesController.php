@@ -12,10 +12,17 @@ class RolesController extends Controller
 {
     public function index()
     {
-        $roles = Role::latest()->paginate(10)->appends(request()->query());
+        $roles = Role::with('permissions')
+            ->withCount('users')
+            ->latest()
+            ->paginate(10)
+            ->appends(request()->query());
+
+        $permissions = Permission::all();
 
         return Inertia::render('Roles/Index', [
-            'roles' => $roles
+            'roles' => $roles,
+            'permissions' => $permissions
         ]);
     }
 

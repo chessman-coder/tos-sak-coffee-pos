@@ -1,16 +1,16 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\TypeController;
-use App\Http\Controllers\SizeController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\RolesController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\POSController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\POSController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RolesController;
+use App\Http\Controllers\SizeController;
+use App\Http\Controllers\TypeController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,14 +33,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // POS & Checkout & Orders module
-    Route::middleware(['check:manage pos checkout'])->group(function () {
+    // POS & Checkout
+    Route::middleware(['check:Manage Pos Checkout'])->group(function () {
         Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
         Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
         Route::post('/checkout/cash/{id}', [PaymentController::class, 'confirmCashPayment'])->name('payment.confirm-cash');
         Route::post('/checkout/cancel/{id}', [PaymentController::class, 'cancelOrder'])->name('payment.cancel');
         Route::get('/payment/check/{id}', [PaymentController::class, 'checkStatus'])->name('payment.check');
-
+    });
+    // Orders module
+    Route::middleware(['check:Manage Order'])->group(function () {
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
@@ -50,7 +52,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Product & Catalog module
-    Route::middleware(['check:manage product'])->group(function () {
+    Route::middleware(['check:Manage Product'])->group(function () {
         Route::get('/catalog', function () {
             return Inertia::render('Catalog/Index');
         })->name('catalog.index');
@@ -85,7 +87,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Inventory module
-    Route::middleware(['check:manage inventory'])->group(function () {
+    Route::middleware(['check:Manage Inventory'])->group(function () {
         Route::get('/inventories', [InventoryController::class, 'index'])->name('inventories.index');
         Route::post('/inventories', [InventoryController::class, 'store'])->name('inventories.store');
         Route::get('/inventories/{inventory}', [InventoryController::class, 'show'])->name('inventories.show');
@@ -96,26 +98,26 @@ Route::middleware('auth')->group(function () {
     });
 
     // Roles management module
-    Route::prefix('roles')->middleware(['check:manage role'])->group(function () {
+    Route::prefix('roles')->middleware(['check:Manage Role'])->group(function () {
         Route::get('/', [RolesController::class, 'index'])->name('roles.index');
         Route::get('/create', [RolesController::class, 'create'])->name('roles.create');
         Route::get('/{id}', [RolesController::class, 'edit'])->name('roles.edit');
-        Route::post("/", [RolesController::class, 'store'])->name('roles.store');
-        Route::patch("/{id}", [RolesController::class, 'update'])->name('roles.update');
-        Route::delete("/{id}", [RolesController::class, 'destroy'])->name('roles.destroy');
+        Route::post('/', [RolesController::class, 'store'])->name('roles.store');
+        Route::patch('/{id}', [RolesController::class, 'update'])->name('roles.update');
+        Route::delete('/{id}', [RolesController::class, 'destroy'])->name('roles.destroy');
     });
 
     // Users management module
-    Route::prefix('users')->middleware(['check:manage user'])->group(function () {
+    Route::prefix('users')->middleware(['check:Manage User'])->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::get('/create', [UserController::class, 'create'])->name('users.create');
         Route::get('/{id}', [UserController::class, 'edit'])->name('users.edit');
-        Route::post("/", [UserController::class, 'store'])->name('users.store');
-        Route::patch("/{id}", [UserController::class, 'update'])->name('users.update');
-        Route::delete("/{id}", [UserController::class, 'destroy'])->name('users.destroy');
+        Route::post('/', [UserController::class, 'store'])->name('users.store');
+        Route::patch('/{id}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
     Route::get('/kitchen', [\App\Http\Controllers\KitchenController::class, 'index'])->name('kitchen.index');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

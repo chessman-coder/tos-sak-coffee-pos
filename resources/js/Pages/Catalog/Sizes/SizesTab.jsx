@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import SizeCard from "@/Components/Catalog/SizeCard";
 import SizeModal from "@/Components/Catalog/SizeModal";
 import Button from "@/Components/ui/Button";
-import DeleteConfirmDialog from "@/Components/Catalog/DeleteConfirmDialog";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 
 export default function SizesTab() {
     const [sizes, setSizes] = useState([]);
@@ -23,7 +23,7 @@ export default function SizesTab() {
         window.axios
             .get("/api/catalog/sizes")
             .then((r) => setSizes(r.data))
-            .catch(() => {});
+            .catch(() => { });
     }
 
     function createSize(e) {
@@ -41,7 +41,7 @@ export default function SizesTab() {
                     setIsSizeModalOpen(false);
                     fetchSizes();
                 })
-                .catch(() => {});
+                .catch(() => { });
         } else {
             window.axios
                 .post("/api/catalog/sizes", {
@@ -54,7 +54,7 @@ export default function SizesTab() {
                     setIsSizeModalOpen(false);
                     fetchSizes();
                 })
-                .catch(() => {});
+                .catch(() => { });
         }
     }
 

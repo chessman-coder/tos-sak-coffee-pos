@@ -241,15 +241,15 @@ export default function ProductsPage({
                                 />
                             </label>
 
-                            {can["manage product"] && (
-                                <button
-                                    type="button"
-                                    onClick={openCreateProductForm}
-                                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#5a3630] px-5 text-sm font-bold text-white shadow-sm transition hover:bg-[#4a2b25]"
-                                >
-                                    <Plus size={18} />
-                                    Add Product
-                                </button>
+                            {can["Manage Product"] && (
+                            <button
+                                type="button"
+                                onClick={openCreateProductForm}
+                                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#5a3630] px-5 text-sm font-bold text-white shadow-sm transition hover:bg-[#4a2b25]"
+                            >
+                                <Plus size={18} />
+                                Add Product
+                            </button>
                             )}
                         </div>
                     </div>
@@ -257,19 +257,20 @@ export default function ProductsPage({
                     <ProductTable
                         products={filteredProducts}
                         canView={true}
-                        canEdit={Boolean(can["manage product"])}
-                        canDelete={Boolean(can["manage product"])}
-                        onView={openViewProductModal}
-                        onEdit={openEditProductForm}
-                        onDelete={confirmDataDeletion}
-                        sortBy={queryParams.sort_by ?? "created_at"}
-                        sortOrder={queryParams.sort_order ?? "desc"}
-                        onSort={handleSort}
-                    />
+                        canEdit={Boolean(can["Manage Product"])}
+                        canDelete = {
+                                Boolean(can["Manage Product"])}
+                                    onView = { openViewProductModal }
+                        onEdit = { openEditProductForm }
+                        onDelete = { confirmDataDeletion }
+                        sortBy = { queryParams.sort_by ?? "created_at" }
+                        sortOrder = { queryParams.sort_order ?? "desc" }
+                        onSort = { handleSort }
+                                        />
 
-                    <div className="mt-6">
-                        <Pagination links={productData.links} />
-                    </div>
+                                        <div className="mt-6">
+                                            <Pagination links={productData.links} />
+                                        </div>
                 </div>
 
                 <Modal show={confirmingDataDeletion} onClose={closeModal}>

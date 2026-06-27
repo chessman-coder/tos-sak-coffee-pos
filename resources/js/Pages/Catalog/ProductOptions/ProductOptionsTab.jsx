@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import Button from "@/Components/ui/Button";
-import DeleteConfirmDialog from "@/Components/Catalog/DeleteConfirmDialog";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 import CreateProductOptionForm from "./CreateProductOptionForm";
 import ProductOptionCard from "@/Components/Catalog/ProductOptionCard";
 
@@ -23,7 +23,7 @@ export default function ProductOptionsTab() {
         window.axios
             .get("/api/catalog/product-options")
             .then((r) => setOptions(r.data))
-            .catch(() => {});
+            .catch(() => { });
     }
 
     function openOptionModal() {
@@ -41,10 +41,10 @@ export default function ProductOptionsTab() {
         setOptionValues(
             Array.isArray(option?.values) && option.values.length > 0
                 ? option.values.map((value) => ({
-                      id: value.id,
-                      value: value.value ?? "",
-                      upcharge: value.upcharge ?? 0,
-                  }))
+                    id: value.id,
+                    value: value.value ?? "",
+                    upcharge: value.upcharge ?? 0,
+                }))
                 : [{ value: "", upcharge: 0 }],
         );
         setIsOptionModalOpen(true);

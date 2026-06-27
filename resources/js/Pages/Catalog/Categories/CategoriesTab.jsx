@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import CategoryCard from "@/Components/Catalog/CategoryCard";
 import Button from "@/Components/ui/Button";
-import DeleteConfirmDialog from "@/Components/Catalog/DeleteConfirmDialog";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 import CreateCategoryForm from "@/Pages/Catalog/Categories/CreateCategoryForm";
 
 export default function CategoriesTab() {
@@ -25,7 +25,7 @@ export default function CategoriesTab() {
         window.axios
             .get("/api/catalog/categories")
             .then((r) => setCategories(r.data))
-            .catch(() => {});
+            .catch(() => { });
     }
 
     function requestDeleteCategory(category) {
@@ -166,7 +166,7 @@ export default function CategoriesTab() {
 
             setDeleteDialog(null);
             fetchCategories();
-        } catch (error) {}
+        } catch (error) { }
     }
 
     function closeDeleteDialog() {

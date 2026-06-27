@@ -14,6 +14,7 @@ import {
     LogOut,
     Boxes,
     Coffee,
+    ShieldCheck,
 } from "lucide-react";
 
 export default function MenuSideBar({ }) {
@@ -58,21 +59,21 @@ export default function MenuSideBar({ }) {
                             role="menu"
                             data-accordion="false"
                         >
-                            {can["manage pos checkout"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("pos.index")}
-                                        className={`nav-link navbar-item ${route().current("pos.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <Store className="nav-icon" />
-                                        <span>POS</span>
-                                    </Link>
-                                </li>
+                            {can["Manage Pos Checkout"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("pos.index")}
+                                    className={`nav-link navbar-item ${route().current("pos.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Store className="nav-icon" />
+                                    <span>POS</span>
+                                </Link>
+                            </li>
                             )}
                             <li className="nav-item">
                                 <Link
@@ -102,101 +103,101 @@ export default function MenuSideBar({ }) {
                                     <span>Analytics</span>
                                 </Link>
                             </li>
-                            {can["manage product"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("catalog.index")}
-                                        className={`nav-link navbar-item ${route().current("catalog.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <ClipboardList className="nav-icon" />
-                                        <span>Catalog</span>
-                                    </Link>
-                                </li>
+                            {can["Manage Product"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("catalog.index")}
+                                    className={`nav-link navbar-item ${route().current("catalog.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ClipboardList className="nav-icon" />
+                                    <span>Catalog</span>
+                                </Link>
+                            </li>
                             )}
-                            {can["manage product"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("products.index")}
-                                        className={`nav-link navbar-item ${route().current("products.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <Coffee className="nav-icon" />
-                                        <span>Product</span>
-                                    </Link>
-                                </li>
+                            {can["Manage Product"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("products.index")}
+                                    className={`nav-link navbar-item ${route().current("products.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Coffee className="nav-icon" />
+                                    <span>Product</span>
+                                </Link>
+                            </li>
                             )}
-                            {can["manage inventory"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("inventories.index")}
-                                        className={`nav-link navbar-item ${route().current("inventories.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <Boxes className="nav-icon" />
-                                        <span>Inventory</span>
-                                    </Link>
-                                </li>
+                            {can["Manage Inventory"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("inventories.index")}
+                                    className={`nav-link navbar-item ${route().current("inventories.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Boxes className="nav-icon" />
+                                    <span>Inventory</span>
+                                </Link>
+                            </li>
                             )}
-                            {can["manage user"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("users.index")}
-                                        className={`nav-link navbar-item ${route().current("users.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <Users className="nav-icon" />
-                                        <span>Users</span>
-                                    </Link>
-                                </li>
+                            {can["Manage User"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("users.index")}
+                                    className={`nav-link navbar-item ${route().current("users.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <Users className="nav-icon" />
+                                    <span>Users</span>
+                                </Link>
+                            </li>
                             )}
-                            {can["manage role"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("roles.index")}
-                                        className={`nav-link navbar-item ${route().current("roles.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <ClipboardClock className="nav-icon" />
-                                        <span>Role</span>
-                                    </Link>
-                                </li>
+                            {can["Manage Role"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("roles.index")}
+                                    className={`nav-link navbar-item ${route().current("roles.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ShieldCheck className="nav-icon" />
+                                    <span>Role</span>
+                                </Link>
+                            </li>
                             )}
-                            {can["manage pos checkout"] && (
-                                <li className="nav-item">
-                                    <Link
-                                        href={route("orders.index")}
-                                        className={`nav-link navbar-item ${route().current("orders.index") && "active"}`}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                        }}
-                                    >
-                                        <ClipboardClock className="nav-icon" />
-                                        <span>Order</span>
-                                    </Link>
-                                </li>
+                            {can["Manage Order"] && (
+                            <li className="nav-item">
+                                <Link
+                                    href={route("orders.index")}
+                                    className={`nav-link navbar-item ${route().current("orders.index") && "active"}`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <ClipboardClock className="nav-icon" />
+                                    <span>Order History</span>
+                                </Link>
+                            </li>
                             )}
                         </ul>
                     </nav>
