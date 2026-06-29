@@ -1,80 +1,63 @@
 import React from 'react';
-import AdminLTELayout from '../Layouts/AdminLayout';
+import AdminLayout from '../Layouts/AdminLayout';
 import { Head } from '@inertiajs/react';
-import Breadcrumb from '@/Components/Breadcrumb';
+import { DollarSign, ShoppingBag, Users } from 'lucide-react';
+import StatCard from '../Components/ui/StatCard';
+import DashboardCharts from '../Components/Dashboard/DashboardCharts';
+import RecentOrders from '../Components/Dashboard/RecentOrders';
 
+const Dashboard = ({ stats, weeklySales, topSelling, recentOrders }) => {
+    // Formatter helpers
+    const formatCurrency = (val) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: val % 1 === 0 ? 0 : 2,
+            maximumFractionDigits: 2
+        }).format(val);
+    };
 
-const Dashboard = () => {
-    const headWeb = 'Dashboard'
-    const linksBreadcrumb = [{ title: 'Home', url: '/' }, { title: headWeb, url: '' }];
     return (
-        <AdminLTELayout breadcrumb={<Breadcrumb header={headWeb} links={linksBreadcrumb} />}>
-            <Head title={headWeb} />
-            <section className="content">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="app-content">
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-lg-3 col-6">
-                                        <div className="small-box bg-info">
-                                            <div className="inner">
-                                                <h3>150</h3>
+        <AdminLayout breadcrumb={null}>
+            <Head title="Dashboard" />
 
-                                                <p>New Orders</p>
-                                            </div>
-                                            <div className="icon">
-                                                <i className="ion ion-bag"></i>
-                                            </div>
-                                            <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right"></i></a>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3 col-6">
-                                        <div className="small-box bg-success">
-                                            <div className="inner">
-                                                <h3>53<sup style={{ fontSize: '20px' }}>%</sup></h3>
-
-                                                <p>Bounce Rate</p>
-                                            </div>
-                                            <div className="icon">
-                                                <i className="ion ion-stats-bars"></i>
-                                            </div>
-                                            <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right"></i></a>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3 col-6">
-                                        <div className="small-box bg-warning">
-                                            <div className="inner">
-                                                <h3>44</h3>
-
-                                                <p>User Registrations</p>
-                                            </div>
-                                            <div className="icon">
-                                                <i className="ion ion-person-add"></i>
-                                            </div>
-                                            <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right"></i></a>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-3 col-6">
-                                        <div className="small-box bg-danger">
-                                            <div className="inner">
-                                                <h3>65</h3>
-
-                                                <p>Unique Visitors</p>
-                                            </div>
-                                            <div className="icon">
-                                                <i className="ion ion-pie-graph"></i>
-                                            </div>
-                                            <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div className="mx-auto space-y-8 pb-12 bg-background px-4 py-6 md:px-6 lg:px-8">
+                {/* Header Section */}
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-3xl font-bold text-primary-text">Dashboard</h1>
                     </div>
                 </div>
-            </section>
-        </AdminLTELayout>
+
+                {/* Metrics Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <StatCard
+                        label="Today's Revenue"
+                        value={formatCurrency(stats.today_revenue)}
+                        icon={<DollarSign className="w-5 h-5 stroke-[2]" />}
+                    />
+
+                    <StatCard
+                        label="Orders"
+                        value={stats.orders_count}
+                        icon={<ShoppingBag className="w-5 h-5 stroke-[2]" />}
+                    />
+
+                    <StatCard
+                        label="Total Staff"
+                        value={stats.total_staff}
+                        icon={<Users className="w-5 h-5 stroke-[2]" />}
+                    />
+                </div>
+
+
+                {/* Charts & Top Sellers Grid */}
+                <DashboardCharts weeklySales={weeklySales} topSelling={topSelling} />
+
+                {/* Recent Orders Section */}
+                <RecentOrders recentOrders={recentOrders} />
+            </div>
+        </AdminLayout>
     );
 };
 

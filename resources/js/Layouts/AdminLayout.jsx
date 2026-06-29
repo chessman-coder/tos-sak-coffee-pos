@@ -3,10 +3,9 @@ import 'admin-lte/dist/css/adminlte.min.css'; // Ensure styles are loaded
 import 'admin-lte/dist/js/adminlte.min.js';
 import MenuSideBar from './MenuSideBar';
 import $ from 'jquery';
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 
-const AdminLayout = ({breadcrumb, children }) => {
-    const user = usePage().props.auth.user;
+const AdminLayout = ({breadcrumb, children, className=""}) => {
     useEffect(() => {
         // Ensure dropdowns, tooltips, and modals work
         $('[data-toggle="dropdown"]').dropdown();
@@ -16,7 +15,7 @@ const AdminLayout = ({breadcrumb, children }) => {
     return (
         <div className="wrapper flex flex-col h-screen overflow-hidden">
             {/* Navbar */}
-            <nav className="main-header navbar navbar-expand navbar-white navbar-light">
+            <nav className="main-header navbar navbar-expand bg-background navbar-light">
                 <ul className="navbar-nav">
                     <li className="nav-item">
                         <a className="nav-link" data-widget="pushmenu" href="#" role="button">
@@ -50,7 +49,7 @@ const AdminLayout = ({breadcrumb, children }) => {
             <MenuSideBar />
 
             {/* Content Wrapper */}
-            <div className="content-wrapper bg-white ml-64 h-screen overflow-auto">
+            <div className={`content-wrapper ml-64 h-screen overflow-auto ${className}`}>
                 {breadcrumb && breadcrumb}
                 <section>{children}</section>
             </div>

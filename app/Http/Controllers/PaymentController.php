@@ -145,7 +145,7 @@ class PaymentController extends Controller
         }
 
         // If the order status is already completed, preparing, ready, or finish, it means it was paid/processed
-        if (in_array($order->status, ['completed', 'preparing', 'ready', 'finish'])) {
+        if (in_array($order->status, ['pending', 'completed', 'preparing', 'ready'])) {
             return response()->json([
                 'success' => true,
                 'status' => $order->status,
@@ -180,13 +180,13 @@ class PaymentController extends Controller
             if (isset($response['responseCode']) && $response['responseCode'] === 0) {
                 // Payment was successful! Update the order status.
                 $order->update([
-                    'status' => 'preparing',
+                    'status' => 'pending',
                     'payment_method' => 'khqr'
                 ]);
 
                 return response()->json([
                     'success' => true,
-                    'status' => 'preparing',
+                    'status' => 'pending',
                     'message' => 'Payment successful!'
                 ]);
             }
@@ -212,13 +212,13 @@ class PaymentController extends Controller
         $order = Order::findOrFail($id);
 
         $order->update([
-            'status' => 'preparing',
+            'status' => 'pending',
             'payment_method' => 'cash'
         ]);
 
         return response()->json([
             'success' => true,
-            'status' => 'preparing',
+            'status' => 'pending',
             'message' => 'Cash payment confirmed successfully.'
         ]);
     }

@@ -73,7 +73,7 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
         order_method: "walk_in_order", // walk_in_order, qr_order
         table_number: "",
         payment_method: "cash", // cash, qr pay
-        status: "pending", // pending, preparing, ready, completed, cancelled, finish
+        status: "unpaid", // unpaid, preparing, ready, completed, cancelled
         notes: "",
         items: [],
     });

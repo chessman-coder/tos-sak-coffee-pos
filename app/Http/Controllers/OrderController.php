@@ -76,7 +76,7 @@ class OrderController extends Controller
                 'order_method' => 'required|in:qr_order,walk_in_order',
                 'table_number' => 'nullable|required_if:order_method,qr_order|max:50',
                 'payment_method' => 'required|in:khqr,cash',
-                'status' => 'required|in:pending,preparing,ready,completed,cancelled,finish',
+                'status' => 'required|in:unpaid,pending,preparing,ready,completed,cancelled',
                 'notes' => 'nullable|string',
                 'items' => 'required|array|min:1',
                 'items.*.product_id' => 'required|exists:products,id',
@@ -128,9 +128,10 @@ class OrderController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
+            $sizes = \App\Models\Size::all();
             foreach ($items as $item) {
                 $product = $products->get($item['product_id']);
-                $unitPrice = (float) $product->price;
+                $unitPrice = $this->calculateItemUnitPrice($product, $item, $sizes);
                 $quantity = (int) $item['quantity'];
                 $discount = (float) ($item['discount'] ?? 0);
                 $lineTotal = max(($unitPrice * $quantity) - $discount, 0);
@@ -164,23 +165,6 @@ class OrderController extends Controller
         return redirect()->route('orders.index');
     }
 
-    public function edit(Order $order, $id): Response
-    {
-        $rsDatasModel = Order::with(['items.options'])->find($id);
-        $products = Product::with(['category'])->orderBy('name')->get(['id', 'name', 'category_id', 'type', 'size', 'price', 'stock', 'image_path']);
-        $options = ProductOption::with(['values' => function ($valueQuery) {
-            $valueQuery->orderBy('sort_order')->orderBy('id');
-        }])->orderBy('sort_order')->orderBy('id')->get();
-        foreach ($products as $product) {
-            $product->setRelation('options', $options);
-        }
-
-        return Inertia::render('Order/CreateEdit', [
-            'datas' => $rsDatasModel,
-            'products' => $products,
-        ]);
-    }
-
     public function update(Request $request, Order $model, $id)
     {
         $rsDatasModel = Order::findOrFail($id);
@@ -193,7 +177,7 @@ class OrderController extends Controller
             'order_method' => 'required|in:qr_order,walk_in_order',
             'table_number' => 'nullable|required_if:order_method,qr_order|max:50',
             'payment_method' => 'required|in:khqr,cash',
-            'status' => 'required|in:pending,preparing,ready,completed,cancelled,finish',
+            'status' => 'required|in:unpaid,pending,preparing,ready,completed,cancelled',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -312,6 +296,42 @@ class OrderController extends Controller
                 'sort_order' => $optionIndex,
             ]);
         }
+    }
+
+    private function calculateItemUnitPrice(Product $product, array $item, $sizes): float
+    {
+        $basePrice = (float) $product->price;
+
+        $sizeUpcharge = 0.0;
+        if (!empty($item['size'])) {
+            $matchingSize = $sizes->first(function ($s) use ($item) {
+                return strtolower($s->title) === strtolower($item['size']);
+            });
+            if ($matchingSize) {
+                $sizeUpcharge = (float) $matchingSize->upcharge;
+            }
+        }
+
+        $optionsUpcharge = 0.0;
+        $selectedOpts = $item['selected_options'] ?? [];
+        if (!empty($selectedOpts)) {
+            foreach ($selectedOpts as $selectedOption) {
+                $productOptionValueId = isset($selectedOption['product_option_value_id'])
+                    ? (int) $selectedOption['product_option_value_id']
+                    : null;
+                if ($productOptionValueId) {
+                    foreach ($product->options as $productOption) {
+                        $val = $productOption->values->firstWhere('id', $productOptionValueId);
+                        if ($val) {
+                            $optionsUpcharge += (float) $val->upcharge;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $basePrice + $sizeUpcharge + $optionsUpcharge;
     }
 
     private function validateSelectedOptions($items, $products): array

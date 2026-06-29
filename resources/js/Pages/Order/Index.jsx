@@ -67,17 +67,6 @@ export default function OrderPage({ orderData }) {
                                 <h3 className="card-title">
                                     Datalist Management
                                 </h3>
-                                <div className="card-tools flex items-center">
-                                    {/* {can["order-create"] && ( */}
-                                    <Link
-                                        href={route("orders.create")}
-                                        className="btn btn-primary btn-sm mr-2"
-                                    >
-                                        <i className="fas fa-plus"></i> Create
-                                        Order
-                                    </Link>
-                                    {/* )} */}
-                                </div>
                             </div>
                             <div className="card-body table-responsive p-0">
                                 <table className="table table-hover text-nowrap">
@@ -86,12 +75,10 @@ export default function OrderPage({ orderData }) {
                                             <th>#ID</th>
                                             <th>Order Number</th>
                                             <th>Order Method</th>
-                                            <th>Table</th>
                                             <th>Payment</th>
                                             <th>Date</th>
                                             <th>Status</th>
                                             <th>Total</th>
-                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -107,10 +94,6 @@ export default function OrderPage({ orderData }) {
                                                         "qr_order"
                                                             ? "QR Order"
                                                             : "Walk-in Order"}
-                                                    </td>
-                                                    <td>
-                                                        {item?.table_number ??
-                                                            "-"}
                                                     </td>
                                                     <td>
                                                         {item?.payment_method ===
@@ -130,36 +113,6 @@ export default function OrderPage({ orderData }) {
                                                             item?.total_amount ??
                                                                 0,
                                                         ).toFixed(2)}
-                                                    </td>
-                                                    <td>
-                                                        {/* {can["order-edit"] && ( */}
-                                                        <Link
-                                                            href={route(
-                                                                "orders.edit",
-                                                                item.id,
-                                                            )}
-                                                            className="btn btn-info btn-xs mr-2"
-                                                        >
-                                                            <i className="fas fa-edit"></i>{" "}
-                                                            Edit
-                                                        </Link>
-                                                        {/* )} */}
-                                                        {/* {can[
-                                                            "order-delete"
-                                                        ] && ( */}
-                                                        <button
-                                                            onClick={() =>
-                                                                confirmDataDeletion(
-                                                                    item,
-                                                                )
-                                                            }
-                                                            type="button"
-                                                            className="btn btn-danger btn-xs"
-                                                        >
-                                                            <i className="fas fa-trash"></i>{" "}
-                                                            Delete
-                                                        </button>
-                                                        {/* )} */}
                                                     </td>
                                                 </tr>
                                             ))

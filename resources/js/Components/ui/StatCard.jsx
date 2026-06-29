@@ -1,7 +1,7 @@
-export default function StatCard({ label, value, icon }) {
+export default function StatCard({ label, value, icon, className = "" }) {
     return (
         <div
-            className="rounded-[26px] border border-[#eadfda] bg-card p-4 shadow-[0_12px_24px_rgba(54,37,30,0.05)]"
+            className={`rounded-[26px] border border-[#eadfda] bg-card p-4 shadow-[0_12px_24px_rgba(54,37,30,0.05)] transition-all duration-300 hover:-translate-y-1 ${className}`}
             style={{ boxShadow: "0 10px 24px rgba(54, 37, 30, 0.06)" }}
         >
             <div className="flex items-start justify-between gap-4">
@@ -16,3 +16,4 @@ export default function StatCard({ label, value, icon }) {
         </div>
     );
 }
+

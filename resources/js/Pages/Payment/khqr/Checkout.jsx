@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Head, Link, router } from "@inertiajs/react";
-import { QrCode, Check } from "lucide-react";
+import { Head, router } from "@inertiajs/react";
+import { QrCode } from "lucide-react";
 import Modal from "@/Components/Modal";
 import SuccessView from "@/Components/SuccessView";
 
