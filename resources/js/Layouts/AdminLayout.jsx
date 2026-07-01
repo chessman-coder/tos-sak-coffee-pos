@@ -71,9 +71,6 @@ const AdminLayout = ({ breadcrumb, children, className = "" }) => {
                                     <ChevronLeft className='size-6' />
                                 )}
                             </a>
-                            {/* <a className="nav-link" href="#" data-widget="pushmenu" role="button">
-                                <ChevronRight className='text-primary-dark' />
-                            </a> */}
                         </li>
                     )}
                 </ul>
@@ -81,13 +78,15 @@ const AdminLayout = ({ breadcrumb, children, className = "" }) => {
                 <ul className="navbar-nav ml-auto">
                     {/* Dropdown */}
                     <li className="nav-item dropdown">
-                        <a className="nav-link" data-toggle="dropdown" href="#">
+                        <a className="nav-link flex items-center px-2 gap-2 text-sm font-bold border border-primaryColor rounded-xl" data-toggle="dropdown" href="#">
                             <div className="h-8 w-8 flex items-center justify-center rounded-full bg-primary-dark text-sm font-bold text-white">
                                 {getInitials(
                                     auth?.user?.name,
                                 )}
                             </div>
-                            {/* <i className="far fa-user"></i> */}
+                            <div>
+                                {auth?.user?.name}
+                            </div>
                         </a>
                         <div className="dropdown-menu dropdown-menu-right">
                             <Link href={route('profile.edit')} className="dropdown-item">Profile</Link>

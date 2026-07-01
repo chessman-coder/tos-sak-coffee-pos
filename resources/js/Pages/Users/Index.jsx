@@ -214,7 +214,7 @@ export default function UserPage({ users }) {
                                                     </div>
                                                 </td>
                                                 <td className="px-5 py-4 align-middle">
-                                                    <Badge>{roleName}</Badge>
+                                                    <Badge variant="role">{roleName}</Badge>
                                                 </td>
                                                 <td className="px-5 py-4 align-middle text-[15px] font-medium text-[#3b241f]">
                                                     {shiftValue}

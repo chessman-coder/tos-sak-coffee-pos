@@ -8,12 +8,13 @@ export default function Badge({
     ...props
 }) {
     const variants = {
-        default: "bg-secondary-light text-primary-light",
+        default: "border border-primary-dark text-danger",
         primary: "bg-primary-dark text-secondary-light",
         success: "bg-success-bg text-success",
         danger: "bg-danger-bg text-danger",
         warning: "bg-warning-bg text-warning",
         info: "bg-info-bg text-info",
+        role: "bg-secondary-light text-primary-dark"
     };
 
     return (
