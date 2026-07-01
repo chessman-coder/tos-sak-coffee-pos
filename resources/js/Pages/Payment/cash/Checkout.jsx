@@ -29,7 +29,7 @@ export default function Checkout({ order_id, amount, bill_number }) {
     const handleClose = () => {
         if (order_id && paymentStatus !== "success") {
             localStorage.removeItem("pos_cart");
-            router.delete(route("orders.destroy", order_id));
+            router.post(route("payment.cancel", order_id));
         } else {
             router.visit(route("pos.index"));
         }
