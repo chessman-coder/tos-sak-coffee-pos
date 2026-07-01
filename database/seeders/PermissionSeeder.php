@@ -19,7 +19,9 @@ class PermissionSeeder extends Seeder
             'Manage Product',
             'Manage Inventory',
             'Manage Pos Checkout',
-            'Manage Order',
+            'View Order History',
+            'View Dashboard',
+            'Manage Report'
         ];
 
         foreach ($permissions as $permission) {

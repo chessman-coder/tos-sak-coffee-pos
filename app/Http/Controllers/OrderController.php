@@ -6,9 +6,9 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductOption;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -42,7 +42,7 @@ class OrderController extends Controller
     {
         $rsDatas = Order::with(['items.product', 'items.options'])->latest()->paginate(10)->appends(request()->query());
 
-        return Inertia::render('Order/Index', [
+        return Inertia::render('OrderHistory/Index', [
             'orderData' => $rsDatas,
         ]);
     }
@@ -58,7 +58,7 @@ class OrderController extends Controller
         }
 
         return Inertia::render('Order/CreateEdit', [
-            'datas' => [ 'order_number' => $this->generateOrderNumber() ],
+            'datas' => ['order_number' => $this->generateOrderNumber()],
             'products' => $products,
         ]);
     }

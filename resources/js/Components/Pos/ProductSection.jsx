@@ -1,6 +1,8 @@
 import React from "react";
 import { Search, ClipboardList } from "lucide-react";
 import ProductCard from "@/Components/Pos/ProductCard";
+import Button from "../ui/Button";
+import { Link } from "@inertiajs/react";
 
 export default function ProductSection({
     activeTab,
@@ -27,20 +29,27 @@ export default function ProductSection({
                     </p>
                 </div>
 
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-80">
-                    <Search
-                        size={18}
-                        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-secondary-dark"
-                    />
-                    <input
-                        type="search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search products..."
-                        className="h-11 w-full rounded-full border border-[#eadfda] bg-white pl-11 pr-4 text-sm text-[#2f1a16] shadow-sm outline-none transition focus:border-[#c07a49] focus:ring-2 focus:ring-[#f3ede9]"
-                    />
+                <div className="flex gap-6">
+                    {/* Search Bar */}
+                    <div className="relative w-full sm:w-80">
+                        <Search
+                            size={18}
+                            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-secondary-dark"
+                        />
+                        <input
+                            type="search"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search products..."
+                            className="h-11 w-full rounded-full border border-[#eadfda] bg-white pl-11 pr-4 text-sm text-[#2f1a16] shadow-sm outline-none transition focus:border-[#c07a49] focus:ring-2 focus:ring-[#f3ede9]"
+                        />
+                    </div>
+                    <Link href={route("orders.index")}>
+                        <Button className="px-3" variant="outlineDark">Order History</Button>
+                    </Link>
                 </div>
+
+
             </header>
 
             {/* Category tabs */}

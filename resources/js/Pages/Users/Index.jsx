@@ -25,15 +25,15 @@ export default function UserPage({ users }) {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     const filteredUsers = normalizedSearchTerm
         ? userList.filter((user) => {
-              const userName = user?.name?.toLowerCase() ?? "";
-              const userEmail = user?.email?.toLowerCase() ?? "";
-              const roleName = user?.roles?.[0]?.name?.toLowerCase() ?? "";
-              return (
-                  userName.includes(normalizedSearchTerm) ||
-                  userEmail.includes(normalizedSearchTerm) ||
-                  roleName.includes(normalizedSearchTerm)
-              );
-          })
+            const userName = user?.name?.toLowerCase() ?? "";
+            const userEmail = user?.email?.toLowerCase() ?? "";
+            const roleName = user?.roles?.[0]?.name?.toLowerCase() ?? "";
+            return (
+                userName.includes(normalizedSearchTerm) ||
+                userEmail.includes(normalizedSearchTerm) ||
+                roleName.includes(normalizedSearchTerm)
+            );
+        })
         : userList;
 
     const getInitials = (name = "") =>
@@ -43,18 +43,6 @@ export default function UserPage({ users }) {
             .slice(0, 2)
             .map((part) => part[0]?.toUpperCase())
             .join("") || "U";
-
-    const getRoleBadgeVariant = (roleName = "") => {
-        const normalizedRole = roleName.toLowerCase();
-
-        if (normalizedRole.includes("admin")) return "warning";
-        if (normalizedRole.includes("manager")) return "warning";
-        if (normalizedRole.includes("cashier")) return "info";
-        if (normalizedRole.includes("barista")) return "success";
-        if (normalizedRole.includes("kitchen")) return "primary";
-
-        return "default";
-    };
 
     const getStatusVariant = (statusValue = "") => {
         const normalizedStatus = String(statusValue).toLowerCase();
@@ -267,7 +255,7 @@ export default function UserPage({ users }) {
                                                             className="inline-flex h-10 w-10 items-center justify-center transition"
                                                             aria-label="Delete user"
                                                         >
-                                                            <Trash2 size={20} strokeWidth={2.5} className="text-danger"/>
+                                                            <Trash2 size={20} strokeWidth={2.5} className="text-danger" />
                                                         </button>
                                                     </div>
                                                 </td>

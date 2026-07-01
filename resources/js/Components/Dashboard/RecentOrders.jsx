@@ -29,7 +29,7 @@ export default function RecentOrders({ recentOrders }) {
                 <table className="w-full border-collapse">
                     <thead>
                         <tr className="border-b border-[#EADBC8] text-left">
-                            <th className="pb-4 text-[10px] tracking-widest text-secondary-text font-black uppercase">Order</th>
+                            <th className="pb-4 text-[10px] tracking-widest text-secondary-text font-black uppercase">Order Number</th>
                             <th className="pb-4 text-[10px] tracking-widest text-secondary-text font-black uppercase">Order Method</th>
                             <th className="pb-4 text-[10px] tracking-widest text-secondary-text font-black uppercase text-center">Items</th>
                             <th className="pb-4 text-[10px] tracking-widest text-secondary-text font-black uppercase">Total</th>
@@ -48,17 +48,16 @@ export default function RecentOrders({ recentOrders }) {
                                 </td>
                                 <td className="py-4">
                                     <span
-                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${
-                                            order.status === 'Preparing'
-                                                ? 'bg-[#FFF6D2] text-[#EC9303] border-[#FAD896]'
-                                                : order.status === 'Pending'
+                                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${order.status === 'Preparing'
+                                            ? 'bg-[#FFF6D2] text-[#EC9303] border-[#FAD896]'
+                                            : order.status === 'Pending'
                                                 ? 'bg-[#FFE9E3] text-[#FF6F59] border-[#FFD5CC]'
                                                 : order.status === 'Ready'
-                                                ? 'bg-[#E5F9F3] text-[#00D991] border-[#A7EED3]'
-                                                : order.status === 'Cancelled'
-                                                ? 'bg-[#FFCED2] text-[#FF002C] border-[#FFB2B8]'
-                                                : 'bg-[#F0EBE5] text-[#6B6B6B] border-[#E0D8CF]'
-                                        }`}
+                                                    ? 'bg-[#E5F9F3] text-[#00D991] border-[#A7EED3]'
+                                                    : order.status === 'Cancelled'
+                                                        ? 'bg-[#FFCED2] text-[#FF002C] border-[#FFB2B8]'
+                                                        : 'bg-[#F0EBE5] text-[#6B6B6B] border-[#E0D8CF]'
+                                            }`}
                                     >
                                         {order.status}
                                     </span>

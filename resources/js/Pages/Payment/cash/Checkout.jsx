@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Head, router } from "@inertiajs/react";
 import axios from "axios";
-import { Banknote, Check, ArrowLeft, Coins, Printer, AlertTriangle } from "lucide-react";
+import { Banknote, ArrowLeft, Coins, AlertTriangle } from "lucide-react";
 import Modal from "@/Components/Modal";
 import SuccessView from "@/Components/SuccessView";
 
-export default function Checkout({ order_id, amount, bill_number, description }) {
+export default function Checkout({ order_id, amount, bill_number }) {
     const [cashReceived, setCashReceived] = useState("");
     const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, processing, success, error
     const [errorMsg, setErrorMsg] = useState("");
@@ -65,19 +65,19 @@ export default function Checkout({ order_id, amount, bill_number, description })
             amount_received: cashReceived,
             change_amount: changeDue,
         })
-        .then(response => {
-            if (response.data.success) {
-                setPaymentStatus("success");
-                localStorage.removeItem("pos_cart");
-            } else {
+            .then(response => {
+                if (response.data.success) {
+                    setPaymentStatus("success");
+                    localStorage.removeItem("pos_cart");
+                } else {
+                    setPaymentStatus("error");
+                    setErrorMsg(response.data.message || "Failed to confirm cash payment.");
+                }
+            })
+            .catch(error => {
                 setPaymentStatus("error");
-                setErrorMsg(response.data.message || "Failed to confirm cash payment.");
-            }
-        })
-        .catch(error => {
-            setPaymentStatus("error");
-            setErrorMsg(error.response?.data?.message || "An error occurred during payment confirmation.");
-        });
+                setErrorMsg(error.response?.data?.message || "An error occurred during payment confirmation.");
+            });
     };
 
     const handlePrintReceipt = () => {
@@ -183,11 +183,10 @@ export default function Checkout({ order_id, amount, bill_number, description })
                                                 key={denom}
                                                 type="button"
                                                 onClick={() => handleQuickAmount(denom)}
-                                                className={`h-11 font-extrabold text-sm rounded-xl transition cursor-pointer border border-[#eadfda] ${
-                                                    Number(cashReceived) === denom
-                                                        ? "bg-[#5a3630] text-white"
-                                                        : "bg-white hover:bg-[#fbf8f5] text-secondary-dark"
-                                                }`}
+                                                className={`h-11 font-extrabold text-sm rounded-xl transition cursor-pointer border border-[#eadfda] ${Number(cashReceived) === denom
+                                                    ? "bg-[#5a3630] text-white"
+                                                    : "bg-white hover:bg-[#fbf8f5] text-secondary-dark"
+                                                    }`}
                                             >
                                                 ${denom}
                                             </button>

@@ -175,7 +175,7 @@ export default function DashboardCharts({ weeklySales, topSelling }) {
                                     </div>
                                 </div>
                                 <div className="font-black text-primary-text text-sm">
-                                    {formatCurrency(item.revenue)}
+                                    {formatCurrency(item.price)}
                                 </div>
                             </div>
                         ))
