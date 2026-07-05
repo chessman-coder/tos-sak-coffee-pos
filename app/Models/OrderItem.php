@@ -22,6 +22,7 @@ class OrderItem extends Model
         'unit_price',
         'subtotal',
         'discount',
+        'notes',
         'line_total',
     ];
 

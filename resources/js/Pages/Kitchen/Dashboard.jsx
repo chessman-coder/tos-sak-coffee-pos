@@ -307,6 +307,11 @@ export default function KitchenDashboard() {
                                                                 <span className="text-[10px] font-bold text-[#C38B59] uppercase block tracking-wide">
                                                                     {order.customer_name || "Walk-in Customer"}
                                                                 </span>
+                                                                {order.phone_number && (
+                                                                    <span className="text-[10px] font-semibold text-[#c07a49] block tracking-wide mt-0.5">
+                                                                        Phone: {order.phone_number}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                             <div className="flex flex-col items-end shrink-0">
                                                                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1 ${isLate ? "bg-red-100 text-red-500" : "bg-[#F8F5F2] text-secondary-dark"
@@ -317,6 +322,16 @@ export default function KitchenDashboard() {
                                                                 {order.order_type === "QR" && (
                                                                     <span className="text-[8px] font-black bg-[#E6B98C] text-[#5A3A36] px-1.5 py-0.5 rounded mt-1.5 tracking-wider uppercase">
                                                                         QR SELF
+                                                                    </span>
+                                                                )}
+                                                                {order.order_type === "Take Away" && (
+                                                                    <span className="text-[8px] font-black bg-[#e05a47] text-white px-1.5 py-0.5 rounded mt-1.5 tracking-wider uppercase">
+                                                                        TAKE AWAY
+                                                                    </span>
+                                                                )}
+                                                                {order.order_type === "Dine In" && (
+                                                                    <span className="text-[8px] font-black bg-[#5a3630] text-white px-1.5 py-0.5 rounded mt-1.5 tracking-wider uppercase">
+                                                                        DINE IN
                                                                     </span>
                                                                 )}
                                                             </div>

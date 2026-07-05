@@ -5,7 +5,7 @@ import { Banknote, ArrowLeft, Coins, AlertTriangle } from "lucide-react";
 import Modal from "@/Components/Modal";
 import SuccessView from "@/Components/SuccessView";
 
-export default function Checkout({ order_id, amount, bill_number }) {
+export default function Checkout({ order_id, amount, bill_number, isAdmin = false }) {
     const [cashReceived, setCashReceived] = useState("");
     const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, processing, success, error
     const [errorMsg, setErrorMsg] = useState("");
@@ -16,6 +16,7 @@ export default function Checkout({ order_id, amount, bill_number }) {
 
     // Calculate change and validate payment when cashReceived changes
     useEffect(() => {
+        if (!isAdmin) return;
         const received = parseFloat(cashReceived);
         if (isNaN(received) || received < totalAmount) {
             setChangeDue(0);
@@ -24,14 +25,38 @@ export default function Checkout({ order_id, amount, bill_number }) {
             setChangeDue(received - totalAmount);
             setIsValidPayment(true);
         }
-    }, [cashReceived, totalAmount]);
+    }, [cashReceived, totalAmount, isAdmin]);
+
+    // Customer Polling for payment confirmation
+    useEffect(() => {
+        if (isAdmin || !order_id || paymentStatus === "success") return;
+
+        const checkPayment = async () => {
+            try {
+                // Pass dummy md5 as cash to bypass controller validation check
+                const response = await fetch(route('payment.check', { id: order_id, md5: 'cash' }));
+                const result = await response.json();
+
+                if (result.success) {
+                    setPaymentStatus("success");
+                }
+            } catch (err) {
+                console.error("Payment check error:", err);
+            }
+        };
+
+        checkPayment();
+        const intervalId = setInterval(checkPayment, 5000);
+        return () => clearInterval(intervalId);
+    }, [order_id, paymentStatus, isAdmin]);
 
     const handleClose = () => {
         if (order_id && paymentStatus !== "success") {
             localStorage.removeItem("pos_cart");
+            localStorage.removeItem("client_order_cart");
             router.post(route("payment.cancel", order_id));
         } else {
-            router.visit(route("pos.index"));
+            router.visit(isAdmin ? route("pos.index") : "/");
         }
     };
 
@@ -101,10 +126,69 @@ export default function Checkout({ order_id, amount, bill_number }) {
                             amount={amount}
                             bill_number={bill_number}
                             payment_method="cash"
-                            cash_received={cashReceived}
+                            cash_received={cashReceived || amount}
                             change_due={changeDue}
-                            onPrintReceipt={handlePrintReceipt}
+                            onPrintReceipt={isAdmin ? handlePrintReceipt : null}
+                            isAdmin={isAdmin}
                         />
+                    ) : !isAdmin ? (
+                        /* Customer View: Waiting for payment at counter */
+                        <div className="p-8 text-center space-y-6">
+                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#f4ece9] text-[#5a3630] animate-bounce">
+                                <Banknote size={32} />
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <h2 className="text-2xl font-extrabold text-[#2f1a16] tracking-tight">
+                                    Proceed to Counter
+                                </h2>
+                                <p className="text-sm font-semibold text-secondary-dark">
+                                    Please pay at the cashier to complete your order.
+                                </p>
+                            </div>
+
+                            <div className="bg-[#fcf9f7] rounded-2xl p-5 border border-[#eadfda] text-left space-y-3.5 shadow-sm">
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-secondary-dark font-semibold">Order Number</span>
+                                        <span className="text-[#2f1a16] font-bold">{bill_number}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm border-t border-[#f3ede9] pt-2">
+                                        <span className="text-secondary-dark font-semibold">Total Amount</span>
+                                        <span className="text-[#5a3630] font-black text-lg">${formatPrice(amount)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm border-t border-[#f3ede9] pt-2">
+                                        <span className="text-secondary-dark font-semibold">Equivalent in Riel</span>
+                                        <span className="text-secondary-dark font-bold text-sm">≈ ៛{(amount * 4000).toLocaleString('en-US')}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center justify-center space-y-2 pt-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="relative flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                                        Waiting for cashier confirmation...
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-gray-400">
+                                    This page will automatically update once payment is received.
+                                </p>
+                            </div>
+
+                            <div className="pt-4 border-t border-[#eadfda] flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={handleClose}
+                                    className="flex-1 h-12 bg-[#5a3630] hover:bg-[#4a2b25] text-white rounded-xl font-bold shadow-md transition flex items-center justify-center cursor-pointer"
+                                >
+                                    Cancel Order
+                                </button>
+                            </div>
+                        </div>
                     ) : (
                         /* Cash Input & Verification View */
                         <>

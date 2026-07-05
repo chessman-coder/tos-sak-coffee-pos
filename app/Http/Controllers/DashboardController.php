@@ -102,7 +102,7 @@ class DashboardController extends Controller
 
         $recentOrders = [];
         foreach ($recentOrdersRaw as $order) {
-            $methodLabel = $order->order_method === 'qr_order' ? 'Self Ordering' : 'Walk-in';
+            $methodLabel = $order->order_method === 'self_order' ? 'Self Ordering' : 'Walk-in Order';
 
             // Map status cleanly
             $statusLabel = 'Served';

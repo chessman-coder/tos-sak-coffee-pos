@@ -59,7 +59,7 @@ export default function OrderDetailModal({ order, show, onClose }) {
                     <div>
                         <p className="text-xs text-[#8a6a55] font-semibold">Order Method</p>
                         <p className="font-bold text-[#2f1a16]">
-                            {order?.order_method === "qr_order" ? "QR Order" : "Walk-in Order"}
+                            {order?.order_method === "self_order" ? "Self Order" : "Walk-in Order"}
                         </p>
                     </div>
                     <div>
@@ -74,12 +74,14 @@ export default function OrderDetailModal({ order, show, onClose }) {
                             {order?.customer_name || "N/A"}
                         </p>
                     </div>
-                    <div>
-                        <p className="text-xs text-[#8a6a55] font-semibold">Table Number</p>
-                        <p className="font-bold text-[#2f1a16]">
-                            {order?.table_number ? `Table ${order.table_number}` : "N/A"}
-                        </p>
-                    </div>
+                    {order?.order_type === "Take Away" && (
+                        <div>
+                            <p className="text-xs text-[#8a6a55] font-semibold">Phone Number</p>
+                            <p className="font-bold text-[#2f1a16]">
+                                {order?.phone_number || "N/A"}
+                            </p>
+                        </div>
+                    )}
                     <div>
                         <p className="text-xs text-[#8a6a55] font-semibold">Status</p>
                         <div className="mt-1">

@@ -7,7 +7,8 @@ import {
     Percent,
     Coins,
     QrCode,
-    ShoppingCart
+    ShoppingCart,
+    Check
 } from "lucide-react";
 
 const formatPrice = (price) => {
@@ -185,22 +186,8 @@ export default function CartSection({
                     </div>
                 )}
 
-                {/* Order Notes */}
-                <div>
-                    <label className="text-[11px] font-bold text-secondary-dark uppercase tracking-wider block mb-1">
-                        Order Notes (Optional)
-                    </label>
-                    <input
-                        type="text"
-                        value={data.notes}
-                        onChange={(e) => setData("notes", e.target.value)}
-                        placeholder="Add notes for this order..."
-                        className="w-full h-8 px-2.5 bg-white border border-[#eadfda] rounded-md text-xs text-[#2f1a16] focus:border-[#c07a49] focus:outline-none"
-                    />
-                </div>
-
                 {/* Pricing Breakdowns */}
-                <div className="border-t border-[#eadfda] pt-3 space-y-1.5">
+                <div className="space-y-1.5">
                     <div className="flex justify-between text-xs text-secondary-dark font-semibold">
                         <span>Subtotal</span>
                         <span>${formatPrice(subtotal)}</span>
@@ -215,14 +202,45 @@ export default function CartSection({
                     </div>
                 </div>
 
+                {/* Payment Method */}
+                <div>
+                    <label className="text-[11px] font-bold text-secondary-dark uppercase tracking-wider block mb-1.5">
+                        Payment Method
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setData("payment_method", "khqr")}
+                            className={`py-2 px-3 border rounded-xl flex flex-col items-center justify-center transition cursor-pointer ${data.payment_method === "khqr"
+                                ? "border-[#5a3630] bg-[#fcf9f7] text-[#5a3630] ring-1 ring-[#5a3630]"
+                                : "border-[#eadfda] bg-white text-gray-500 hover:bg-[#fbf8f5]"
+                                }`}
+                        >
+                            <span className="font-bold text-xs">KHQR Pay</span>
+                            <span className="text-[9px] text-[#8b6b61] font-semibold mt-0.5">Scan & Pay</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setData("payment_method", "cash")}
+                            className={`py-2 px-3 border rounded-xl flex flex-col items-center justify-center transition cursor-pointer ${data.payment_method === "cash"
+                                ? "border-[#5a3630] bg-[#fcf9f7] text-[#5a3630] ring-1 ring-[#5a3630]"
+                                : "border-[#eadfda] bg-white text-gray-500 hover:bg-[#fbf8f5]"
+                                }`}
+                        >
+                            <span className="font-bold text-xs">Pay With Cash</span>
+                            <span className="text-[9px] text-[#8b6b61] font-semibold mt-0.5">Pay cash</span>
+                        </button>
+                    </div>
+                </div>
+
                 {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={processing || cart.length === 0}
-                    className="w-full h-12 bg-[#5a3630] hover:bg-[#4a2b25] disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-full font-bold shadow-md transition flex items-center justify-center gap-2 mt-4"
+                    className="w-full h-12 bg-[#5a3630] hover:bg-[#4a2b25] disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2 mt-4 cursor-pointer"
                 >
-                    <ShoppingCart size={18} />
-                    {processing ? "Placing Order..." : "Place Order"}
+                    <Check size={18} strokeWidth={2.5} />
+                    {processing ? "Placing Order..." : "Confirm & Send Order"}
                 </button>
             </form>
         </aside>

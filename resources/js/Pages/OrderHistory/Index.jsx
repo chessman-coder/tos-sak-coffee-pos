@@ -88,7 +88,7 @@ export default function OrderPage({ orderData }) {
                                             <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-[#4a2b25]">{k + 1}</td>
                                             <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-bold text-[#2f1a16]">{item?.order_number}</td>
                                             <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-[#4a2b25]">
-                                                {item?.order_method === "qr_order" ? "QR Order" : "Walk-in Order"}
+                                                {item?.order_method === "self_order" ? "Self Ordering" : "Walk-in Order"}
                                             </td>
                                             <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-[#4a2b25]">
                                                 {item?.payment_method === "khqr" ? "KHQR" : "Cash"}

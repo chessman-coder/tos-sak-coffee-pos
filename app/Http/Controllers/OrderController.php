@@ -71,10 +71,10 @@ class OrderController extends Controller
             $validated = $request->validate([
                 'order_number' => 'nullable|max:255|min:2|unique:orders,order_number',
                 'customer_name' => 'nullable|string|max:100',
+                'phone_number' => 'required_if:order_type,Take Away|nullable|string|max:255',
                 'order_type' => 'required|string|in:Dine In,Take Away',
                 'order_date' => 'required|date',
-                'order_method' => 'required|in:qr_order,walk_in_order',
-                'table_number' => 'nullable|required_if:order_method,qr_order|max:50',
+                'order_method' => 'required|in:self_order,walk_in_order',
                 'payment_method' => 'required|in:khqr,cash',
                 'status' => 'required|in:unpaid,pending,preparing,ready,completed,cancelled',
                 'notes' => 'nullable|string',
@@ -84,11 +84,13 @@ class OrderController extends Controller
                 'items.*.discount' => 'nullable|numeric|min:0',
                 'items.*.type' => 'nullable|string|max:255',
                 'items.*.size' => 'nullable|string|max:255',
+                'items.*.notes' => 'nullable|string',
                 'items.*.selected_options' => 'nullable|array',
                 'items.*.selected_options.*.product_option_id' => 'nullable|integer|exists:product_options,id',
                 'items.*.selected_options.*.product_option_value_id' => 'nullable|integer|exists:product_option_values,id',
                 'items.*.selected_options.*.option_label' => 'nullable|string|max:255',
                 'items.*.selected_options.*.value_label' => 'nullable|string|max:255',
+                'items.*.selected_options.*.note' => 'nullable|string',
             ]);
         } catch (ValidationException $e) {
             Log::warning('Order validation failed', $e->errors());
@@ -118,10 +120,10 @@ class OrderController extends Controller
             $order = $model->create([
                 'order_number' => $orderNumber,
                 'customer_name' => $validated['customer_name'] ?? null,
+                'phone_number' => $validated['phone_number'] ?? null,
                 'order_type' => $validated['order_type'],
                 'order_date' => $validated['order_date'],
                 'order_method' => $validated['order_method'],
-                'table_number' => $validated['order_method'] === 'qr_order' ? $validated['table_number'] : null,
                 'payment_method' => $validated['payment_method'],
                 'status' => $validated['status'],
                 'total_amount' => 0,
@@ -141,6 +143,7 @@ class OrderController extends Controller
                     'product_id' => $product->id,
                     'type' => $item['type'] ?? null,
                     'size' => $item['size'] ?? null,
+                    'notes' => $item['notes'] ?? null,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
                     'subtotal' => $unitPrice * $quantity,
@@ -172,10 +175,10 @@ class OrderController extends Controller
         $validated = $request->validate([
             'order_number' => 'required|max:255|min:2|unique:orders,order_number,' . $id,
             'customer_name' => 'nullable|string|max:100',
+            'phone_number' => 'required_if:order_type,Take Away|nullable|string|max:255',
             'order_type' => 'required|string|in:Dine In,Take Away',
             'order_date' => 'required|date',
-            'order_method' => 'required|in:qr_order,walk_in_order',
-            'table_number' => 'nullable|required_if:order_method,qr_order|max:50',
+            'order_method' => 'required|in:self_order,walk_in_order',
             'payment_method' => 'required|in:khqr,cash',
             'status' => 'required|in:unpaid,pending,preparing,ready,completed,cancelled',
             'notes' => 'nullable|string',
@@ -185,11 +188,13 @@ class OrderController extends Controller
             'items.*.discount' => 'nullable|numeric|min:0',
             'items.*.type' => 'nullable|string|max:255',
             'items.*.size' => 'nullable|string|max:255',
+            'items.*.notes' => 'nullable|string',
             'items.*.selected_options' => 'nullable|array',
             'items.*.selected_options.*.product_option_id' => 'nullable|integer|exists:product_options,id',
             'items.*.selected_options.*.product_option_value_id' => 'nullable|integer|exists:product_option_values,id',
             'items.*.selected_options.*.option_label' => 'nullable|string|max:255',
             'items.*.selected_options.*.value_label' => 'nullable|string|max:255',
+            'items.*.selected_options.*.note' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($validated, $rsDatasModel) {
@@ -212,10 +217,10 @@ class OrderController extends Controller
             $rsDatasModel->update([
                 'order_number' => $validated['order_number'],
                 'customer_name' => $validated['customer_name'] ?? null,
+                'phone_number' => $validated['phone_number'] ?? null,
                 'order_type' => $validated['order_type'],
                 'order_date' => $validated['order_date'],
                 'order_method' => $validated['order_method'],
-                'table_number' => $validated['order_method'] === 'qr_order' ? $validated['table_number'] : null,
                 'payment_method' => $validated['payment_method'],
                 'status' => $validated['status'],
                 'notes' => $validated['notes'] ?? null,
@@ -234,6 +239,7 @@ class OrderController extends Controller
                     'product_id' => $product->id,
                     'type' => $item['type'] ?? null,
                     'size' => $item['size'] ?? null,
+                    'notes' => $item['notes'] ?? null,
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
                     'subtotal' => $unitPrice * $quantity,
@@ -294,6 +300,7 @@ class OrderController extends Controller
                 'option_label' => $productOption->name,
                 'value_label' => $productOptionValue->value,
                 'sort_order' => $optionIndex,
+                'note' => $selectedOption['note'] ?? null,
             ]);
         }
     }

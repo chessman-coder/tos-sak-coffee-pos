@@ -31,6 +31,7 @@ class PaymentController extends Controller
                     'amount' => $amount,
                     'bill_number' => $billNumber,
                     'description' => $description,
+                    'isAdmin' => auth()->check(),
                 ]);
             }
         } else {
@@ -122,6 +123,7 @@ class PaymentController extends Controller
                 'amount' => $amount,
                 'bill_number' => $billNumber,
                 'description' => $description,
+                'isAdmin' => auth()->check(),
             ]);
         } catch (\Exception $e) {
             if ($request->wantsJson() || !$request->acceptsHtml()) {
@@ -238,7 +240,7 @@ class PaymentController extends Controller
             ]);
         }
 
-        return redirect()->route('pos.index')->with('message', 'Order Cancelled');
+        return redirect()->route(auth()->check() ? 'pos.index' : 'customer.index')->with('message', 'Order Cancelled');
     }
 
     /**

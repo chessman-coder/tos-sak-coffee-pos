@@ -9,7 +9,6 @@ import {
     Coins,
     QrCode
 } from "lucide-react";
-import OrderCheckoutModal from "@/Components/Pos/OrderCheckoutModal";
 
 const formatPrice = (price) => {
     const amount = Number(price ?? 0);
@@ -43,9 +42,7 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
     const [selectedType, setSelectedType] = useState("");
     const [optionError, setOptionError] = useState("");
 
-    // Checkout Confirmation Modal state
-    const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
-    const [paymentMethodSelected, setPaymentMethodSelected] = useState(null);
+
 
     const getProductSizes = (product) => {
         if (!product?.size) return [];
@@ -71,7 +68,6 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
         order_type: "Dine In", // Dine In, Take Away
         order_date: new Date().toISOString().split("T")[0],
         order_method: "walk_in_order", // walk_in_order, qr_order
-        table_number: "",
         payment_method: "cash", // cash, qr pay
         status: "unpaid", // unpaid, preparing, ready, completed, cancelled
         notes: "",
@@ -103,21 +99,7 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
         localStorage.setItem("pos_cart", JSON.stringify(cart));
     }, [cart]);
 
-    // Submit form after payment method has been set in the state
-    useEffect(() => {
-        if (paymentMethodSelected) {
-            post(route("orders.store"), {
-                onSuccess: () => {
-                    reset();
-                    setPaymentMethodSelected(null);
-                    setCheckoutModalOpen(false);
-                },
-                onError: () => {
-                    setPaymentMethodSelected(null);
-                }
-            });
-        }
-    }, [paymentMethodSelected]);
+
 
     // Parent Categories (root level)
     const parentCategories = useMemo(() => {
@@ -353,13 +335,12 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
             return;
         }
 
-        setCheckoutModalOpen(true);
-    };
-
-    const handlePaymentSelection = (method) => {
-        if (processing) return;
-        setData("payment_method", method);
-        setPaymentMethodSelected(method);
+        post(route("orders.store"), {
+            onSuccess: () => {
+                reset();
+                clearCart();
+            },
+        });
     };
 
     return (
@@ -453,22 +434,6 @@ export default function Pos({ products = [], categories = [], sizes = [], orderN
                 onOptionSelect={handleOptionSelect}
                 optionError={optionError}
                 onConfirm={handleConfirmOptions}
-            />
-
-            {/* Order Checkout Confirmation Modal */}
-            <OrderCheckoutModal
-                isOpen={checkoutModalOpen}
-                onClose={() => setCheckoutModalOpen(false)}
-                processing={processing}
-                errors={errors}
-                data={data}
-                setData={setData}
-                cart={cart}
-                subtotal={subtotal}
-                discountTotal={discountTotal}
-                totalAmount={totalAmount}
-                onPaymentSelect={handlePaymentSelection}
-                paymentMethodSelected={paymentMethodSelected}
             />
         </AdminLayout>
     );

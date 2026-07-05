@@ -9,6 +9,7 @@ export default function SuccessView({
     cash_received = 0,
     change_due = 0,
     onPrintReceipt = null,
+    isAdmin = false,
 }) {
     const totalAmount = Number(amount || 0);
 
@@ -99,11 +100,12 @@ export default function SuccessView({
                     type="button"
                     onClick={() => {
                         localStorage.removeItem("pos_cart");
-                        router.visit(route("pos.index"));
+                        localStorage.removeItem("client_order_cart");
+                        router.visit(isAdmin ? route("pos.index") : "/");
                     }}
                     className="w-full h-12 bg-[#5a3630] hover:bg-[#4a2b25] text-white rounded-xl font-bold shadow-md transition transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                 >
-                    Return to POS
+                    {isAdmin ? "Return to POS" : "Back to Ordering"}
                 </button>
             </div>
         </div>

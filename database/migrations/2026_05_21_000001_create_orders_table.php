@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('order_number')->unique();
             $table->date('order_date');
             $table->string('order_method')->default('walk_in_order');
-            $table->string('table_number')->nullable();
             $table->string('payment_method')->default('cash');
             $table->string('status')->default('pending');
             $table->decimal('total_amount', 12, 2)->default(0);

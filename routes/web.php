@@ -15,6 +15,11 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductOption;
+use App\Models\Size;
+use Illuminate\Support\Facades\DB;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -25,8 +30,81 @@ use Inertia\Inertia;
 //     ]);
 // });
 
-Route::get('/', function () {
-    return Inertia::render('CustomerOrder/Index');
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    // Get all products including category
+    $products = Product::with(['category'])->orderBy('name')->get();
+
+    // Get all global product options with their values
+    $options = ProductOption::with(['values' => function ($valueQuery) {
+        $valueQuery->orderBy('sort_order')->orderBy('id');
+    }])->orderBy('sort_order')->orderBy('id')->get();
+
+    // Attach options to each product model manually
+    foreach ($products as $product) {
+        $product->setRelation('options', $options);
+    }
+
+    // Get top product IDs based on total ordered quantities
+    $topProductIds = DB::table('order_items')
+        ->select('product_id', DB::raw('SUM(quantity) as total_sales'))
+        ->groupBy('product_id')
+        ->orderByDesc('total_sales')
+        ->limit(5)
+        ->pluck('product_id')
+        ->toArray();
+
+    if (empty($topProductIds)) {
+        // Fallback to top products
+        $topSellingProducts = Product::with(['category'])
+            ->limit(5)
+            ->get();
+    } else {
+        $topSellingProducts = Product::with(['category'])
+            ->whereIn('id', $topProductIds)
+            ->get()
+            ->sortBy(function ($product) use ($topProductIds) {
+                return array_search($product->id, $topProductIds);
+            })
+            ->values();
+
+        // If we found fewer than 5, fill the rest with other products
+        if ($topSellingProducts->count() < 5) {
+            $existingIds = $topSellingProducts->pluck('id')->toArray();
+            $fillers = Product::with(['category'])
+                ->whereNotIn('id', $existingIds)
+                ->limit(5 - $topSellingProducts->count())
+                ->get();
+            $topSellingProducts = $topSellingProducts->concat($fillers);
+        }
+    }
+
+    // Attach options to each top selling product model manually
+    foreach ($topSellingProducts as $product) {
+        $product->setRelation('options', $options);
+    }
+    
+    // Get all categories to allow filtering on the frontend
+    $categories = Category::all();
+
+    // Get all sizes to check for upcharges on the frontend
+    $sizes = Size::all();
+
+    // Generate Order Number
+    $max = DB::table('orders')
+        ->where('order_number', 'like', 'ORD-%')
+        ->selectRaw("MAX(CAST(REPLACE(order_number, 'ORD-', '') AS UNSIGNED)) as max_no")
+        ->value('max_no');
+    $next = ($max ? (int) $max + 1 : 1);
+    $suffix = str_pad($next, 3, '0', STR_PAD_LEFT);
+    $orderNumber = 'ORD-' . $suffix;
+
+    return Inertia::render('CustomerOrder/Index', [
+        'products' => $products,
+        'categories' => $categories,
+        'sizes' => $sizes,
+        'orderNumber' => $orderNumber,
+        'topSellingProducts' => $topSellingProducts,
+    ]);
 })->name('customer.index');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -36,13 +114,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // POS & Checkout
+    // POS & Checkout (Protected)
     Route::middleware(['check:Manage Pos Checkout'])->group(function () {
         Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
-        Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
         Route::post('/checkout/cash/{id}', [PaymentController::class, 'confirmCashPayment'])->name('payment.confirm-cash');
-        Route::post('/checkout/cancel/{id}', [PaymentController::class, 'cancelOrder'])->name('payment.cancel');
-        Route::get('/payment/check/{id}', [PaymentController::class, 'checkStatus'])->name('payment.check');
     });
     // Orders module
     Route::middleware(['check:Manage Order'])->group(function () {
@@ -121,5 +196,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/kitchen', [\App\Http\Controllers\KitchenController::class, 'index'])->name('kitchen.index');
 });
+
+// POS & Checkout (Public/Guest)
+Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
+Route::post('/checkout/cancel/{id}', [PaymentController::class, 'cancelOrder'])->name('payment.cancel');
+Route::get('/payment/check/{id}', [PaymentController::class, 'checkStatus'])->name('payment.check');
+Route::post('/customer-order/store', [OrderController::class, 'store'])->name('customer-order.store');
 
 require __DIR__ . '/auth.php';
