@@ -98,16 +98,24 @@ class InventoryController extends Controller
      */
     public function update(Request $request, Inventory $inventory): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|min:2',
-            'category' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:2048',
-            'unit' => 'nullable|string|max:50',
-            'stock' => 'required|integer|min:0',
-            'reorder_level' => 'nullable|integer|min:0',
-            'unit_cost' => 'nullable|numeric|min:0',
-            'supplier' => 'nullable|string|max:255',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255|min:2',
+                'category' => 'nullable|string|max:255',
+                'image' => 'nullable|image|max:2048',
+                'unit' => 'nullable|string|max:50',
+                'stock' => 'required|integer|min:0',
+                'reorder_level' => 'nullable|integer|min:0',
+                'unit_cost' => 'nullable|numeric|min:0',
+                'supplier' => 'nullable|string|max:255',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error('Inventory validation failed:', [
+                'errors' => $e->errors(),
+                'payload' => $request->all()
+            ]);
+            throw $e;
+        }
 
         $imagePath = $inventory->image_path;
 

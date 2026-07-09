@@ -64,3 +64,6 @@ Route::get('/qr-order/tracking/{order_number}', [QrOrderApiController::class, 't
 // Kitchen API routes
 Route::get('/kitchen/orders', [KitchenApiController::class, 'index']);
 Route::post('/kitchen/orders/{id}/status', [KitchenApiController::class, 'updateStatus']);
+
+// Telegram Bot Webhook
+Route::post('/telegram/webhook', [\App\Http\Controllers\TelegramWebhookController::class, 'handle']);

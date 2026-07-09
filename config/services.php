@@ -43,4 +43,13 @@ return [
         'merchantMobile' => env('BAKONG_MERCHANT_MOBILE'),
     ],
 
+    'telegram' => [
+        'payment_bot_token' => env('TELEGRAM_PAYMENT_BOT_TOKEN'),
+        'receiver_order_bot_token' => env('TELEGRAM_RECEIVER_ORDER_BOT_TOKEN'),
+        'sale_report_bot_token' => env('TELEGRAM_SALE_REPORT_BOT_TOKEN'),
+        'low_stock_bot_token' => env('TELEGRAM_LOW_STOCK_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+        'daily_report_schedule' => env('TELEGRAM_DAILY_REPORT_SCHEDULE', '59 23 * * *'),
+    ],
+
 ];

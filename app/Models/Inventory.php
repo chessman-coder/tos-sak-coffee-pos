@@ -43,4 +43,17 @@ class Inventory extends Model
     {
         return $this->hasMany(InventoryMovement::class);
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($inventory) {
+            if ($inventory->wasRecentlyCreated || $inventory->wasChanged('stock')) {
+                try {
+                    app(\App\Services\TelegramService::class)->sendLowStockAlert($inventory);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to trigger low stock alert for inventory item ' . $inventory->id . ': ' . $e->getMessage(), ['exception' => $e]);
+                }
+            }
+        });
+    }
 }

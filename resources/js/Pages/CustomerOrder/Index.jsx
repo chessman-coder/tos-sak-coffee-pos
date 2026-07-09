@@ -82,7 +82,7 @@ export default function CustomerOrder({ products = [], categories = [], sizes = 
         setData((prev) => ({
             ...prev,
             order_type: type,
-            order_method: type === "Dine In" ? "self_order" : "walk_in_order",
+            order_method: "self_order",
             phone_number: type === "Dine In" ? "" : prev.phone_number,
         }));
     };

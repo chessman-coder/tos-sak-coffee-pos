@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use KHQR\BakongKHQR;
@@ -186,6 +187,15 @@ class PaymentController extends Controller
                     'payment_method' => 'khqr'
                 ]);
 
+                // Send Telegram Notification
+                try {
+                    $telegramService = app(TelegramService::class);
+                    $telegramService->sendOrderPaymentAlert($order);
+                    $telegramService->sendReceiverOrderAlert($order);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Telegram alert failed: ' . $e->getMessage());
+                }
+
                 return response()->json([
                     'success' => true,
                     'status' => 'pending',
@@ -213,10 +223,21 @@ class PaymentController extends Controller
     {
         $order = Order::findOrFail($id);
 
+        $oldStatus = $order->status;
+
         $order->update([
             'status' => 'pending',
             'payment_method' => 'cash'
         ]);
+
+        if ($oldStatus !== 'pending') {
+            try {
+                $telegramService = app(TelegramService::class);
+                $telegramService->sendReceiverOrderAlert($order);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Telegram receiver order alert failed: ' . $e->getMessage());
+            }
+        }
 
         return response()->json([
             'success' => true,

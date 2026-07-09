@@ -256,7 +256,7 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
             });
         } else {
             router[method](endpoint, payload, {
-                forceFormData: true,
+                forceFormData: false,
                 preserveScroll: true,
                 onSuccess: () => {
                     closeItemModal();

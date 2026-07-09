@@ -33,4 +33,19 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    protected static function booted()
+    {
+        static::saved(function ($product) {
+            if ($product->wasRecentlyCreated || $product->wasChanged('stock')) {
+                if ($product->stock !== null) {
+                    try {
+                        app(\App\Services\TelegramService::class)->sendLowStockAlert($product);
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::error('Failed to trigger low stock alert for product ' . $product->id . ': ' . $e->getMessage(), ['exception' => $e]);
+                    }
+                }
+            }
+        });
+    }
 }
