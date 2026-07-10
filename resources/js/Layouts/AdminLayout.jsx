@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const AdminLayout = ({ breadcrumb, children, className = "" }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const { url } = usePage();
 
     useEffect(() => {
         // Ensure dropdowns, tooltips, and modals work
@@ -37,6 +38,15 @@ const AdminLayout = ({ breadcrumb, children, className = "" }) => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    useEffect(() => {
+        // Auto-close sidebar on mobile view navigation
+        if (window.innerWidth < 992 && $('body').hasClass('sidebar-open')) {
+            $('body').removeClass('sidebar-open');
+            $('#sidebar-overlay').remove();
+            setIsCollapsed(true);
+        }
+    }, [url]);
 
     const { auth } = usePage().props;
     const can = auth?.can ?? {};

@@ -35,7 +35,7 @@ export default function MenuSideBar({ }) {
     return (
         <>
             {/* Sidebar */}
-            <aside className="main-sidebar fixed left-0 top-0 z-40 bg-primaryColor elevation-4 flex flex-col max-h-screen overflow-hidden">
+            <aside className="main-sidebar fixed left-0 top-0 z-[1040] bg-primaryColor elevation-4 flex flex-col max-h-screen overflow-hidden">
                 <Link href="/" className="brand-link">
                     <div className="flex justify-center items-center gap-4">
                         <div className="p-2 bg-card rounded-2xl">
@@ -46,8 +46,8 @@ export default function MenuSideBar({ }) {
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <span className="font-black text-white text-2xl"> <span className="text-secondary-dark">TOS</span> SAK</span>
-                            <span className="block text-xs font-semibold tracking-widest text-secondary-dark">COFFEE POS</span>
+                            <p className="font-black text-2xl text-secondary-dark">TOS <span className="text-white">sak</span></p>
+                            <p className="block text-xs font-semibold tracking-widest text-secondary-dark">COFFEE POS</p>
                         </div>
                     </div>
                 </Link>
@@ -91,8 +91,8 @@ export default function MenuSideBar({ }) {
                             </li>
                             <li className="nav-item">
                                 <Link
-                                    href="#"
-                                    className={`nav-link navbar-item ${route().current("#") && "active"}`}
+                                    href={route("kitchen.index")}
+                                    className={`nav-link navbar-item ${route().current("kitchen.index") && "active"}`}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -100,7 +100,7 @@ export default function MenuSideBar({ }) {
                                     }}
                                 >
                                     <ChartNoAxesCombined className="nav-icon" />
-                                    <span>Analytics</span>
+                                    <span>Kitchen</span>
                                 </Link>
                             </li>
                             {can["Manage Product"] && (

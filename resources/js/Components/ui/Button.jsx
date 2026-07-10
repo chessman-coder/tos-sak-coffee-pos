@@ -8,10 +8,10 @@ export default function Button({
     ...props
 }) {
     const variants = {
-        outline: "border-2 border-primary-dark",
-        fillDark: "border-2 border-primary-dark bg-primary-dark text-secondary-light ",
-        fillLight: "border-2 border-secondary-dark bg-secondary-dark text-primary-dark",
-        danger: "border-2 border-danger bg-danger text-bg-card",
+        outline: "border border-primary-dark",
+        fillDark: "border border-primary-dark bg-primary-dark text-secondary-light ",
+        fillLight: "border border-secondary-dark bg-secondary-dark text-primary-dark",
+        danger: "border border-danger bg-danger text-bg-card",
     };
 
     return (

@@ -1,6 +1,7 @@
 import Modal from "@/Components/Modal";
 import { usePage } from "@inertiajs/react";
 import { X } from "lucide-react";
+import Button from "../ui/Button";
 
 const inputClassName =
     "w-full rounded-2xl border border-[#d9c7bf] resize-none bg-white px-4 py-3 text-sm text-[#2f1a16] outline-none transition focus:border-[#b78a78] focus:ring-2 focus:ring-[#edd9cf]";
@@ -28,7 +29,7 @@ export default function InventoryMovementModal({
                 <div className="mb-5 flex items-start justify-between gap-4">
                     <div>
                         <h2 className="mb-1 text-3xl font-bold text-[#2f1a16]">
-                            {isStockIn ? "Stock in" : "Stock out"}
+                            {isStockIn ? "Restock" : "Stockout"}
                         </h2>
                         <p className="mb-0 text-sm text-secondary-dark">
                             Record movement for {item.name} and keep the history updated.
@@ -44,6 +45,10 @@ export default function InventoryMovementModal({
                 </div>
 
                 <div className="mb-4 rounded-2xl border border-[#eadfda] bg-white p-4 text-sm text-primaryColor">
+                    <div className="mb-3 text-base text-primaryColor">
+                        <span className="block text-xs uppercase tracking-[0.08em] text-primary-light">Item Name</span>
+                        <strong>{item.name}</strong>
+                    </div>
                     <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                         <div>
                             <span className="block text-xs uppercase tracking-[0.08em] text-primary-light">Current stock</span>
@@ -85,21 +90,23 @@ export default function InventoryMovementModal({
                     </label>
 
                     <div className="md:col-span-2 mt-2 flex justify-end gap-3">
-                        <button
+                        <Button
                             type="button"
                             onClick={onClose}
                             disabled={isSubmitting}
-                            className="rounded-full border border-[#d6ccc8] bg-white px-5 py-2.5 font-semibold text-[#4a2b25] shadow-sm transition hover:bg-[#fcf8f6] disabled:opacity-60"
+                            variant='outline'
+                            className="rounded-full shadow-sm transition hover:bg-[#fcf8f6] disabled:opacity-60"
                         >
                             Cancel
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="rounded-full bg-[#5a3630] px-5 py-2.5 font-bold text-white shadow-sm transition hover:bg-[#4a2b25] disabled:opacity-60"
+                            variant="fillDark"
+                            className="rounded-full text-white shadow-sm transition hover:bg-primary-dark disabled:opacity-60"
                         >
-                            {isSubmitting ? "Saving..." : isStockIn ? "Record stock in" : "Record stock out"}
-                        </button>
+                            {isSubmitting ? "Saving..." : isStockIn ? "Restock" : "Stockout"}
+                        </Button>
                     </div>
                 </form>
             </div>
