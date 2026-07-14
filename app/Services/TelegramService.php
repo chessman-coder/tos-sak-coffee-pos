@@ -141,45 +141,45 @@ class TelegramService
 
         // Build HTML Message
         $htmlMessage = "✅ <b>New Payment Received!</b>\n\n";
+        $htmlMessage .= '📅 <b>Date:</b> ' . e($order->order_date) . "\n";
         $htmlMessage .= '📦 <b>Order Number:</b> #<code>' . e($order->order_number) . "</code>\n";
         $htmlMessage .= '🍽️ <b>Order Type:</b> ' . e($order->order_type) . ' (' . e($order->order_method) . ")\n";
         $htmlMessage .= '💳 <b>Payment Method:</b> ' . e(strtoupper($order->payment_method)) . "\n";
         $htmlMessage .= '💵 <b>Total Paid:</b> $' . number_format($order->total_amount, 2) . "\n";
-        $htmlMessage .= '📅 <b>Date:</b> ' . e($order->order_date) . "\n";
 
-        if (!empty($order->notes)) {
-            $htmlMessage .= '📝 <b>Notes:</b> <i>' . e($order->notes) . "</i>\n";
-        }
+        // if (!empty($order->notes)) {
+        //     $htmlMessage .= '📝 <b>Notes:</b> <i>' . e($order->notes) . "</i>\n";
+        // }
 
-        $htmlMessage .= "\n🛒 <b>Order Items:</b>\n";
+        // $htmlMessage .= "\n🛒 <b>Order Items:</b>\n";
 
-        foreach ($order->items as $item) {
-            $productName = $item->product ? $item->product->name : 'Unknown Product';
-            $htmlMessage .= '• <b>' . e($productName) . '</b> (x' . $item->quantity . ') - $' . number_format($item->line_total, 2) . "\n";
+        // foreach ($order->items as $item) {
+        //     $productName = $item->product ? $item->product->name : 'Unknown Product';
+        //     $htmlMessage .= '• <b>' . e($productName) . '</b> (x' . $item->quantity . ') - $' . number_format($item->line_total, 2) . "\n";
 
-            $specDetails = [];
-            if ($item->size) {
-                $specDetails[] = 'Size: ' . e($item->size);
-            }
-            if ($item->type) {
-                $specDetails[] = 'Type: ' . e($item->type);
-            }
+        //     $specDetails = [];
+        //     if ($item->size) {
+        //         $specDetails[] = 'Size: ' . e($item->size);
+        //     }
+        //     if ($item->type) {
+        //         $specDetails[] = 'Type: ' . e($item->type);
+        //     }
 
-            if (!empty($specDetails)) {
-                $htmlMessage .= '  <i>' . implode(' | ', $specDetails) . "</i>\n";
-            }
+        //     if (!empty($specDetails)) {
+        //         $htmlMessage .= '  <i>' . implode(' | ', $specDetails) . "</i>\n";
+        //     }
 
-            if ($item->options->isNotEmpty()) {
-                $htmlMessage .= "  Options: \n";
-                foreach ($item->options as $option) {
-                    $htmlMessage .= '       - ' . e($option->option_label) . ': ' . e($option->value_label) . "\n";
-                }
-            }
+        //     if ($item->options->isNotEmpty()) {
+        //         $htmlMessage .= "  Options: \n";
+        //         foreach ($item->options as $option) {
+        //             $htmlMessage .= '       - ' . e($option->option_label) . ': ' . e($option->value_label) . "\n";
+        //         }
+        //     }
 
-            if (!empty($item->notes)) {
-                $htmlMessage .= '  Note: <i>' . e($item->notes) . "</i>\n";
-            }
-        }
+        //     if (!empty($item->notes)) {
+        //         $htmlMessage .= '  Note: <i>' . e($item->notes) . "</i>\n";
+        //     }
+        // }
 
         try {
             $url = "https://api.telegram.org/bot{$this->paymentBotToken}/sendMessage";
@@ -431,4 +431,38 @@ class TelegramService
 
         return $this->sendTextMessage($chatId, $htmlMessage, $botType);
     }
+
+    /**
+     * Send a sales report to Telegram for a specific period.
+     *
+     * @param string $htmlMessage
+     * @return bool
+     */
+    public function sendPeriodSalesReport(string $htmlMessage): bool
+    {
+        if (empty($this->saleReportBotToken) || empty($this->saleReportChatId)) {
+            Log::warning('Telegram sale report bot credentials are not configured.');
+            return false;
+        }
+
+        try {
+            $url = "https://api.telegram.org/bot{$this->saleReportBotToken}/sendMessage";
+            $response = Http::timeout(10)->post($url, [
+                'chat_id' => $this->saleReportChatId,
+                'text' => $htmlMessage,
+                'parse_mode' => 'HTML',
+            ]);
+
+            if ($response->failed()) {
+                Log::error('Telegram API sendPeriodSalesReport failed: ' . $response->body());
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to send Telegram sales report: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
+

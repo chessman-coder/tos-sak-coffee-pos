@@ -1,15 +1,18 @@
 import React from "react";
-import { Coffee, ShoppingBag } from "lucide-react";
+import { usePage } from "@inertiajs/react";
+import { ShoppingBag } from "lucide-react";
 
 export default function GuestHeader({ setCartOpen, cart = [] }) {
+    const { settings } = usePage().props;
+
     return (
         <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-[#eadfda] px-4 py-3 md:px-8 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#5a3630] text-white shadow-md">
-                    <Coffee size={20} className="animate-pulse" />
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-[#f4ece9] text-white shadow-md">
+                    <img src={settings?.logo_url || "/images/logo.svg"} alt="Store logo" className="h-8 w-8 object-contain" />
                 </div>
                 <div>
-                    <h1 className="text-lg font-black tracking-tight text-[#2f1a16]">TOS SAK CAFE</h1>
+                    <h1 className="text-lg font-black tracking-tight text-[#2f1a16]">{settings?.store_name || "TOS SAK CAFE"}</h1>
                     <p className="text-[10px] uppercase tracking-widest text-[#c07a49] font-bold">
                         Self-Ordering Portal
                     </p>

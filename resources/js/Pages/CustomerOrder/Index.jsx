@@ -6,6 +6,7 @@ import ProductOptionsModal from "@/Components/CustomerOrder/ProductOptionsModal"
 import GuestHeader from "@/Components/CustomerOrder/GuestHeader";
 import ProductMenu from "@/Components/CustomerOrder/ProductMenu";
 import MobileCartBar from "@/Components/CustomerOrder/MobileCartBar";
+import { toast } from "@/Components/ui/Toast";
 
 export default function CustomerOrder({ products = [], categories = [], sizes = [], orderNumber, topSellingProducts = [] }) {
     // Search and Category states
@@ -212,6 +213,7 @@ export default function CustomerOrder({ products = [], categories = [], sizes = 
                 ];
             }
         });
+        toast.success(`${product.name} added to cart!`);
     };
 
     const handleConfirmOptions = () => {
@@ -223,9 +225,9 @@ export default function CustomerOrder({ products = [], categories = [], sizes = 
         );
 
         if (missingRequired.length > 0) {
-            setOptionError(
-                `Please select required options: ${missingRequired.map((o) => o.name).join(", ")}`
-            );
+            const errMsg = `Please select required options: ${missingRequired.map((o) => o.name).join(", ")}`;
+            setOptionError(errMsg);
+            toast.warning(errMsg);
             return;
         }
 
@@ -299,6 +301,7 @@ export default function CustomerOrder({ products = [], categories = [], sizes = 
         e.preventDefault();
 
         if (cart.length === 0) {
+            toast.warning("Your cart is empty!");
             return;
         }
 
@@ -310,13 +313,17 @@ export default function CustomerOrder({ products = [], categories = [], sizes = 
                 setCart([]);
                 setCartOpen(false);
                 reset();
+                toast.success("Order placed successfully!");
+            },
+            onError: () => {
+                toast.failed("Failed to place order. Please check the details.");
             },
         });
     };
 
     return (
         <div className="min-h-screen bg-[#fcf9f7] font-sans antialiased text-[#2f1a16] selection:bg-[#5a3630] selection:text-white">
-            <Head title="Order Delicious Food & Drinks" />
+            <Head title="Self Order Food & Drinks" />
 
             {/* Custom Premium Guest Header */}
             <GuestHeader

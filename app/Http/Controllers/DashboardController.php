@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if ($user && $user->hasPermissionTo('Manage Pos Checkout') && $user->hasPermissionTo('Manage Order')) {
+        if ($user && $user->hasPermissionTo('Manage Pos Checkout') && $user->hasPermissionTo('View Order History')) {
             return redirect()->route('pos.index');
         }
 
@@ -57,10 +57,11 @@ class DashboardController extends Controller
             'total_staff' => $totalStaff,
         ];
 
-        // Weekly Sales (last 7 days of performance)
+        // Weekly Sales (current week: Monday to Sunday)
         $weeklySales = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::today()->subDays($i);
+        $startOfWeek = Carbon::today()->startOfWeek();
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
             $dateStr = $date->toDateString();
             $dayName = $date->format('D');  // Mon, Tue, etc.
             $sales = (float) Order::where('status', '!=', 'cancelled')

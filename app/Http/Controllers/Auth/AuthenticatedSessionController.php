@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        if ($user && $user->hasPermissionTo('Manage Pos Checkout') && $user->hasPermissionTo('Manage Order')) {
+        if ($user && $user->hasPermissionTo('Manage Pos Checkout') && $user->hasPermissionTo('View Order History')) {
             return redirect()->intended(route('pos.index', absolute: false));
         }
 

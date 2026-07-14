@@ -21,7 +21,8 @@ class PermissionSeeder extends Seeder
             'Manage Pos Checkout',
             'View Order History',
             'View Dashboard',
-            'Manage Report'
+            'View Kitchen Dashboard',
+            'Manage Settings',
         ];
 
         foreach ($permissions as $permission) {

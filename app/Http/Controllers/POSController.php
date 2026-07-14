@@ -31,7 +31,7 @@ class POSController extends Controller
         foreach ($products as $product) {
             $product->setRelation('options', $options);
         }
-        
+
         // Get all categories to allow filtering on the frontend
         $categories = Category::all();
 

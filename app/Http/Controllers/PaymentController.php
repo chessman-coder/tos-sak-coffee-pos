@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\AppSettingsService;
 use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,11 +16,17 @@ class PaymentController extends Controller
 {
     public function checkout(Request $request, $id)
     {
+        $settings = app(AppSettingsService::class)->all();
+
         // Try to find by Order first, then Product
         $order = Order::find($id);
         $amount = 0.0;
         $billNumber = null;
         $description = '';
+
+        if ($order) {
+            $order->load(['items.product', 'items.options']);
+        }
 
         if ($order) {
             $amount = (float) $order->total_amount;
@@ -29,6 +36,7 @@ class PaymentController extends Controller
             if ($order->payment_method === 'cash') {
                 return Inertia::render('Payment/cash/Checkout', [
                     'order_id' => $order->id,
+                    'order' => $order,
                     'amount' => $amount,
                     'bill_number' => $billNumber,
                     'description' => $description,
@@ -55,7 +63,7 @@ class PaymentController extends Controller
             $bakongAccountID = config('services.bakong.merchantID') ?: env('BAKONG_MERCHANT_ID', 'dara_ly@bkrt');
             $merchantName = config('services.bakong.merchantName') ?: 'Merchant Name';
             $merchantCity = config('services.bakong.merchantCity') ?: 'Phnom Penh';
-            $storeName = env('BAKONG_STORE_NAME', 'Tos Sak');
+            $storeName = $settings['store_name'] ?? env('BAKONG_STORE_NAME', 'Tos Sak');
             $mobile = config('services.bakong.merchantMobile') ?: env('BAKONG_MERCHANT_MOBILE', '077906536');
             $terminal = env('BAKONG_TERMINAL_LABEL', 'WebQR');
 
@@ -112,6 +120,8 @@ class PaymentController extends Controller
                     'md5' => $md5Hash,
                     'amount' => $amount,
                     'currency' => 'USD',
+                    'exchange_rate' => $settings['exchange_rate'] ?? 4000,
+                    'store_name' => $storeName,
                     'bill_number' => $billNumber,
                     'description' => $description,
                 ]);
@@ -119,6 +129,7 @@ class PaymentController extends Controller
 
             return Inertia::render('Payment/khqr/Checkout', [
                 'order_id' => $order ? $order->id : null,
+                'order' => $order,
                 'qr_code' => $qrCodeString,
                 'md5' => $md5Hash,
                 'amount' => $amount,

@@ -8,6 +8,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\TypeController;
@@ -107,9 +108,14 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
     ]);
 })->name('customer.index');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified', 'check:View Dashboard'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::middleware(['check:View Dashboard'])->group(function () {
+        Route::get('/sale-analytics', [\App\Http\Controllers\SaleAnalyticsController::class, 'index'])->name('sale-analytics.index');
+        Route::post('/sale-analytics/send-telegram', [\App\Http\Controllers\SaleAnalyticsController::class, 'sendTelegramReport'])->name('sale-analytics.send-telegram');
+    });
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -120,7 +126,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/checkout/cash/{id}', [PaymentController::class, 'confirmCashPayment'])->name('payment.confirm-cash');
     });
     // Orders module
-    Route::middleware(['check:Manage Order'])->group(function () {
+    Route::middleware(['check:View Order History'])->group(function () {
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
@@ -182,6 +188,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [RolesController::class, 'store'])->name('roles.store');
         Route::patch('/{id}', [RolesController::class, 'update'])->name('roles.update');
         Route::delete('/{id}', [RolesController::class, 'destroy'])->name('roles.destroy');
+    });
+
+    Route::middleware(['check:Manage Settings'])->group(function () {
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
 
     // Users management module

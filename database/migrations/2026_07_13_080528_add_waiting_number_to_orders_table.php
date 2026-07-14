@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cache', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->mediumText('value');
-            $table->integer('expiration');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->unsignedInteger('waiting_number')->nullable()->after('order_number');
         });
     }
 
@@ -23,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cache');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropColumn('waiting_number');
+        });
     }
 };

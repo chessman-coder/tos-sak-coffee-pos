@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import InputError from "@/Components/InputError";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { Coffee, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function Login({ status, canResetPassword }) {
+    const { settings } = usePage().props;
     const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
@@ -32,11 +33,11 @@ export default function Login({ status, canResetPassword }) {
                 {/* Top: Logo & Title */}
                 <div className="flex items-center gap-4 relative z-10">
                     <div className="flex items-center justify-center bg-card p-3 rounded-xl text-[#3c221e] text-2xl font-extrabold shadow-md">
-                        <img className="w-20" src="images/Logo.svg" alt="Logo" />
+                        <img className="w-20" src={settings?.logo_url || "/images/logo.svg"} alt="Logo" />
                     </div>
                     <div className="flex flex-col">
                         <span className="text-5xl font-black text-white tracking-wide leading-tight">
-                            <span className="text-secondary-dark">TOS</span> SAK
+                            <span className="text-secondary-dark">{settings?.store_name || "TOS"}</span>
                         </span>
                         <span className="text-base font-bold tracking-widest text-[#d8af91]">
                             COFFEE POS
@@ -60,7 +61,7 @@ export default function Login({ status, canResetPassword }) {
 
                 {/* Bottom: Copyright Footer */}
                 <div className="text-xs text-[#ae958b] font-medium relative z-10">
-                    &copy; 2026 TOS SAK
+                    &copy; 2026 {settings?.store_name || "TOS SAK"}
                 </div>
             </div>
 

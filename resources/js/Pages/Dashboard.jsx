@@ -5,6 +5,7 @@ import { DollarSign, ShoppingBag, Users } from 'lucide-react';
 import StatCard from '../Components/ui/StatCard';
 import DashboardCharts from '../Components/Dashboard/DashboardCharts';
 import RecentOrders from '../Components/Dashboard/RecentOrders';
+import TopSelling from '../Components/Dashboard/TopSelling';
 
 const Dashboard = ({ stats, weeklySales, topSelling, recentOrders }) => {
     // Formatter helpers
@@ -52,7 +53,10 @@ const Dashboard = ({ stats, weeklySales, topSelling, recentOrders }) => {
 
 
                 {/* Charts & Top Sellers Grid */}
-                <DashboardCharts weeklySales={weeklySales} topSelling={topSelling} />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <DashboardCharts weeklySales={weeklySales} />
+                    <TopSelling topSelling={topSelling} />
+                </div>
 
                 {/* Recent Orders Section */}
                 <RecentOrders recentOrders={recentOrders} />

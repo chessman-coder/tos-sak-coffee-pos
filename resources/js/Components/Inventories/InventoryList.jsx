@@ -1,5 +1,7 @@
+import React, { useState } from "react";
 import { Plus, Minus, Eye, SquarePen, Trash2, ImageIcon } from "lucide-react";
 import Badge from "../ui/Badge";
+import DeleteConfirmDialog from "../DeleteConfirmDialog";
 
 export default function InventoryList({
     filteredItems,
@@ -10,6 +12,26 @@ export default function InventoryList({
     onEditItem,
     onDeleteItem,
 }) {
+    const [confirmingDataDeletion, setConfirmingDataDeletion] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const triggerDeleteConfirm = (item) => {
+        setSelectedItem(item);
+        setConfirmingDataDeletion(true);
+    };
+
+    const closeModal = () => {
+        setConfirmingDataDeletion(false);
+        setSelectedItem(null);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (selectedItem) {
+            onDeleteItem(selectedItem);
+        }
+        closeModal();
+    };
+
     if (!filteredItems || filteredItems.length === 0) {
         return (
             <div className="overflow-hidden rounded-[22px] border border-[#eadfda] bg-white p-6 text-sm text-secondary-dark shadow-[0_10px_24px_rgba(54,37,30,0.04)]">
@@ -103,7 +125,7 @@ export default function InventoryList({
                                         <button type="button" onClick={() => onEditItem(item)} className="text-infoColor transition border-none appearance-none outline-none" aria-label="Edit item" title="Edit Item">
                                             <SquarePen size={18} />
                                         </button>
-                                        <button type="button" onClick={() => onDeleteItem(item)} className="text-danger transition border-none appearance-none outline-none" aria-label="Delete item" title="Delete Item">
+                                        <button type="button" onClick={() => triggerDeleteConfirm(item)} className="text-danger transition border-none appearance-none outline-none" aria-label="Delete item" title="Delete Item">
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
@@ -113,6 +135,14 @@ export default function InventoryList({
                     })}
                 </tbody>
             </table>
+            <DeleteConfirmDialog
+                show={confirmingDataDeletion}
+                title="Delete inventory item"
+                description={selectedItem ? `Are you sure you want to delete "${selectedItem.name}"?` : ""}
+                confirmText="Delete"
+                onConfirm={handleDeleteConfirm}
+                onClose={closeModal}
+            />
         </div>
     );
 }

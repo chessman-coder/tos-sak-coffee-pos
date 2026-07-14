@@ -20,6 +20,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { MantineProvider } from '@mantine/core';
+import { ToastContainer } from '@/Components/ui/Toast';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -36,6 +37,7 @@ createInertiaApp({
         root.render(
             <MantineProvider withNormalizeCSS withGlobalStyles>
                 <App {...props} />
+                <ToastContainer />
             </MantineProvider>
         );
     },

@@ -1,10 +1,12 @@
 import React from "react";
 import { Check, Printer } from "lucide-react";
 import { router } from "@inertiajs/react";
+import ReceiptTemplate from "@/Components/ReceiptTemplate";
 
 export default function SuccessView({
     amount,
     bill_number,
+    order = null,
     payment_method = "khqr",
     cash_received = 0,
     change_due = 0,
@@ -23,11 +25,11 @@ export default function SuccessView({
     return (
         <div className="p-8 text-center bg-white space-y-6">
             {/* Animated Success Checkmark */}
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full text-success bg-success-bg border-4 border-success animate-pulse">
+            <div className="no-print mx-auto flex h-20 w-20 items-center justify-center rounded-full text-success bg-success-bg border-4 border-success animate-pulse">
                 <Check size={40} className="stroke-[4]" />
             </div>
 
-            <div className="space-y-2">
+            <div className="no-print space-y-2">
                 <h2 className="text-2xl font-extrabold text-primary-text tracking-tight">
                     {payment_method === "cash" ? "Payment Completed!" : "Pay Successfully!"}
                 </h2>
@@ -82,6 +84,15 @@ export default function SuccessView({
                     )}
                 </div>
             </div>
+
+            <ReceiptTemplate
+                amount={amount}
+                bill_number={bill_number}
+                order={order}
+                payment_method={payment_method}
+                cash_received={cash_received}
+                change_due={change_due}
+            />
 
             {/* Actions */}
             <div className="space-y-3 pt-2">

@@ -4,7 +4,7 @@ import { QrCode } from "lucide-react";
 import Modal from "@/Components/Modal";
 import SuccessView from "@/Components/SuccessView";
 
-export default function Checkout({ order_id, qr_code, md5, amount, bill_number, description, isAdmin = false }) {
+export default function Checkout({ order_id, order = null, qr_code, md5, amount, bill_number, description, isAdmin = false }) {
     const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, checking, success, error
     const [errorMsg, setErrorMsg] = useState("");
     const [checkingManual, setCheckingManual] = useState(false);
@@ -94,7 +94,7 @@ export default function Checkout({ order_id, qr_code, md5, amount, bill_number, 
             >
                 <div className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-[#eadfda]">
                     {paymentStatus === "success" ? (
-                        <SuccessView amount={amount} bill_number={bill_number} isAdmin={isAdmin} />
+                        <SuccessView amount={amount} bill_number={bill_number} order={order} isAdmin={isAdmin} />
                     ) : (
                         /* Scan & Verification View */
                         <>

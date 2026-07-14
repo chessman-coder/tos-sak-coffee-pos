@@ -1,14 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
     CircleAlert,
-    Eye,
     History,
-    Minus,
     Package,
     Plus,
-    Search,
-    SquarePen,
-    Trash2,
+    Search
 } from "lucide-react";
 import InventoryFormModal from "@/Components/Inventories/InventoryFormModal";
 import InventoryHistoryPanel from "@/Components/Inventories/InventoryHistoryPanel";
@@ -320,10 +316,6 @@ export default function InventoryPage({ inventories = [], movements = [] }) {
     }
 
     function handleDeleteItem(item) {
-        const confirmed = window.confirm(`Delete ${item.name}?`);
-
-        if (!confirmed) return;
-
         router.delete(route("inventories.destroy", item.id), {
             preserveScroll: true,
             onSuccess: () =>

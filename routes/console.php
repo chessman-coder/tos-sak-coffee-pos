@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use App\Services\AppSettingsService;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -12,5 +13,5 @@ Schedule::call(function (\App\Services\TelegramService $telegramService) {
     $telegramService->sendDailySaleReport();
 })
 ->name('telegram:send-daily-report')
-->cron(config('services.telegram.daily_report_schedule', '59 23 * * *'))
+->cron(app(AppSettingsService::class)->get('telegram_daily_report_schedule', config('services.telegram.daily_report_schedule', '59 23 * * *')))
 ->timezone('Asia/Phnom_Penh');

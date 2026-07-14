@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import axios from "axios";
 import { Banknote, ArrowLeft, Coins, AlertTriangle } from "lucide-react";
 import Modal from "@/Components/Modal";
 import SuccessView from "@/Components/SuccessView";
 
-export default function Checkout({ order_id, amount, bill_number, isAdmin = false }) {
+export default function Checkout({ order_id, order = null, amount, bill_number, isAdmin = false }) {
+    const { settings } = usePage().props;
     const [cashReceived, setCashReceived] = useState("");
     const [paymentStatus, setPaymentStatus] = useState("pending"); // pending, processing, success, error
     const [errorMsg, setErrorMsg] = useState("");
@@ -125,6 +126,7 @@ export default function Checkout({ order_id, amount, bill_number, isAdmin = fals
                         <SuccessView
                             amount={amount}
                             bill_number={bill_number}
+                            order={order}
                             payment_method="cash"
                             cash_received={cashReceived || amount}
                             change_due={changeDue}
@@ -159,7 +161,7 @@ export default function Checkout({ order_id, amount, bill_number, isAdmin = fals
                                     </div>
                                     <div className="flex justify-between items-center text-sm border-t border-[#f3ede9] pt-2">
                                         <span className="text-secondary-dark font-semibold">Equivalent in Riel</span>
-                                        <span className="text-secondary-dark font-bold text-sm">≈ ៛{(amount * 4000).toLocaleString('en-US')}</span>
+                                        <span className="text-secondary-dark font-bold text-sm">≈ ៛{(amount * Number(settings?.exchange_rate ?? 4000)).toLocaleString('en-US')}</span>
                                     </div>
                                 </div>
                             </div>

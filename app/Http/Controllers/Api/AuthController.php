@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use JWTAuth;
-use JWTAuthException;
 use App\Models\User;
 use HasApiTokens;
 use Spatie\Permission\Models\Role;
@@ -18,54 +17,65 @@ use Illuminate\Validation\Rule;
 class AuthController extends Controller
 {
     /**
-     * Get a JWT via given credentials.
+     * Get a JWT for the given user and keep the expiry aligned with config.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return array<string, mixed>|null
      */
-    private function getToken($email, $password)
+    private function issueToken(User $user)
     {
-        $token = null;
         try {
-            if (!$token = JWTAuth::attempt( ['email' => $email, 'password'=>$password])) {
-                return response()->json([
-                    'response' => 'error',
-                    'message' => 'Password or email is invalid',
-                    'token'=> $token
-                ]);
-            }
-        } catch (JWTAuthException $e) {
-            return response()->json([
-                'response' => 'error',
-                'message' => 'Token creation failed',
-            ]);
+            $ttlMinutes = max(1, (int) config('jwt.ttl', 60));
+
+            JWTAuth::factory()->setTTL($ttlMinutes);
+
+            $token = JWTAuth::fromUser($user);
+
+            return [
+                'token' => $token,
+                'expires_at' => now()->addMinutes($ttlMinutes),
+            ];
+        } catch (\Throwable $e) {
+            return null;
         }
-        return $token;
     }
 
     public function login(Request $request)
     {
         $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['success' => false, "error" => true, 'email' => true, "message" => "The email doesn't match"]);
+        }
+
         if($user->status == 2){
             return response()->json(['success' => false, "error" => true, 'data' => $user, "message" => "Your Account has been deleted."]);
         }
-        if ($user) 
-        {
-            if(Hash::check($request->password, $user->password)) { // The passwords match...
-                $token = self::getToken($request->email, $request->password);
-                $user->token = $token; // update user token
-                $user->save();
-                
-                if (!empty($user)) {
-                    $permissions = $user->getAllPermissions()->pluck('name');
-                } else {
-                    $permissions = [];
-                }
-                return response()->json(["success" => true, "error" => false, 'data' => $user, 'message' => 'Login successfully!']);
-            } else {
-                return response()->json(["success" => false, "error" => true, "password" => true, "message" => "The password doesn't match"]);
+        if(Hash::check($request->password, $user->password)) { // The passwords match...
+            $tokenData = $this->issueToken($user);
+
+            if (!$tokenData) {
+                return response()->json(['success' => false, 'message' => 'Token creation failed'], 500);
             }
+
+            $user->token = $tokenData['token'];
+            $user->token_expires_at = $tokenData['expires_at'];
+            $user->save();
+
+            if (!empty($user)) {
+                $permissions = $user->getAllPermissions()->pluck('name');
+            } else {
+                $permissions = [];
+            }
+
+            return response()->json([
+                "success" => true,
+                "error" => false,
+                'data' => $user,
+                'token' => $tokenData['token'],
+                'token_expires_at' => $tokenData['expires_at'],
+                'message' => 'Login successfully!'
+            ]);
         } else {
-            return response()->json(['success' => false, "error" => true, 'email' => true, "message" => "The phone doesn't match"]);
+            return response()->json(["success" => false, "error" => true, "password" => true, "message" => "The password doesn't match"]);
         }
     }
 
@@ -98,12 +108,24 @@ class AuthController extends Controller
             }
            
             if ($user->save()){
-                $token = self::getToken($request->email, $request->password); // generate user token
-                if (!is_string($token))  return response()->json(['success' => false,'message'=>'Token generation failed'], 201);
-                $user = User::where('email', $request->email)->get()->first();
-                $user->token = $token; // update user token
+                $tokenData = $this->issueToken($user);
+
+                if (!$tokenData) {
+                    return response()->json(['success' => false,'message'=>'Token generation failed'], 500);
+                }
+
+                $user->token = $tokenData['token'];
+                $user->token_expires_at = $tokenData['expires_at'];
                 $user->save();
-                return response()->json(['success' => true, "error" => false, 'message' => 'You are register successfully!!!.', 'data' => $user], 200);        
+
+                return response()->json([
+                    'success' => true,
+                    "error" => false,
+                    'message' => 'You are register successfully!!!.',
+                    'data' => $user,
+                    'token' => $tokenData['token'],
+                    'token_expires_at' => $tokenData['expires_at'],
+                ], 200);        
             }else{
                 return response()->json(['success' => false, "error" => false, 'message' => 'Something went worng, You cannot register!', 'data' => 'Can not register user'], 201);
             }

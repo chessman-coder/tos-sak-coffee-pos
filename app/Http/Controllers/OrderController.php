@@ -116,9 +116,16 @@ class OrderController extends Controller
 
             $totalAmount = 0;
             $orderNumber = $validated['order_number'] ?? $this->generateOrderNumber();
+            
+            $orderDate = $validated['order_date'] ?? now()->toDateString();
+            $maxWaiting = $model->whereDate('order_date', $orderDate)
+                ->where('status', '!=', 'cancelled')
+                ->max('waiting_number');
+            $waitingNumber = ($maxWaiting ?? 0) + 1;
 
             $order = $model->create([
                 'order_number' => $orderNumber,
+                'waiting_number' => $waitingNumber,
                 'customer_name' => $validated['customer_name'] ?? null,
                 'phone_number' => $validated['phone_number'] ?? null,
                 'order_type' => $validated['order_type'],

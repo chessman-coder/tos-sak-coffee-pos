@@ -242,7 +242,7 @@ export default function KitchenDashboard() {
 
     return (
         <AdminLayout>
-            <Head title="Kitchen Queue Dashboard" />
+            <Head title="Kitchen Live Dashboard" />
 
             <div className="flex flex-col h-[calc(100vh-80px)] px-3 py-3 md:px-4 md:py-4 bg-[#F8F5F2]">
                 {/* Header controls */}

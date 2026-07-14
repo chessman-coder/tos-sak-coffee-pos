@@ -23,6 +23,7 @@ class KitchenApiController extends Controller
             return [
                 'id' => $order->id,
                 'order_number' => $order->order_number,
+                'waiting_number' => $order->waiting_number,
                 'customer_name' => $order->customer_name,
                 'phone_number' => $order->phone_number,
                 'order_type' => $order->order_type,
@@ -67,6 +68,7 @@ class KitchenApiController extends Controller
         $orderData = [
             'id' => $order->id,
             'order_number' => $order->order_number,
+            'waiting_number' => $order->waiting_number,
             'customer_name' => $order->customer_name,
             'phone_number' => $order->phone_number,
             'order_type' => $order->order_type,

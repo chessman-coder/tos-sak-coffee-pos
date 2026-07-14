@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AppSettingsService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -29,7 +30,12 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $settingsService = app(AppSettingsService::class);
+
         return array_merge(parent::share($request), [
+            'settings' => array_merge($settingsService->all(), [
+                'logo_url' => $settingsService->logoUrl(),
+            ]),
             'auth' => [
                 'user' => $request->user(),
                 'can' => $request->user()?->loadMissing('roles.permissions')
@@ -41,6 +47,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'failed' => fn () => $request->session()->get('failed') ?? $request->session()->get('error'),
             ],
         ]);
     }

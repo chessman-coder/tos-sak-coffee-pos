@@ -61,6 +61,11 @@ export default function KitchenColumns({
                             col.orders.map(order => {
                                 const elapsed = getElapsedMinutes(order.created_at);
                                 const isLate = elapsed >= 10 && (key === "pending" || key === "preparing");
+                                const waitingNumber = order?.waiting_number ?? (() => {
+                                    const source = String(order?.order_number || "");
+                                    const digits = source.match(/\d+/g)?.join("");
+                                    return digits ? digits.replace(/^0+/, "") || "0" : source || "N/A";
+                                })();
 
                                 return (
                                     <div
@@ -72,8 +77,11 @@ export default function KitchenColumns({
                                         <div>
                                             <div className="flex items-start justify-between gap-3 mb-2.5">
                                                 <div>
-                                                    <h4 className="font-black text-base text-primary-dark">
+                                                    <h4 className="font-black text-base text-primary-dark flex items-center gap-2">
                                                         #{order.order_number}
+                                                        <span className="text-[10px] bg-[#f4ece9] text-[#5a3630] font-extrabold px-1.5 py-0.5 rounded-md border border-[#eadfda]">
+                                                            No. {waitingNumber}
+                                                        </span>
                                                     </h4>
                                                     <span className="text-sm font-bold text-secondary-dark uppercase block tracking-wide">
                                                         {order.customer_name || "Walk-in Customer"}
