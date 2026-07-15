@@ -1,4 +1,4 @@
-import InfoBox from "@/Components/UI/InfoBox";
+import InfoBox from "@/Components/ui/InfoBox";
 import { usePage } from "@inertiajs/react";
 import { X } from "lucide-react";
 

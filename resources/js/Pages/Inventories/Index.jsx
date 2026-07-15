@@ -9,9 +9,9 @@ import {
 import InventoryFormModal from "@/Components/Inventories/InventoryFormModal";
 import InventoryHistoryPanel from "@/Components/Inventories/InventoryHistoryPanel";
 import InventoryMovementModal from "@/Components/Inventories/InventoryMovementModal";
-import DetailModal from "@/Components/UI/DetailModal";
+import DetailModal from "@/Components/ui/DetailModal";
 import InventoryList from "@/Components/Inventories/InventoryList";
-import StatCard from "@/Components/UI/StatCard";
+import StatCard from "@/Components/ui/StatCard";
 import Button from "@/Components/ui/Button";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, router, usePage } from "@inertiajs/react";
