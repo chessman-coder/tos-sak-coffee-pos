@@ -1,0 +1,10 @@
+:8080 {
+    root * public
+    php_fastcgi unix//run/php-fpm.sock {
+        root public
+        split .php
+        try_files {path} {path}/ /index.php?{query}
+    }
+    file_server
+    encode zstd gzip
+}
