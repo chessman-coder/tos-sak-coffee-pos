@@ -177,7 +177,7 @@ class PaymentController extends Controller
         }
 
         try {
-            $token = config('services.bakong.token') ?: env('BAKONG_SECRET_KEY');
+            $token = config('services.bakong.token') ?: env('BAKONG_TOKEN');
             if (empty($token) || $token === 'YOUR_BAKONG_TOKEN') {
                 throw new \Exception("Bakong API Token is not configured.");
             }
