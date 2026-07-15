@@ -1,0 +1,14 @@
+# Nixpacks deployment configuration for Laravel + Vite on Railway
+
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader",
+    "npm install"
+]
+
+[phases.build]
+cmds = [
+    "mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache",
+    "npm run build",
+    "php artisan optimize:clear"
+]
