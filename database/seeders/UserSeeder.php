@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'email' => 'admin@gmail.com',
         ], [
             'name' => 'admin',
-            'password' => Hash::make('123456')
+            'password' => Hash::make('admin@tossak2026')
         ]);
         
         $role = Role::firstOrCreate(['name' => 'Admin']);
