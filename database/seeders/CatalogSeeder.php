@@ -93,9 +93,5 @@ class CatalogSeeder extends Seeder
         ProductOptionValue::create(['product_option_id' => $addonsOpt->id, 'value' => 'Extra Shot', 'upcharge' => 0.75, 'sort_order' => 0]);
         ProductOptionValue::create(['product_option_id' => $addonsOpt->id, 'value' => 'Caramel Drizzle', 'upcharge' => 0.50, 'sort_order' => 1]);
         ProductOptionValue::create(['product_option_id' => $addonsOpt->id, 'value' => 'Whipped Cream', 'upcharge' => 0.50, 'sort_order' => 2]);
-
-        foreach ($productsData as $prod) {
-            Product::create($prod);
-        }
     }
 }
