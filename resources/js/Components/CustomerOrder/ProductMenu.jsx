@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Search, Flame, Plus, ImageIcon } from "lucide-react";
 import ProductGrid from "@/Components/CustomerOrder/ProductGrid";
 
@@ -16,14 +16,45 @@ export default function ProductMenu({
     setSearch,
     selectedCategoryId,
     setSelectedCategoryId,
+    categories = [],
     parentCategories = [],
     subCategoriesMap = {},
     filteredProducts = [],
     handleAddToCartClick,
     topSellingProducts = [],
 }) {
+    const selectedCategoryObj = useMemo(() => {
+        if (selectedCategoryId === null || selectedCategoryId === undefined || selectedCategoryId === "") return null;
+        return categories.find((c) => String(c.id) === String(selectedCategoryId));
+    }, [categories, selectedCategoryId]);
+
+    const activeParentCategoryId = selectedCategoryObj
+        ? (selectedCategoryObj.parent_id ?? selectedCategoryObj.id)
+        : null;
+
+    const activeSubCategoryId = selectedCategoryObj?.parent_id ? selectedCategoryObj.id : null;
+
+    const activeSubCategories = useMemo(() => {
+        if (!activeParentCategoryId) return [];
+        return (
+            subCategoriesMap[activeParentCategoryId] ||
+            subCategoriesMap[String(activeParentCategoryId)] ||
+            []
+        );
+    }, [activeParentCategoryId, subCategoriesMap]);
+
+    const sectionTitle = useMemo(() => {
+        if (search.trim()) {
+            return `Results for "${search.trim()}"`;
+        }
+        if (selectedCategoryObj) {
+            return selectedCategoryObj.name;
+        }
+        return "All Products";
+    }, [search, selectedCategoryObj]);
+
     return (
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-6 w-full">
             {/* Welcome Vibe & Search */}
             <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
                 <div>
@@ -56,44 +87,63 @@ export default function ProductMenu({
                     <button
                         type="button"
                         onClick={() => setSelectedCategoryId(null)}
-                        className={`rounded-full px-5 py-2.5 text-xs font-bold transition shadow-sm cursor-pointer shrink-0 ${selectedCategoryId === null
+                        className={`rounded-full px-5 py-2.5 text-xs font-bold transition shadow-sm cursor-pointer shrink-0 ${activeParentCategoryId === null
                             ? "bg-[#5a3630] text-white"
                             : "bg-white border border-[#eadfda] text-[#5a3630] hover:bg-[#fbf8f5]"
                             }`}
                     >
                         All Products
                     </button>
-                    {parentCategories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => setSelectedCategoryId(cat.id)}
-                            className={`rounded-full px-5 py-2.5 text-xs font-bold transition shadow-sm cursor-pointer shrink-0 ${selectedCategoryId === cat.id
-                                ? "bg-[#5a3630] text-white"
-                                : "bg-white border border-[#eadfda] text-[#5a3630] hover:bg-[#fbf8f5]"
-                                }`}
-                        >
-                            {cat.name}
-                        </button>
-                    ))}
+                    {parentCategories.map((cat) => {
+                        const isParentActive = activeParentCategoryId !== null && String(activeParentCategoryId) === String(cat.id);
+                        return (
+                            <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => setSelectedCategoryId(cat.id)}
+                                className={`rounded-full px-5 py-2.5 text-xs font-bold transition shadow-sm cursor-pointer shrink-0 ${isParentActive
+                                    ? "bg-[#5a3630] text-white"
+                                    : "bg-white border border-[#eadfda] text-[#5a3630] hover:bg-[#fbf8f5]"
+                                    }`}
+                            >
+                                {cat.name}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Subcategory Pills */}
-                {selectedCategoryId && subCategoriesMap[selectedCategoryId] && (
-                    <div className="flex flex-wrap gap-1.5 border-t border-[#eadfda] pt-3 animate-fadeIn">
-                        <span className="text-xs text-[#8b6b61] flex items-center mr-1">
+                {activeParentCategoryId && activeSubCategories.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 border-t border-[#eadfda] pt-3 animate-fadeIn">
+                        <span className="text-xs text-[#8b6b61] font-semibold flex items-center mr-1">
                             Subcategories:
                         </span>
-                        {subCategoriesMap[selectedCategoryId].map((sub) => (
-                            <button
-                                key={sub.id}
-                                type="button"
-                                onClick={() => setSelectedCategoryId(sub.id)}
-                                className="rounded-full bg-[#f3ede9] px-3.5 py-1.5 text-xs font-semibold text-[#5a3630] transition hover:bg-[#eee4de] cursor-pointer"
-                            >
-                                {sub.name}
-                            </button>
-                        ))}
+                        <button
+                            type="button"
+                            onClick={() => setSelectedCategoryId(activeParentCategoryId)}
+                            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer ${!activeSubCategoryId
+                                ? "bg-[#5a3630] text-white"
+                                : "bg-[#f3ede9] text-[#5a3630] hover:bg-[#eee4de]"
+                                }`}
+                        >
+                            All {categories.find((c) => String(c.id) === String(activeParentCategoryId))?.name}
+                        </button>
+                        {activeSubCategories.map((sub) => {
+                            const isSubActive = activeSubCategoryId !== null && String(activeSubCategoryId) === String(sub.id);
+                            return (
+                                <button
+                                    key={sub.id}
+                                    type="button"
+                                    onClick={() => setSelectedCategoryId(isSubActive ? activeParentCategoryId : sub.id)}
+                                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer ${isSubActive
+                                        ? "bg-[#5a3630] text-white"
+                                        : "bg-[#f3ede9] text-[#5a3630] hover:bg-[#eee4de]"
+                                        }`}
+                                >
+                                    {sub.name}
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
             </nav>
@@ -185,10 +235,15 @@ export default function ProductMenu({
                 </section>
             )}
 
-            {/* Product Card Grid */}
-            <span className="text-xl font-extrabold text-[#2f1a16] tracking-tight">
-                All Products
-            </span>
+            {/* Product Card Grid Header & Grid */}
+            <div className="flex items-center justify-between">
+                <span className="text-xl font-extrabold text-[#2f1a16] tracking-tight">
+                    {sectionTitle}
+                </span>
+                <span className="text-xs text-[#8b6b61] font-semibold">
+                    {filteredProducts.length} {filteredProducts.length === 1 ? "item" : "items"}
+                </span>
+            </div>
             <ProductGrid
                 filteredProducts={filteredProducts}
                 handleAddToCartClick={handleAddToCartClick}

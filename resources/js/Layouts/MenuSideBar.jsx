@@ -6,8 +6,6 @@ import { useEffect } from "react";
 import {
     LayoutDashboard,
     Users,
-    ChartNoAxesCombined,
-    Warehouse,
     ClipboardList,
     ClipboardClock,
     Store,
@@ -17,10 +15,11 @@ import {
     ShieldCheck,
     Settings,
     TrendingUp,
+    ChefHat,
 } from "lucide-react";
 
 export default function MenuSideBar({}) {
-    const { url, auth, settings } = usePage().props;
+    const { auth, settings } = usePage().props;
     const can = auth?.can ?? {};
     useEffect(() => {
         // Ensure dropdowns, tooltips, and modals work
@@ -124,7 +123,7 @@ export default function MenuSideBar({}) {
                                             gap: "12px",
                                         }}
                                     >
-                                        <ChartNoAxesCombined className="nav-icon" />
+                                        <ChefHat className="nav-icon" />
                                         <span>Kitchen</span>
                                     </Link>
                                 </li>

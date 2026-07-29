@@ -34,9 +34,9 @@ const getStatusBadge = (stock) => {
     }
 
     const count = Number(stock);
-    if (count > 5) {
+    if (count > 3) {
         return <Badge variant="success">In Stock</Badge>;
-    } else if (count > 0 && count <= 5) {
+    } else if (count > 0 && count <= 3) {
         return <Badge variant="warning">Low Stock</Badge>;
     } else {
         return <Badge variant="danger">Out of Stock</Badge>;

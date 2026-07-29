@@ -3,16 +3,17 @@ import SizeBadge from "./SizeBadge";
 
 export default function SizesColumn({ sizes = [] }) {
     const containerRef = useRef(null);
-    const [visibleCount, setVisibleCount] = useState(sizes.length);
+    const displaySizes = sizes.length > 0 ? sizes : ["Reg"];
+    const [visibleCount, setVisibleCount] = useState(displaySizes.length);
 
     // Reset visibility to show all sizes when sizes change or container resizes
     useEffect(() => {
-        setVisibleCount(sizes.length);
+        setVisibleCount(displaySizes.length);
 
         if (!containerRef.current) return;
 
         const observer = new ResizeObserver(() => {
-            setVisibleCount(sizes.length);
+            setVisibleCount(displaySizes.length);
         });
 
         observer.observe(containerRef.current);
@@ -21,8 +22,8 @@ export default function SizesColumn({ sizes = [] }) {
 
     // Measure and truncate if they wrap to more than 2 rows
     useEffect(() => {
-        if (!containerRef.current || sizes.length === 0) return;
-        if (visibleCount !== sizes.length) return;
+        if (!containerRef.current || displaySizes.length === 0) return;
+        if (visibleCount !== displaySizes.length) return;
 
         const container = containerRef.current;
         const children = Array.from(container.children);
@@ -45,9 +46,8 @@ export default function SizesColumn({ sizes = [] }) {
             // Truncate to avoid 3rd row, reserving space for the "+N more" badge
             setVisibleCount(Math.max(1, limitIndex - 1));
         }
-    }, [sizes, visibleCount]);
+    }, [displaySizes, visibleCount]);
 
-    const displaySizes = sizes.length > 0 ? sizes : ["Reg"];
     const hasMore = visibleCount < displaySizes.length;
     const moreCount = displaySizes.length - visibleCount;
 

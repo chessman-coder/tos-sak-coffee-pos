@@ -5,8 +5,7 @@ import { useState } from "react";
 import Modal from "@/Components/Modal";
 import UserHeader from "@/Components/Users/UserHeader";
 import { UserForm } from "@/Pages/Users/CreateEdit";
-import DangerButton from "@/Components/DangerButton";
-import SecondaryButton from "@/Components/SecondaryButton";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 import Badge from "@/Components/ui/Badge";
 import {
     Pencil, Trash2
@@ -131,7 +130,7 @@ export default function UserPage({ users }) {
                         />
                     </div>
                 </Modal>
-                <Modal
+                {/* <Modal
                     show={confirmingDelete}
                     onClose={closeDeleteModal}
                     maxWidth="md"
@@ -151,18 +150,29 @@ export default function UserPage({ users }) {
                             ?
                         </p>
                         <div className="mt-6 flex justify-end gap-3">
-                            <SecondaryButton
+                            <Button
                                 type="button"
                                 onClick={closeDeleteModal}
                             >
                                 Cancel
-                            </SecondaryButton>
-                            <DangerButton disabled={processing}>
+                            </Button>
+                            <Button variant="danger" disabled={processing}>
                                 Delete
-                            </DangerButton>
+                            </Button>
                         </div>
                     </form>
-                </Modal>
+                </Modal> */}
+
+                <DeleteConfirmDialog
+                    show={confirmingDelete}
+                    title="Delete User"
+                    onClose={closeDeleteModal}
+                    description={`Are you sure you want to delete "${deletingUser?.name}"?`}
+                    confirmText="Delete"
+                    processing={processing}
+                    onConfirm={deleteUser}
+                />
+
                 <div className="mt-4 overflow-hidden rounded-3xl border border-amber-100 bg-white shadow-sm">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-amber-100">
@@ -170,7 +180,6 @@ export default function UserPage({ users }) {
                                 <tr className="text-left text-xs font-bold uppercase tracking-[0.18em] text-[#9a6b43]">
                                     <th className="px-5 py-4">Name</th>
                                     <th className="px-5 py-4">Role</th>
-                                    <th className="px-5 py-4">Shift</th>
                                     <th className="px-5 py-4">Status</th>
                                     <th className="px-5 py-4 text-right">
                                         Action
@@ -215,9 +224,6 @@ export default function UserPage({ users }) {
                                                 </td>
                                                 <td className="px-5 py-4 align-middle">
                                                     <Badge variant="role">{roleName}</Badge>
-                                                </td>
-                                                <td className="px-5 py-4 align-middle text-[15px] font-medium text-[#3b241f]">
-                                                    {shiftValue}
                                                 </td>
                                                 <td className="px-5 py-4 align-middle">
                                                     <Badge

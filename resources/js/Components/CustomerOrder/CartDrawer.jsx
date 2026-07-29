@@ -193,7 +193,7 @@ export default function CartDrawer({
                                         <label className="text-[10px] font-black uppercase text-[#8b6b61] tracking-wider block mb-1.5">
                                             Payment Method
                                         </label>
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid grid-cols-1 gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => setData("payment_method", "khqr")}
@@ -202,19 +202,7 @@ export default function CartDrawer({
                                                     : "border-[#eadfda] bg-white text-gray-500"
                                                     }`}
                                             >
-                                                <span className="font-extrabold text-xs">KHQR Pay</span>
                                                 <span className="text-[9px] mt-0.5 text-[#8b6b61]">Scan & Pay</span>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setData("payment_method", "cash")}
-                                                className={`py-2 px-3 border rounded-xl flex flex-col items-center justify-center transition cursor-pointer ${data.payment_method === "cash"
-                                                    ? "border-[#5a3630] bg-[#fcf9f7] text-[#5a3630] ring-1 ring-[#5a3630]"
-                                                    : "border-[#eadfda] bg-white text-gray-500"
-                                                    }`}
-                                            >
-                                                <span className="font-extrabold text-xs">Pay at Counter</span>
-                                                <span className="text-[9px] mt-0.5 text-[#8b6b61]">Pay cash</span>
                                             </button>
                                         </div>
                                     </div>

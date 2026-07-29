@@ -2,7 +2,6 @@ import Breadcrumb from "@/Components/Breadcrumb";
 import InputError from "@/Components/InputError";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { useRef, useState } from "react";
 
 export function UserForm({
     user = {},
@@ -11,8 +10,6 @@ export function UserForm({
     onSuccess,
     submitLabel,
 }) {
-    const fileInputRef = useRef(null);
-    const [avatarPreview, setAvatarPreview] = useState(user?.avatar_url || "");
     const { data, setData, post, patch, errors, reset, processing } = useForm({
         name: user?.name || "",
         email: user?.email || "",
@@ -20,16 +17,6 @@ export function UserForm({
         "confirm-password": "",
         roles: user.roles?.map((role) => role.id) || [],
     });
-
-    const handleAvatarChange = (e) => {
-        const file = e.target.files?.[0];
-
-        if (!file) {
-            return;
-        }
-
-        setAvatarPreview(URL.createObjectURL(file));
-    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -67,43 +54,6 @@ export function UserForm({
                         {user?.id ? "Edit User" : "New User"}
                     </h2>
                 </div>
-
-                {/* <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                    <div
-                        className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center text-sm text-slate-400 transition hover:border-slate-400 hover:bg-slate-100"
-                        onClick={() => fileInputRef.current?.click()}
-                        role="button"
-                        tabIndex={0}
-                    >
-                        {avatarPreview ? (
-                            <img
-                                src={avatarPreview}
-                                alt="Avatar preview"
-                                className="h-full w-full rounded-2xl object-cover"
-                            />
-                        ) : (
-                            <span>Drag image here</span>
-                        )}
-                    </div>
-                    <div className="text-center sm:text-left">
-                        <p className="mb-1 text-sm text-slate-500">Drag image here</p>
-                        <p className="mb-1 text-sm text-slate-500">or</p>
-                        <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="border-0 bg-transparent p-0 text-sm font-medium text-blue-500 hover:text-blue-600"
-                        >
-                            Browse image
-                        </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="d-none"
-                            onChange={handleAvatarChange}
-                        />
-                    </div>
-                </div> */}
 
                 <div className="space-y-4">
                     <div className="row align-items-center g-3">

@@ -18,7 +18,7 @@ Route::get('/user', function (Request $request) {
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
+    // Route::post('/register', [AuthController::class, 'register']);
 
     Route::middleware('jwt.auth')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
@@ -55,11 +55,6 @@ Route::delete('/catalog/product-options/{id}', [ProductOptionApiController::clas
 Route::get('/catalog/products', function () {
     return response()->json(Product::orderBy('name')->get(['id', 'name', 'price']));
 });
-
-// QR Self-Ordering API routes
-Route::get('/qr-order/products', [QrOrderApiController::class, 'products']);
-Route::post('/qr-order', [QrOrderApiController::class, 'store']);
-Route::get('/qr-order/tracking/{order_number}', [QrOrderApiController::class, 'track']);
 
 // Kitchen API routes
 Route::get('/kitchen/orders', [KitchenApiController::class, 'index']);

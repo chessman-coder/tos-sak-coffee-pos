@@ -114,6 +114,25 @@ class OrderController extends Controller
                 throw ValidationException::withMessages($optionErrors);
             }
 
+            // Check stock availability for products with defined stock numbers
+            $stockErrors = [];
+            foreach ($items as $itemIndex => $item) {
+                $product = $products->get($item['product_id']);
+                if ($product && $product->stock !== null && $product->stock !== '') {
+                    $requestedQty = (int) $item['quantity'];
+                    $currentStock = (int) $product->stock;
+                    if ($currentStock <= 0) {
+                        $stockErrors["items.$itemIndex.quantity"] = "{$product->name} is currently out of stock.";
+                    } elseif ($requestedQty > $currentStock) {
+                        $stockErrors["items.$itemIndex.quantity"] = "Only {$currentStock} items available in stock for {$product->name}.";
+                    }
+                }
+            }
+
+            if ($stockErrors !== []) {
+                throw ValidationException::withMessages($stockErrors);
+            }
+
             $totalAmount = 0;
             $orderNumber = $validated['order_number'] ?? $this->generateOrderNumber();
             
@@ -159,6 +178,13 @@ class OrderController extends Controller
                 ]);
 
                 $this->syncOrderItemOptions($orderItem, $product, $item['selected_options'] ?? []);
+
+                // Decrease stock count if stock is tracked for this product
+                if ($product->stock !== null && $product->stock !== '') {
+                    $currentStock = (int) $product->stock;
+                    $newStock = max(0, $currentStock - $quantity);
+                    $product->update(['stock' => $newStock]);
+                }
 
                 $totalAmount += $lineTotal;
             }

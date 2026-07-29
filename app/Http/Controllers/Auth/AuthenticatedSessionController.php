@@ -37,6 +37,9 @@ class AuthenticatedSessionController extends Controller
         if ($user && $user->hasPermissionTo('Manage Pos Checkout') && $user->hasPermissionTo('View Order History')) {
             return redirect()->intended(route('pos.index', absolute: false));
         }
+        if ($user && $user->hasPermissionTo('View Kitchen Dashboard')) {
+            return redirect()->intended(route('kitchen.index', absolute: false));
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

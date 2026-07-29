@@ -22,6 +22,32 @@ export default function SuccessView({
         });
     };
 
+    const waitingNumber = order?.waiting_number ?? (() => {
+        const source = String(order?.order_number || bill_number || "");
+        const digits = source.match(/\d+/g)?.join("");
+        return digits ? digits.replace(/^0+/, "") || "0" : source || "N/A";
+    })();
+
+    const orderType = order?.order_type || "N/A";
+    const isDineIn = orderType.toLowerCase().includes("dine");
+
+    const itemsList = Array.isArray(order?.items)
+        ? order.items
+        : order?.items
+        ? [order.items]
+        : [];
+    const itemsCount = itemsList.reduce(
+        (sum, item) => sum + Number(item.quantity || 1),
+        0
+    );
+    const itemsNamesLabel =
+        itemsList
+            .map((item) => item?.product?.name || item?.product_name || item?.name)
+            .filter(Boolean)
+            .join(", ") || "N/A";
+
+    const isPOSView = isAdmin && order?.order_method !== "self_order";
+
     return (
         <div className="p-8 text-center bg-white space-y-6">
             {/* Animated Success Checkmark */}
@@ -47,9 +73,47 @@ export default function SuccessView({
                     <div className="flex justify-between items-center text-sm">
                         <span className="text-secondary-dark font-semibold">Order Number</span>
                         <span className="text-[#2f1a16] font-bold">
-                            {bill_number || "N/A"}
+                            {bill_number || order?.order_number || "N/A"}
                         </span>
                     </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-secondary-dark font-semibold">Waiting Number</span>
+                        <span className="text-[#5a3630] font-black text-sm bg-[#f3ede9] px-2.5 py-0.5 rounded-lg">
+                            #{waitingNumber}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-secondary-dark font-semibold">Order Type</span>
+                        <span className="text-[#2f1a16] font-bold">
+                            {orderType}
+                        </span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-secondary-dark font-semibold">Customer Name</span>
+                        <span className="text-[#2f1a16] font-bold">
+                            {order?.customer_name || "N/A"}
+                        </span>
+                    </div>
+
+                    {!isDineIn && (
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-secondary-dark font-semibold">Customer Number</span>
+                            <span className="text-[#2f1a16] font-bold">
+                                {order?.phone_number || order?.customer_number || "N/A"}
+                            </span>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-center text-sm gap-4 border-t border-[#f3ede9] pt-2">
+                        <span className="text-secondary-dark font-semibold shrink-0">Order Item</span>
+                        <span className="text-[#2f1a16] font-bold text-right truncate">
+                            {itemsNamesLabel} {itemsCount > 0 ? `(x${itemsCount})` : ""}
+                        </span>
+                    </div>
+
                     <div className="flex justify-between items-center text-sm border-t border-[#f3ede9] pt-2">
                         <span className="text-secondary-dark font-semibold">Total Amount</span>
                         <span className="text-[#2f1a16] font-bold">
@@ -96,7 +160,7 @@ export default function SuccessView({
 
             {/* Actions */}
             <div className="space-y-3 pt-2">
-                {payment_method === "cash" && onPrintReceipt && (
+                {isPOSView ? (
                     <button
                         type="button"
                         onClick={onPrintReceipt}
@@ -105,6 +169,10 @@ export default function SuccessView({
                         <Printer size={18} />
                         Print Receipt
                     </button>
+                ) : (
+                    <div className="p-3.5 bg-[#fcf9f7] border border-[#c07a49]/40 rounded-xl text-center text-xs font-black text-[#ff0000]">
+                        Please, screenshot the order receipt to track your order!
+                    </div>
                 )}
 
                 <button
@@ -112,11 +180,11 @@ export default function SuccessView({
                     onClick={() => {
                         localStorage.removeItem("pos_cart");
                         localStorage.removeItem("client_order_cart");
-                        router.visit(isAdmin ? route("pos.index") : "/");
+                        router.visit(isPOSView ? route("pos.index") : "/");
                     }}
                     className="w-full h-12 bg-[#5a3630] hover:bg-[#4a2b25] text-white rounded-xl font-bold shadow-md transition transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                 >
-                    {isAdmin ? "Return to POS" : "Back to Ordering"}
+                    {isPOSView ? "Return to POS" : "Back to Ordering"}
                 </button>
             </div>
         </div>

@@ -1,13 +1,8 @@
 import Breadcrumb from "@/Components/Breadcrumb";
-import DangerButton from "@/Components/DangerButton";
 import Modal from "@/Components/Modal";
-import NavLink from "@/Components/NavLink";
 import Pagination from "@/Components/Pagination";
-import PrimaryButton from "@/Components/PrimaryButton";
-import SecondaryButton from "@/Components/SecondaryButton";
-import SecondaryButtonLink from "@/Components/SecondaryButtonLink";
+import Button from "@/Components/ui/Button";
 import AdminLayout from "@/Layouts/AdminLayout";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import moment from "moment";
 import { useState } from "react";
@@ -190,17 +185,17 @@ export default function CategoriesPage({ categoryData }) {
                                             ?
                                         </p>
                                         <div className="mt-6 flex justify-end">
-                                            <SecondaryButton
+                                            <Button
                                                 onClick={closeModal}
                                             >
                                                 No
-                                            </SecondaryButton>
-                                            <DangerButton
+                                            </Button>
+                                            <Button
                                                 className="ms-3"
                                                 disabled={processing}
                                             >
                                                 Yes
-                                            </DangerButton>
+                                            </Button>
                                         </div>
                                     </form>
                                 </Modal>

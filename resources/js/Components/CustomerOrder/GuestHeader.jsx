@@ -1,6 +1,7 @@
 import React from "react";
-import { usePage } from "@inertiajs/react";
-import { ShoppingBag } from "lucide-react";
+import { Link, usePage } from "@inertiajs/react";
+import { ShoppingBag, User } from "lucide-react";
+import Button from "../ui/Button";
 
 export default function GuestHeader({ setCartOpen, cart = [] }) {
     const { settings } = usePage().props;
@@ -34,6 +35,19 @@ export default function GuestHeader({ setCartOpen, cart = [] }) {
                         </span>
                     )}
                 </button>
+
+                {/* Login Button */}
+                <Button
+                    type="button"
+                    variant="fillDark"
+                    className="relative flex items-center gap-2 rounded-full shadow-sm broader"
+                >
+                    <Link href={route("login")} className="flex gap-2 hover:text-secondary-dark">
+                        <User size={18} />
+                        <span className="hidden sm:inline">Login</span>
+                    </Link>
+                </Button>
+
             </div>
         </header>
     );

@@ -1,15 +1,14 @@
-import Breadcrumb from "@/Components/Breadcrumb";
-import DangerButton from "@/Components/DangerButton";
 import Modal from "@/Components/Modal";
 import Pagination from "@/Components/Pagination";
 import ProductTable from "@/Components/Products/ProductTable";
 import ProductFormModal from "@/Components/Products/ProductFormModal";
 import ProductViewModal from "@/Components/Products/ProductViewModal";
-import SecondaryButton from "@/Components/SecondaryButton";
+import Button from "@/Components/ui/Button";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Head, useForm, usePage, router } from "@inertiajs/react";
+import { useForm, usePage, router } from "@inertiajs/react";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
 
 const splitSizes = (value) => {
     if (!value) return [];
@@ -273,28 +272,15 @@ export default function ProductsPage({
                                         </div>
                 </div>
 
-                <Modal show={confirmingDataDeletion} onClose={closeModal}>
-                    <form onSubmit={deleteDataRow} className="p-6">
-                        <h2 className="text-lg font-medium text-gray-900">
-                            Confirmation!
-                        </h2>
-                        <p className="mt-1 text-sm text-gray-600">
-                            Are you sure you want to delete{" "}
-                            <span className="text-lg font-medium">
-                                {deleteData.name}
-                            </span>
-                            ?
-                        </p>
-                        <div className="mt-6 flex justify-end">
-                            <SecondaryButton type="button" onClick={closeModal}>
-                                No
-                            </SecondaryButton>
-                            <DangerButton className="ms-3" disabled={processing}>
-                                Yes
-                            </DangerButton>
-                        </div>
-                    </form>
-                </Modal>
+                <DeleteConfirmDialog
+                    show={confirmingDataDeletion}
+                    title="Delete Product"
+                    onClose={closeModal}
+                    description={`Are you sure you want to delete "${deleteData.name}"?`}
+                    confirmText="Delete"
+                    processing={processing}
+                    onConfirm={deleteDataRow}
+                />
 
                 <ProductFormModal
                     show={showProductForm}

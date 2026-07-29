@@ -1,7 +1,3 @@
-import DangerButton from "@/Components/DangerButton";
-import Modal from "@/Components/Modal";
-import Pagination from "@/Components/Pagination";
-import SecondaryButton from "@/Components/SecondaryButton";
 import AdminLayout from "@/Layouts/AdminLayout";
 import RoleCard from "@/Components/Roles/RoleCard";
 import RoleModal from "@/Components/Roles/RoleModal";
@@ -134,7 +130,7 @@ export default function UserPage({ roles, permissions = [] }) {
                     show={confirmingDataDeletion}
                     title="Delete Role"
                     onClose={closeModal}
-                    description={`Are you sure you want to delete the role "${deleteData.name}"? This action cannot be undone.`}
+                    description={`Are you sure you want to delete "${deleteData.name}"?`}
                     confirmText="Delete"
                     processing={processing}
                     onConfirm={deleteDataRow}

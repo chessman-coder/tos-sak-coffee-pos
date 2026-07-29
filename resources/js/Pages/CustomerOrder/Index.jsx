@@ -338,6 +338,7 @@ export default function CustomerOrder({ products = [], categories = [], sizes = 
                     setSearch={setSearch}
                     selectedCategoryId={selectedCategoryId}
                     setSelectedCategoryId={setSelectedCategoryId}
+                    categories={categories}
                     parentCategories={parentCategories}
                     subCategoriesMap={subCategoriesMap}
                     filteredProducts={filteredProducts}
