@@ -32,7 +32,7 @@ class CatalogSeeder extends Seeder
         $fruit = Category::create(['name' => 'Fruit Tea', 'parent_id' => $tea->id]);
 
         $milkTea = Category::create(['name' => 'Milk Tea', 'parent_id' => null]);
-        $classic = Catagory::create(['name' => 'Classic', 'parent_id' => $milkTea->id]);
+        $classic = Category::create(['name' => 'Classic', 'parent_id' => $milkTea->id]);
         $flavored = Category::creat(['name' => 'Flavored', 'parent_id' => $milkTea->id]);
 
         $desserts = Category::create(['name' => 'Desserts', 'parent_id' => null]);
