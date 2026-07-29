@@ -19,20 +19,27 @@ class CatalogSeeder extends Seeder
     {
         // 1. Seed Categories & Subcategories
         $coffee = Category::create(['name' => 'Coffee', 'parent_id' => null]);
-        $espressoBased = Category::create(['name' => 'Espresso-Based', 'parent_id' => $coffee->id]);
-        $coldBrew = Category::create(['name' => 'Cold Brew', 'parent_id' => $coffee->id]);
+        $espresso = Category::create(['name' => 'Espresso', 'parent_id' => $coffee->id]);
+        $milkCoffee = Category::create(['name' => 'Milk Coffee', 'parent_id' => $coffee->id]);
+        $flavoredCoffee = Category::create(['name' => 'Flavored Coffee', 'parent_id' => $coffee->id]);
 
         $nonCoffee = Category::create(['name' => 'Non-Coffee', 'parent_id' => null]);
-        $matchaChoc = Category::create(['name' => 'Matcha & Chocolate', 'parent_id' => $nonCoffee->id]);
-        $smoothies = Category::create(['name' => 'Smoothies & Juices', 'parent_id' => $nonCoffee->id]);
+        $juice = Category::create(['name' => 'Juice', 'parent_id' => $nonCoffee->id]);
+        $milk = Category::create(['name' => 'Milk', 'parent_id' => $nonCoffee->id]);
 
         $tea = Category::create(['name' => 'Tea', 'parent_id' => null]);
-        $hotTea = Category::create(['name' => 'Hot Tea', 'parent_id' => $tea->id]);
-        $icedTea = Category::create(['name' => 'Iced Tea', 'parent_id' => $tea->id]);
+        $brewed = Category::create(['name' => 'Brewed Tea', 'parent_id' => $tea->id]);
+        $fruit = Category::create(['name' => 'Fruit Tea', 'parent_id' => $tea->id]);
 
-        $bakery = Category::create(['name' => 'Bakery', 'parent_id' => null]);
-        $cakes = Category::create(['name' => 'Cakes', 'parent_id' => $bakery->id]);
-        $croissants = Category::create(['name' => 'Croissants', 'parent_id' => $bakery->id]);
+        $milkTea = Category::create(['name' => 'Milk Tea', 'parent_id' => null]);
+        $classic = Catagory::create(['name' => 'Classic', 'parent_id' => $milkTea->id]);
+        $flavored = Category::creat(['name' => 'Flavored', 'parent_id' => $milkTea->id]);
+
+        $desserts = Category::create(['name' => 'Desserts', 'parent_id' => null]);
+        $cakes = Category::create(['name' => 'Cakes', 'parent_id' => $desserts->id]);
+        $pastries = Category::create(['name' => 'Pastries', 'parent_id' => $desserts->id]);
+        $Cookies = Category::create(['name' => 'Cookies', 'parent_id' => $desserts->id]);
+        
 
         // 2. Seed Sizes
         $sizesData = [
@@ -62,8 +69,10 @@ class CatalogSeeder extends Seeder
             'sort_order' => 0,
         ]);
         ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => '100% Sugar', 'upcharge' => 0.00, 'sort_order' => 0]);
-        ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => '50% Sugar', 'upcharge' => 0.00, 'sort_order' => 1]);
-        ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => 'No Sugar', 'upcharge' => 0.00, 'sort_order' => 2]);
+        ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => '75% Sugar', 'upcharge' => 0.00, 'sort_order' => 1]);
+        ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => '50% Sugar', 'upcharge' => 0.00, 'sort_order' => 2]);
+        ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => '25% Sugar', 'upcharge' => 0.00, 'sort_order' => 3]);
+        ProductOptionValue::create(['product_option_id' => $sugarOpt->id, 'value' => 'No Sugar', 'upcharge' => 0.00, 'sort_order' => 4]);
 
         // Ice Level (Optional)
         $iceOpt = ProductOption::create([
@@ -84,26 +93,6 @@ class CatalogSeeder extends Seeder
         ProductOptionValue::create(['product_option_id' => $addonsOpt->id, 'value' => 'Extra Shot', 'upcharge' => 0.75, 'sort_order' => 0]);
         ProductOptionValue::create(['product_option_id' => $addonsOpt->id, 'value' => 'Caramel Drizzle', 'upcharge' => 0.50, 'sort_order' => 1]);
         ProductOptionValue::create(['product_option_id' => $addonsOpt->id, 'value' => 'Whipped Cream', 'upcharge' => 0.50, 'sort_order' => 2]);
-
-        // 5. Seed Products
-        $productsData = [
-            [
-                'name' => 'Americano',
-                'category_id' => $espressoBased->id,
-                'type' => 'Hot, Iced',
-                'size' => 'Small, Medium, Large',
-                'price' => 0.01,
-                'stock' => 100,
-            ],
-            [
-                'name' => 'Caramel Macchiato',
-                'category_id' => $espressoBased->id,
-                'type' => 'Hot, Iced, Frappe',
-                'size' => 'Small, Medium, Large',
-                'price' => 3.50,
-                'stock' => 100,
-            ],
-        ];
 
         foreach ($productsData as $prod) {
             Product::create($prod);

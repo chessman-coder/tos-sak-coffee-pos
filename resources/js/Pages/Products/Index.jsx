@@ -1,11 +1,9 @@
-import Modal from "@/Components/Modal";
 import Pagination from "@/Components/Pagination";
 import ProductTable from "@/Components/Products/ProductTable";
 import ProductFormModal from "@/Components/Products/ProductFormModal";
 import ProductViewModal from "@/Components/Products/ProductViewModal";
-import Button from "@/Components/ui/Button";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { useForm, usePage, router } from "@inertiajs/react";
+import { useForm, usePage, router, Head } from "@inertiajs/react";
 import { Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import DeleteConfirmDialog from "@/Components/DeleteConfirmDialog";
@@ -206,13 +204,10 @@ export default function ProductsPage({
     };
 
     const headWeb = "Products";
-    const linksBreadcrumb = [
-        { title: "Home", url: "/" },
-        { title: headWeb, url: "" },
-    ];
 
     return (
         <AdminLayout >
+            <Head title={headWeb} />
             <section className="min-h-screen bg-background px-4 py-6 md:px-6 lg:px-8">
                 <div className="p-4 md:p-7">
                     <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
